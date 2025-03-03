@@ -1,3 +1,110 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/* עיצוב ברירת מחדל (מצב אור) */
+body {
+  @apply bg-white text-black;
+}
+
+/* עיצוב במצב חושך */
+.dark body {
+  @apply bg-gray-900 text-white;
+}
+
+/* תמיכה במצב RTL – כאשר html מוגדר עם dir="rtl" */
+html[dir="rtl"] {
+  direction: rtl;
+  text-align: right;
+}
+
+/* הגדרות נוספות */
+.high-contrast {
+  filter: contrast(150%);
+}
+
+.invert-contrast {
+  filter: invert(100%);
+}
+
+.grayscale {
+  filter: grayscale(100%);
+}
+
+.highlight-links a {
+  border-bottom: 2px dashed currentColor;
+  font-weight: bold;
+}
+
+.highlight-headings h1,
+.highlight-headings h2,
+.highlight-headings h3,
+.highlight-headings h4,
+.highlight-headings h5,
+.highlight-headings h6 {
+  background-color: rgba(0, 0, 0, 0.1);
+  font-weight: bold;
+}
+
+.stop-animations * {
+  animation: none !important;
+  transition: none !important;
+}
+
+.accessibility-widget {
+  direction: rtl;
+  text-align: center;
+}
+
+/* --- Custom Scrollbar Styles --- */
+
+/* משתנים למצב אור */
+:root {
+  --scrollbar-width: 12px;
+  --scrollbar-track-color: #e0e7ff; /* גוון כחול בהיר למצב אור */
+  --scrollbar-thumb-color: #3b82f6;
+  --scrollbar-thumb-hover-color: #2563eb;
+}
+
+/* משתנים למצב חושך (כאשר מופעלת הקלאס dark) */
+.dark {
+  --scrollbar-track-color: #1e293b; /* גוון כחול כהה למצב חושך */
+  --scrollbar-thumb-color: #1e40af;
+  --scrollbar-thumb-hover-color: #1e3a8a;
+}
+
+/* סגנונות עבור דפדפנים תומכי Webkit */
+::-webkit-scrollbar {
+  width: var(--scrollbar-width) !important;
+  height: var(--scrollbar-width) !important;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--scrollbar-track-color) !important;
+  border-radius: 9999px !important;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--scrollbar-thumb-color) !important;
+  border-radius: 9999px !important;
+  border: 3px solid var(--scrollbar-track-color) !important;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--scrollbar-thumb-hover-color) !important;
+}
+
+/* הסתרת כפתורי החצים והפינה של הסרגל */
+::-webkit-scrollbar-button {
+  display: none !important;
+}
+
+::-webkit-scrollbar-corner {
+  background: transparent !important;
+}
+
+/* סגנון עבור Firefox */
+* {
+  scrollbar-width: thin !important;
+  scrollbar-color: var(--scrollbar-thumb-color) var(--scrollbar-track-color) !important;
+}
