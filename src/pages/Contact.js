@@ -43,7 +43,7 @@ const Contact = () => {
       setResponseMsg(t('contact_error_fixFields'));
       return;
     }
-    // השתמש במשתנה סביבה REACT_APP_API_URL כדי שהכתובת תתעדכן בהתאם לסביבה
+    // כאן המשתנה REACT_APP_API_URL יקבל את הערך שהוגדר בסביבת הפריסה
     fetch(`${process.env.REACT_APP_API_URL}/contact`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
