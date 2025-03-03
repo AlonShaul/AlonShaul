@@ -43,7 +43,8 @@ const Contact = () => {
       setResponseMsg(t('contact_error_fixFields'));
       return;
     }
-    fetch('http://localhost:5000/api/contact', {
+    // השתמש במשתנה סביבה REACT_APP_API_URL כדי שהכתובת תתעדכן בהתאם לסביבה
+    fetch(`${process.env.REACT_APP_API_URL}/contact`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(formData)
