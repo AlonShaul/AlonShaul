@@ -3,6 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "@prisma/client": "^6.4.1",
     "cra-template": "1.2.0",
     "framer-motion": "^12.4.2",
     "i18next": "^24.2.2",
@@ -14,7 +15,7 @@
     "react-icons": "^5.5.0",
     "react-router-dom": "^7.1.5",
     "react-scripts": "5.0.1",
-    "typescript": "^4.9.5",
+    "typescript": "^5.8.2",
     "web-vitals": "^4.2.4"
   },
   "scripts": {
