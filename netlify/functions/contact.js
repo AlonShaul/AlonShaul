@@ -12,7 +12,7 @@ const validator = require('validator');
 const transporter = nodemailer.createTransport({
   host: 'in-v3.mailjet.com',
   port: 587,
-  secure: false,
+  secure: false, // STARTTLS
   auth: {
     user: process.env.MAILJET_API_KEY,
     pass: process.env.MAILJET_SECRET_KEY
@@ -20,6 +20,7 @@ const transporter = nodemailer.createTransport({
   tls: { rejectUnauthorized: false }
 });
 
+// פונקציה אסינכרונית שמטפלת בבקשת POST ליצירת קשר
 exports.handler = async (event, context) => {
   // ודא שמדובר בבקשת POST
   if (event.httpMethod !== 'POST') {
@@ -41,12 +42,18 @@ exports.handler = async (event, context) => {
 
   const { name, email, message } = data;
 
-  // בדיקה בסיסית
+  // בדיקה בסיסית: אימייל חייב להיות תקין והודעה לא ריקה
   if (!email || !validator.isEmail(email)) {
-    return { statusCode: 400, body: JSON.stringify({ error: 'כתובת אימייל לא תקינה' }) };
+    return {
+      statusCode: 400,
+      body: JSON.stringify({ error: 'כתובת אימייל לא תקינה' })
+    };
   }
   if (!message) {
-    return { statusCode: 400, body: JSON.stringify({ error: 'יש לספק הודעה' }) };
+    return {
+      statusCode: 400,
+      body: JSON.stringify({ error: 'יש לספק הודעה' })
+    };
   }
 
   try {
@@ -60,7 +67,7 @@ exports.handler = async (event, context) => {
     const direction = isHebrew ? 'rtl' : 'ltr';
     const textAlign = isHebrew ? 'right' : 'left';
 
-    // יצירת תוכן HTML עם הגדרת כיוון ויישור
+    // יצירת תוכן HTML עם הגדרת כיוון ויישור בהתאם
     const htmlContent = `
       <div style="direction: ${direction}; text-align: ${textAlign};">
         <p><strong>שם:</strong> ${name}</p>
@@ -69,14 +76,18 @@ exports.handler = async (event, context) => {
       </div>
     `;
 
+    // הגדרת הודעת המייל לשליחה
     const mailOptions = {
-      from: process.env.EMAIL_FROM,
-      to: process.env.EMAIL_TO,
+      from: process.env.EMAIL_FROM,   // כתובת שולח מאושרת
+      to: process.env.EMAIL_TO,         // כתובת יעד
       subject: 'הודעת צור קשר חדשה',
       html: htmlContent
     };
 
+    // לוגים לצורך בדיקה (ניתן להשאיר אותם, הם בתוך הפונקציה האסינכרונית)
+    console.log('Attempting to send mail with options:', mailOptions);
     await transporter.sendMail(mailOptions);
+    console.log('Mail sent successfully');
 
     return {
       statusCode: 200,
@@ -90,7 +101,3 @@ exports.handler = async (event, context) => {
     };
   }
 };
-
-console.log('Attempting to send mail with options:', mailOptions);
-await transporter.sendMail(mailOptions);
-console.log('Mail sent successfully');
