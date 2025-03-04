@@ -90,3 +90,7 @@ exports.handler = async (event, context) => {
     };
   }
 };
+
+console.log('Attempting to send mail with options:', mailOptions);
+await transporter.sendMail(mailOptions);
+console.log('Mail sent successfully');
