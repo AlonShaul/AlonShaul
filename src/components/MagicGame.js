@@ -1,7 +1,9 @@
 import React, { useEffect, useRef, useState, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import spaceship from '../spaceship.png';
-
+import pauseIcon from '../planets/pause.png';
+import restartIcon from '../planets/Restart.png';
+import resumeIcon from '../planets/Resume.png';
 
 // הגדרות מהירויות ותדירויות
 const SPELL_SPEED = 400;
@@ -10,18 +12,17 @@ const ENEMY_SPEED_MAX = 150;
 const ENEMY_SPAWN_INTERVAL = 1500;
 const COLLISION_DISTANCE = 30;
 const ENEMY_BULLET_SPEED = 200;
-const ENEMY_SHOOT_PROBABILITY = 0.5; // הסתברות לירי בשנייה לכל אויב
-const METEOR_SPAWN_INTERVAL = 3000; // כל 3 שניות
-const HEART_SPAWN_INTERVAL = 5000; // כל 5 שניות
-const INVULNERABILITY_TIME = 500; // זמן בלתי חדיר במיליסקנד לאחר פגיעה
+const ENEMY_SHOOT_PROBABILITY = 0.5;
+const METEOR_SPAWN_INTERVAL = 3000;
+const HEART_SPAWN_INTERVAL = 5000;
+const INVULNERABILITY_TIME = 500;
 
-// משתנה שמאפשר להוסיף סיבוב נוסף למטאור (במעלות). שנה את הערך לפי הצורך.
-const METEOR_ROTATION_OFFSET = -45; // לדוגמה, שנה ל-15 לקבלת סיבוב נוסף של 15 מעלות
+// משתנה שמאפשר להוסיף סיבוב נוסף למטאור (במעלות)
+const METEOR_ROTATION_OFFSET = -45;
 
 // פונקציה לחישוב מרחק בין שתי נקודות
 const distance = (a, b) => Math.hypot(a.x - b.x, a.y - b.y);
 
-// מערך נתונים עבור כוכבי הלכת – ודא שהתמונות קיימות בתיקייה ../planets/
 const planetData = [
   { name: 'Mercury', src: require('../planets/mercury.png') },
   { name: 'Venus', src: require('../planets/venus.png') },
@@ -33,13 +34,11 @@ const planetData = [
   { name: 'Neptune', src: require('../planets/neptune.png') },
 ];
 
-// פונקציה להחזרת כוכב לכת אקראי בגודל קבוע עם "עומק" אקראי (ללא שינוי בגודל התמונה)
 const getRandomPlanet = (containerWidth, containerHeight) => {
   const randomPlanet = planetData[Math.floor(Math.random() * planetData.length)];
-  const size = 40; // גודל קבוע
+  const size = 40;
   const img = new Image();
   img.src = randomPlanet.src;
-  // ערך עומק אקראי בין 0.5 (רחוק) ל-1.0 (קרוב)
   const depth = 0.5 + Math.random() * 0.5;
   return {
     name: randomPlanet.name,
@@ -52,9 +51,8 @@ const getRandomPlanet = (containerWidth, containerHeight) => {
   };
 };
 
-// פונקציה להחזרת מטאור אקראי – אין סיבוב פנימי, אך ניתן להוסיף סיבוב נוסף לפי METEOR_ROTATION_OFFSET
 const getRandomMeteor = (containerWidth, containerHeight) => {
-  const size = 40; // גודל קבוע
+  const size = 40;
   return {
     id: Date.now() + Math.random(),
     x: Math.random() * (containerWidth - size),
@@ -62,14 +60,13 @@ const getRandomMeteor = (containerWidth, containerHeight) => {
     size: size,
     speed: 80 + Math.random() * 40,
     dx: -20 + Math.random() * 40,
-    rotation: 0,          // ללא סיבוב פנימי
-    rotationSpeed: 0,     // ללא סיבוב פנימי
+    rotation: 0,
+    rotationSpeed: 0,
   };
 };
 
-// פונקציה להחזרת לב נופל (falling heart)
 const getRandomHeart = (containerWidth, containerHeight) => {
-  const size = 20; // גודל לב קטן
+  const size = 20;
   return {
     id: Date.now() + Math.random(),
     x: Math.random() * (containerWidth - size),
@@ -82,13 +79,13 @@ const getRandomHeart = (containerWidth, containerHeight) => {
 const MagicGame = () => {
   const { t } = useTranslation();
   
-  // משתני משחק
   const [score, setScore] = useState(0);
   const [lives, setLives] = useState(5);
   const [gameOver, setGameOver] = useState(false);
   const [gameStarted, setGameStarted] = useState(false);
+  const [paused, setPaused] = useState(false);
 
-  // מערכים עבור יריות, אויבים, יריות אויב והתפוצצויות
+  // Refs עבור יריות, אויבים, יריות אויב והתפוצצויות
   const spellsRef = useRef([]);
   const enemiesRef = useRef([]);
   const enemyBulletsRef = useRef([]);
@@ -125,7 +122,7 @@ const MagicGame = () => {
     height: window.innerHeight * 0.9,
   });
 
-  // אתחול מערך הכוכבים – 60 כוכבים, opacity 0.6
+  // אתחול מערך הכוכבים – 60 כוכבים
   useEffect(() => {
     const stars = [];
     for (let i = 0; i < 60; i++) {
@@ -148,9 +145,9 @@ const MagicGame = () => {
     ];
   }, [containerSize]);
 
-  // יצירת מטאורים – בכל METEOR_SPAWN_INTERVAL, יווצרו 1 עד 3 מטאורים
+  // יצירת מטאורים – כל METEOR_SPAWN_INTERVAL, יווצרו מטאורים (כשמשחק התחיל ולא במצב פאוז)
   useEffect(() => {
-    if (gameOver || !gameStarted) return;
+    if (gameOver || !gameStarted || paused) return;
     const spawnMeteors = () => {
       const count = Math.floor(Math.random() * 3) + 1;
       for (let i = 0; i < count; i++) {
@@ -159,11 +156,11 @@ const MagicGame = () => {
     };
     const interval = setInterval(spawnMeteors, METEOR_SPAWN_INTERVAL);
     return () => clearInterval(interval);
-  }, [containerSize.width, containerSize.height, gameOver, gameStarted]);
+  }, [containerSize.width, containerSize.height, gameOver, gameStarted, paused]);
 
-  // יצירת לבבות נופלים – בכל HEART_SPAWN_INTERVAL, יווצר לב אם אין לב במערכת
+  // יצירת לבבות – כל HEART_SPAWN_INTERVAL, יווצר לב אם אין לב (כשמשחק התחיל ולא במצב פאוז)
   useEffect(() => {
-    if (gameOver || !gameStarted) return;
+    if (gameOver || !gameStarted || paused) return;
     const spawnHeart = () => {
       if (heartsRef.current.length < 1) {
         heartsRef.current.push(getRandomHeart(containerSize.width, containerSize.height));
@@ -171,7 +168,24 @@ const MagicGame = () => {
     };
     const interval = setInterval(spawnHeart, HEART_SPAWN_INTERVAL);
     return () => clearInterval(interval);
-  }, [containerSize.width, containerSize.height, gameOver, gameStarted]);
+  }, [containerSize.width, containerSize.height, gameOver, gameStarted, paused]);
+
+  // יצירת אויבים – מופעלת רק לאחר התחלת המשחק (כשמשחק לא במצב פאוז)
+  useEffect(() => {
+    if (gameOver || !gameStarted || paused) return;
+    const spawnEnemy = () => {
+      if (enemiesRef.current.length > 20) return;
+      enemiesRef.current.push({
+        id: Date.now(),
+        x: 40 + Math.random() * (containerSize.width - 80),
+        y: -50,
+        speed: ENEMY_SPEED_MIN + Math.random() * (ENEMY_SPEED_MAX - ENEMY_SPEED_MIN),
+        type: Math.floor(Math.random() * 3),
+      });
+    };
+    const interval = setInterval(spawnEnemy, ENEMY_SPAWN_INTERVAL);
+    return () => clearInterval(interval);
+  }, [containerSize.width, containerSize.height, gameOver, gameStarted, paused]);
 
   // עדכון גודל הקאנבס בעת שינוי חלון
   useEffect(() => {
@@ -196,9 +210,12 @@ const MagicGame = () => {
     spaceshipImgRef.current = img;
   }, []);
 
-  // מאזין לתנועת העכבר – עדכון מיקום החללית
+  // מאזין לתנועת העכבר – עדכון מיקום החללית ועדכון זמן תנועה (ל-Auto Pause)
+  const lastMouseMoveRef = useRef(Date.now());
   useEffect(() => {
     const handleMouseMove = (e) => {
+      lastMouseMoveRef.current = Date.now();
+      if (paused) return;
       if (!containerRef.current) return;
       const rect = containerRef.current.getBoundingClientRect();
       const x = Math.max(40, Math.min(e.clientX - rect.left, containerSize.width - 40));
@@ -207,12 +224,22 @@ const MagicGame = () => {
     };
     window.addEventListener('mousemove', handleMouseMove);
     return () => window.removeEventListener('mousemove', handleMouseMove);
-  }, [containerSize]);
+  }, [containerSize, paused]);
 
-  // מאזין ללחיצה – יורה קסם אם המשחק התחיל
+  // Auto Pause: אם אין תנועת עכבר במשך 60 שניות, מעבר למצב Pause (רק אם המשחק פעיל)
+  useEffect(() => {
+    const interval = setInterval(() => {
+      if (gameStarted && !paused && Date.now() - lastMouseMoveRef.current >= 60000) {
+        setPaused(true);
+      }
+    }, 1000);
+    return () => clearInterval(interval);
+  }, [gameStarted, paused]);
+
+  // מאזין ללחיצה – יורה קסם אם המשחק התחיל (ולא במצב פאוז)
   useEffect(() => {
     const handleClick = () => {
-      if (!gameStarted) return;
+      if (!gameStarted || paused) return;
       spellsRef.current.push({
         id: Date.now(),
         x: playerPosRef.current.x,
@@ -221,34 +248,21 @@ const MagicGame = () => {
     };
     window.addEventListener('click', handleClick);
     return () => window.removeEventListener('click', handleClick);
-  }, [gameStarted]);
+  }, [gameStarted, paused]);
 
-  // יצירת אויבים – מופעלת רק לאחר התחלת המשחק
-  useEffect(() => {
-    if (gameOver || !gameStarted) return;
-    const spawnEnemy = () => {
-      if (enemiesRef.current.length > 20) return;
-      enemiesRef.current.push({
-        id: Date.now(),
-        x: 40 + Math.random() * (containerSize.width - 80),
-        y: -50,
-        speed: ENEMY_SPEED_MIN + Math.random() * (ENEMY_SPEED_MAX - ENEMY_SPEED_MIN),
-        type: Math.floor(Math.random() * 3),
-      });
-    };
-    const interval = setInterval(spawnEnemy, ENEMY_SPAWN_INTERVAL);
-    return () => clearInterval(interval);
-  }, [containerSize.width, containerSize.height, gameOver, gameStarted]);
-
-  // לולאת המשחק – מעדכנת מיקומים ובודקת התנגשות
-  const lastTimeRef = useRef(null);
+  // ניהול לולאת האנימציה – רק כאשר המשחק פעיל (לא במצב פאוז)
+  const lastTimeRefAnim = useRef(null);
+  const animationFrameIdRef = useRef(null);
   const gameLoop = useCallback((time) => {
-    if (gameOver || !gameStarted) return;
-    if (!lastTimeRef.current) lastTimeRef.current = time;
-    const deltaTime = (time - lastTimeRef.current) / 1000;
-    lastTimeRef.current = time;
+    if (gameOver || !gameStarted || paused) {
+      lastTimeRefAnim.current = null;
+      return;
+    }
+    if (!lastTimeRefAnim.current) lastTimeRefAnim.current = time;
+    const deltaTime = (time - lastTimeRefAnim.current) / 1000;
+    lastTimeRefAnim.current = time;
 
-    // עדכון כוכבים – תנועה איטית למטה, ואתחול כאשר עוברים את הקצה (+100)
+    // עדכון כוכבים
     starsRef.current.forEach(star => {
       star.y += star.speed * deltaTime;
       if (star.y > containerSize.height + 100) {
@@ -257,7 +271,7 @@ const MagicGame = () => {
       }
     });
 
-    // עדכון כוכבי הלכת הפעילים – הם נעים למטה; כאשר אחד מהם עובר את הקצה, מוחלף באחד חדש
+    // עדכון כוכבי לכת
     activePlanetsRef.current = activePlanetsRef.current.map(planet => {
       planet.y += planet.speed * deltaTime;
       if (planet.y > containerSize.height + 100) {
@@ -266,25 +280,25 @@ const MagicGame = () => {
       return planet;
     });
 
-    // עדכון מטאורים – תנועה ללא סיבוב, ואתחול מחדש כאשר עוברים את הקצה
+    // עדכון מטאורים
     meteorsRef.current = meteorsRef.current.map(meteor => {
       meteor.y += meteor.speed * deltaTime;
       meteor.x += meteor.dx * deltaTime;
       return meteor;
     }).filter(meteor => meteor.y < containerSize.height + meteor.size + 100);
 
-    // עדכון לבבות נופלים – תנועה, ואתחול כאשר עוברים את הקצה
+    // עדכון לבבות
     heartsRef.current = heartsRef.current.map(heart => {
       heart.y += heart.speed * deltaTime;
       return heart;
     }).filter(heart => heart.y < containerSize.height + heart.size + 100);
 
-    // עדכון יריות החללית
+    // עדכון יריות
     spellsRef.current = spellsRef.current
       .map(spell => ({ ...spell, y: spell.y - SPELL_SPEED * deltaTime }))
       .filter(spell => spell.y > -50);
 
-    // עדכון אויבים וירי אויב – יריות של יריב יוצאות ממרכזו + 40
+    // עדכון אויבים וירי אויב
     enemiesRef.current.forEach(enemy => {
       enemy.y += enemy.speed * deltaTime;
       if (Math.random() < ENEMY_SHOOT_PROBABILITY * deltaTime) {
@@ -300,7 +314,6 @@ const MagicGame = () => {
     });
     enemiesRef.current = enemiesRef.current.filter(enemy => enemy.y < containerSize.height + 100);
 
-    // עדכון יריות אויב
     enemyBulletsRef.current = enemyBulletsRef.current
       .map(bullet => ({
         ...bullet,
@@ -312,7 +325,7 @@ const MagicGame = () => {
         bullet.y >= -50 && bullet.y <= containerSize.height + 100
       );
 
-    // בדיקת התנגשות קסמים עם אויבים
+    // התנגשות קסמים עם אויבים
     const collidedSpellIds = new Set();
     enemiesRef.current = enemiesRef.current.filter(enemy => {
       let hit = false;
@@ -335,7 +348,7 @@ const MagicGame = () => {
     });
     spellsRef.current = spellsRef.current.filter(spell => !collidedSpellIds.has(spell.id));
 
-    // בדיקת התנגשות קסמים עם מטאורים – אם יורים עליהם, הם מתפוצצים
+    // התנגשות קסמים עם מטאורים
     meteorsRef.current = meteorsRef.current.filter(meteor => {
       let hit = false;
       spellsRef.current.forEach(spell => {
@@ -356,7 +369,7 @@ const MagicGame = () => {
       return true;
     });
 
-    // בדיקת התנגשות יריות אויב עם החללית (סף 15)
+    // התנגשות יריות אויב עם החללית
     if (time > invulnerableUntilRef.current) {
       let collisionDetected = false;
       enemyBulletsRef.current = enemyBulletsRef.current.filter(bullet => {
@@ -376,7 +389,7 @@ const MagicGame = () => {
       }
     }
 
-    // בדיקת התנגשות מטאורים עם החללית (סף 30)
+    // התנגשות מטאורים עם החללית
     meteorsRef.current = meteorsRef.current.filter(meteor => {
       if (distance(meteor, playerPosRef.current) < 30) {
         setLives(prev => {
@@ -395,7 +408,7 @@ const MagicGame = () => {
       return true;
     });
 
-    // בדיקת התנגשות לבבות נופלים עם החללית (סף 20) – אם נלכד, מוסיפים לב אחד
+    // התנגשות לבבות עם החללית
     heartsRef.current = heartsRef.current.filter(heart => {
       if (distance(heart, playerPosRef.current) < 20) {
         setLives(prev => prev + 1);
@@ -404,7 +417,7 @@ const MagicGame = () => {
       return true;
     });
 
-    // בדיקת התנגשות בין המטוס של השחקן לבין המטוס היריב
+    // התנגשות בין אויב לחללית
     enemiesRef.current = enemiesRef.current.filter(enemy => {
       if (distance(enemy, playerPosRef.current) < 30) {
         explosionsRef.current.push({
@@ -427,8 +440,8 @@ const MagicGame = () => {
     explosionsRef.current = explosionsRef.current.filter(exp => Date.now() - exp.start < 800);
 
     draw();
-    requestAnimationFrame(gameLoop);
-  }, [containerSize, gameOver, gameStarted]);
+    animationFrameIdRef.current = requestAnimationFrame(gameLoop);
+  }, [containerSize, gameOver, gameStarted, paused]);
 
   const draw = () => {
     const canvas = canvasRef.current;
@@ -436,7 +449,7 @@ const MagicGame = () => {
     const ctx = canvas.getContext('2d');
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-    // ציור כוכבים – opacity 0.6
+    // ציור כוכבים
     starsRef.current.forEach(star => {
       ctx.fillStyle = "rgba(255,255,255,0.6)";
       ctx.beginPath();
@@ -444,7 +457,7 @@ const MagicGame = () => {
       ctx.fill();
     });
 
-    // ציור כוכבי לכת – מציגים 3 פעילים, עם שקיפות על פי העומק
+    // ציור כוכבי לכת
     activePlanetsRef.current.forEach(planet => {
       if (planet.img.complete) {
         ctx.save();
@@ -454,21 +467,21 @@ const MagicGame = () => {
       }
     });
 
-    // ציור מטאורים – מציגים מטאורים ללא סיבוב (ניתן להוסיף סיבוב נוסף לפי METEOR_ROTATION_OFFSET)
+    // ציור מטאורים
     meteorsRef.current.forEach(meteor => {
       ctx.save();
-      ctx.translate(meteor.x + meteor.size/2, meteor.y + meteor.size/2);
+      ctx.translate(meteor.x + meteor.size / 2, meteor.y + meteor.size / 2);
       ctx.rotate(((meteor.rotation + METEOR_ROTATION_OFFSET) * Math.PI) / 180);
       if (meteorImgRef.current && meteorImgRef.current.complete) {
-        ctx.drawImage(meteorImgRef.current, -meteor.size/2, -meteor.size/2, meteor.size, meteor.size);
+        ctx.drawImage(meteorImgRef.current, -meteor.size / 2, -meteor.size / 2, meteor.size, meteor.size);
       } else {
         ctx.fillStyle = "gray";
-        ctx.fillRect(-meteor.size/2, -meteor.size/2, meteor.size, meteor.size);
+        ctx.fillRect(-meteor.size / 2, -meteor.size / 2, meteor.size, meteor.size);
       }
       ctx.restore();
     });
 
-    // ציור לבבות נופלים – מציירים את האימוג'י "❤️"
+    // ציור לבבות
     ctx.font = "20px Arial";
     ctx.textAlign = "center";
     ctx.textBaseline = "middle";
@@ -476,7 +489,7 @@ const MagicGame = () => {
       ctx.fillText("❤️", heart.x, heart.y);
     });
 
-    // ציור יריות החללית (כדורים כחולים)
+    // ציור יריות החללית
     spellsRef.current.forEach(spell => {
       ctx.fillStyle = "#60a5fa";
       ctx.beginPath();
@@ -484,7 +497,7 @@ const MagicGame = () => {
       ctx.fill();
     });
 
-    // ציור אויבים עם להבה בזנב – נגדיר להם פילטר אדום-צהוב
+    // ציור אויבים
     enemiesRef.current.forEach(enemy => {
       ctx.save();
       ctx.translate(enemy.x, enemy.y);
@@ -502,7 +515,7 @@ const MagicGame = () => {
       ctx.restore();
     });
 
-    // ציור יריות אויב (כדורים אדומים)
+    // ציור יריות אויב
     enemyBulletsRef.current.forEach(bullet => {
       ctx.fillStyle = "red";
       ctx.beginPath();
@@ -510,7 +523,7 @@ const MagicGame = () => {
       ctx.fill();
     });
 
-    // ציור התפוצצויות – גרדיאנט מעגלי בולט יותר
+    // ציור התפוצצויות
     explosionsRef.current.forEach(exp => {
       const age = Date.now() - exp.start;
       const progress = age / 800;
@@ -525,7 +538,7 @@ const MagicGame = () => {
       ctx.fill();
     });
 
-    // ציור החללית של השחקן עם פילטר בגווני כחול
+    // ציור החללית של השחקן
     if (spaceshipImgRef.current) {
       ctx.save();
       ctx.translate(playerPosRef.current.x, playerPosRef.current.y);
@@ -544,11 +557,16 @@ const MagicGame = () => {
   };
 
   useEffect(() => {
-    if (gameStarted && !gameOver) {
-      lastTimeRef.current = null;
-      requestAnimationFrame(gameLoop);
+    if (gameStarted && !gameOver && !paused) {
+      lastTimeRefAnim.current = null;
+      animationFrameIdRef.current = requestAnimationFrame(gameLoop);
     }
-  }, [gameLoop, gameOver, gameStarted]);
+    return () => {
+      if (animationFrameIdRef.current) {
+        cancelAnimationFrame(animationFrameIdRef.current);
+      }
+    };
+  }, [gameStarted, gameOver, paused, gameLoop]);
 
   const restartGame = () => {
     setScore(0);
@@ -561,7 +579,7 @@ const MagicGame = () => {
     meteorsRef.current = [];
     heartsRef.current = [];
     invulnerableUntilRef.current = 0;
-    lastTimeRef.current = null;
+    lastTimeRefAnim.current = null;
   };
 
   const startGame = () => {
@@ -574,7 +592,7 @@ const MagicGame = () => {
       className="relative w-full h-[90vh] overflow-hidden select-none"
       style={{
         background: 'radial-gradient(ellipse at center, #001f3f 0%, #004080 50%, #005f99 100%)',
-        cursor: gameStarted ? 'none' : 'default',
+        cursor: (gameStarted && !paused) ? 'none' : 'default',
       }}
     >
       <canvas
@@ -599,16 +617,25 @@ const MagicGame = () => {
           </button>
         </div>
       )}
-      {gameStarted && (
+      {gameStarted && !gameOver && (
         <>
           <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 z-50 px-10 py-5 rounded-3xl bg-blue-900 bg-opacity-90 border-4 border-blue-400 text-white font-extrabold text-4xl shadow-2xl">
             Score: {score}
           </div>
-          <div className ="absolute top-4 left-4 z-50 text-4xl flex items-center" dir="ltr"> 
+          <div className="absolute top-4 left-4 z-50 text-4xl flex items-center" dir="ltr">
             <span className="mr-2 text-white font-bold">Lives:</span>
             {Array.from({ length: lives }).map((_, i) => (
               <span key={i} style={{ marginRight: 5 }}>❤️</span>
             ))}
+          </div>
+          {/* כפתור Pause */}
+          <div className="absolute top-4 right-4 z-50">
+            <button
+              className="w-12 h-12 flex items-center justify-center rounded-full bg-blue-400 hover:bg-blue-500"
+              onClick={() => setPaused(true)}
+            >
+              <img src={pauseIcon} alt="Pause" className="w-8 h-8" />
+            </button>
           </div>
         </>
       )}
@@ -617,11 +644,34 @@ const MagicGame = () => {
           <div className="p-10 rounded-xl text-center" style={{ background: 'linear-gradient(135deg, #004080, #005f99)' }}>
             <h1 className="text-6xl text-white font-extrabold mb-6">Game Over</h1>
             <button
-              className="px-6 py-3 text-2xl font-bold rounded bg-blue-400 text-white hover:bg-blue-500"
+              className="px-6 py-3 text-2xl font-bold rounded bg-blue-400 hover:bg-blue-500 text-white"
               onClick={restartGame}
             >
               Restart
             </button>
+          </div>
+        </div>
+      )}
+      {paused && (
+        <div className="absolute inset-0 z-50 flex flex-col items-center justify-center bg-black bg-opacity-70">
+          <div className="p-10 rounded-xl text-center bg-gradient-to-br from-blue-700 to-blue-500">
+            <h1 className="text-6xl text-white font-extrabold mb-8">Paused</h1>
+            <div className="flex flex-col gap-4">
+              <button
+                className="w-48 h-12 flex flex-row items-center justify-between px-4 rounded bg-blue-400 hover:bg-blue-500 text-white text-xl"
+                onClick={() => setPaused(false)}
+              >
+                <img src={resumeIcon} alt="Resume" className="w-6 h-6" />
+                <span>Resume</span>
+              </button>
+              <button
+                className="w-48 h-12 flex flex-row items-center justify-between px-4 rounded bg-blue-400 hover:bg-blue-500 text-white text-xl"
+                onClick={() => { restartGame(); setPaused(false); }}
+              >
+                <img src={restartIcon} alt="Restart" className="w-6 h-6" />
+                <span>Restart</span>
+              </button>
+            </div>
           </div>
         </div>
       )}
