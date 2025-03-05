@@ -120,7 +120,7 @@ const MagicGame = () => {
   // מניעת פגיעות חוזרות
   const invulnerableUntilRef = useRef(0);
 
-  // מיקום החללית (מעודכן לפי תנועת העכבר/לחיצה)
+  // מיקום החללית (מעודכן לפי לחיצה/עכבר)
   const playerPosRef = useRef({ x: window.innerWidth / 2, y: window.innerHeight - 100 });
 
   // רפרנסים לקאנבס ולמיכל
@@ -233,18 +233,16 @@ const MagicGame = () => {
     return () => window.removeEventListener('mousemove', handleMouseMove);
   }, [containerSize, paused]);
 
-  // במצב טלפון - מבצעים עדכון מיקום החללית לפי לחיצה (ולא לפי החלקה)
+  // במצב טלפון – עדכון מיקום החללית לפי לחיצה (כפי שהיה קודם) + יורים קסם
   useEffect(() => {
     const handleClick = (e) => {
       if (!gameStarted || paused) return;
-      // אם במצב טלפון, מעדכנים את מיקום החללית לפי מיקום הלחיצה
       if (isMobile && containerRef.current) {
         const rect = containerRef.current.getBoundingClientRect();
         const x = Math.max(40, Math.min(e.clientX - rect.left, containerSize.width - 40));
         const y = Math.max(40, Math.min(e.clientY - rect.top, containerSize.height - 40));
         playerPosRef.current = { x, y };
       }
-      // יורים קסם
       spellsRef.current.push({
         id: Date.now(),
         x: playerPosRef.current.x,
@@ -634,8 +632,8 @@ const MagicGame = () => {
       )}
       {gameStarted && !gameOver && (
         <>
-          {/* בלוח הניקוד - במצב טלפון נשאיר את המיכל בתחתית, אך מרכזים את הטקסט */}
-          <div className={`absolute bottom-4 left-1/2 transform -translate-x-1/2 z-50 px-10 py-5 rounded-3xl bg-blue-900 bg-opacity-90 border-4 border-blue-400 text-white font-extrabold text-4xl shadow-2xl ${isMobile ? "text-center" : ""}`}>
+          {/* לוח הניקוד - במצב טלפון מוקטן (גודל קטן יותר) אך במיקום התחתית */}
+          <div className={`absolute bottom-4 left-1/2 transform -translate-x-1/2 z-50 ${isMobile ? "px-4 py-2 rounded-xl border-2 border-blue-400 text-white font-extrabold text-2xl text-center" : "px-10 py-5 rounded-3xl bg-blue-900 bg-opacity-90 border-4 border-blue-400 text-white font-extrabold text-4xl shadow-2xl"}`}>
             Score: {score}
           </div>
           <div className="absolute top-4 left-4 z-50 text-4xl flex items-center" dir="ltr">
@@ -672,7 +670,7 @@ const MagicGame = () => {
         <div className="absolute inset-0 z-50 flex flex-col items-center justify-center bg-black bg-opacity-70">
           <div className="p-10 rounded-xl text-center bg-gradient-to-br from-blue-700 to-blue-500">
             <h1 className="text-6xl text-white font-extrabold mb-8">Paused</h1>
-            <div className="flex flex-col gap-4">
+            <div className="flex flex-col gap-4 items-center">
               <button
                 className="w-48 h-12 flex flex-row items-center justify-between px-4 rounded bg-blue-400 hover:bg-blue-500 text-white text-xl"
                 onClick={() => setPaused(false)}
