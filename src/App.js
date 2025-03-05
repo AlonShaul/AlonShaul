@@ -8,6 +8,7 @@ import Profile from './pages/Profile';
 import Projects from './pages/Projects';
 import Contact from './pages/Contact';
 import AccessibilityWidget from './components/AccessibilityWidget';
+import ContactBot from './components/ContactBot'; // הוספת ייבוא של הבוט
 
 function App() {
   return (
@@ -24,6 +25,7 @@ function App() {
       </main>
       <Footer />
       <AccessibilityWidget />
+      <ContactBot /> {/* הוספת הבוט לתחתית העמוד */}
     </div>
   );
 }
