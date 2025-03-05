@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import spaceship from '../spaceship.png';
-import pauseIcon from '../planets/Pause.png';
+import pauseIcon from '../planets/pause.png';
 import restartIcon from '../planets/Restart.png';
 import resumeIcon from '../planets/Resume.png';
 
