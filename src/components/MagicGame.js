@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import spaceship from '../spaceship.png';
-import pauseIcon from '../planets/pause.png';
+import pauseIcon from '../planets/Pause.png';
 import restartIcon from '../planets/Restart.png';
 import resumeIcon from '../planets/Resume.png';
 
@@ -592,7 +592,7 @@ const MagicGame = () => {
       className="relative w-full h-[90vh] overflow-hidden select-none"
       style={{
         background: 'radial-gradient(ellipse at center, #001f3f 0%, #004080 50%, #005f99 100%)',
-        cursor: (gameStarted && !paused) ? 'none' : 'default',
+        cursor: (gameStarted && !paused && !gameOver) ? 'none' : 'default',
       }}
     >
       <canvas
