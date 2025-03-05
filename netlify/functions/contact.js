@@ -2,9 +2,6 @@
 
 require('dotenv').config(); // טעינת משתני סביבה מהקובץ .env
 
-const { PrismaClient } = require('@prisma/client');
-const prisma = new PrismaClient();
-
 const nodemailer = require('nodemailer');
 const validator = require('validator');
 
@@ -20,7 +17,6 @@ const transporter = nodemailer.createTransport({
   tls: { rejectUnauthorized: false }
 });
 
-// פונקציה אסינכרונית שמטפלת בבקשת POST ליצירת קשר
 exports.handler = async (event, context) => {
   // ודא שמדובר בבקשת POST
   if (event.httpMethod !== 'POST') {
@@ -57,17 +53,10 @@ exports.handler = async (event, context) => {
   }
 
   try {
-    // שמירת ההודעה במסד הנתונים באמצעות Prisma
-    const newContact = await prisma.contact.create({
-      data: { name, email, message }
-    });
-
-    // בדיקה אם ההודעה מכילה תווים עבריים
+    // יצירת תוכן HTML להודעת המייל
     const isHebrew = /[\u0590-\u05FF]/.test(message);
     const direction = isHebrew ? 'rtl' : 'ltr';
     const textAlign = isHebrew ? 'right' : 'left';
-
-    // יצירת תוכן HTML עם הגדרת כיוון ויישור בהתאם
     const htmlContent = `
       <div style="direction: ${direction}; text-align: ${textAlign};">
         <p><strong>שם:</strong> ${name}</p>
@@ -76,28 +65,26 @@ exports.handler = async (event, context) => {
       </div>
     `;
 
-    // הגדרת הודעת המייל לשליחה
     const mailOptions = {
-      from: process.env.EMAIL_FROM,   // כתובת שולח מאושרת
-      to: process.env.EMAIL_TO,         // כתובת יעד
+      from: process.env.EMAIL_FROM,  // כתובת שולח מאושרת
+      to: process.env.EMAIL_TO,      // כתובת יעד (המייל שלך)
       subject: 'הודעת צור קשר חדשה',
       html: htmlContent
     };
 
-    // לוגים לצורך בדיקה (ניתן להשאיר אותם, הם בתוך הפונקציה האסינכרונית)
     console.log('Attempting to send mail with options:', mailOptions);
     await transporter.sendMail(mailOptions);
     console.log('Mail sent successfully');
 
     return {
       statusCode: 200,
-      body: JSON.stringify({ message: 'ההודעה התקבלה והמייל נשלח!', data: newContact })
+      body: JSON.stringify({ message: 'ההודעה התקבלה והמייל נשלח!' })
     };
   } catch (error) {
-    console.error('Error saving contact message:', error);
+    console.error('Error in contact function:', error);
     return {
       statusCode: 500,
-      body: JSON.stringify({ error: 'תקלה בעת שמירת ההודעה' })
+      body: JSON.stringify({ error: 'תקלה בעת שליחת ההודעה' })
     };
   }
 };
