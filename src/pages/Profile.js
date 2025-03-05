@@ -69,7 +69,7 @@ const Profile = () => {
                   transition={{ duration: 1, delay: 0.7 }}
                 >
                   <motion.a 
-                    href="https://www.linkedin.com/in/yourprofile" 
+                    href="https://www.linkedin.com/in/alonshaul/" 
                     target="_blank" 
                     rel="noopener noreferrer"
                     className="flex items-center text-blue-600 hover:text-blue-800"
@@ -83,7 +83,7 @@ const Profile = () => {
                     <span className="font-semibold text-xl">LinkedIn</span>
                   </motion.a>
                   <motion.a 
-                    href="https://github.com/yourusername" 
+                    href="https://github.com/AlonShaul" 
                     target="_blank" 
                     rel="noopener noreferrer"
                     className="flex items-center text-gray-500 hover:text-black"
