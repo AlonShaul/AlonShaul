@@ -120,25 +120,12 @@ const MagicGame = () => {
   // מניעת פגיעות חוזרות
   const invulnerableUntilRef = useRef(0);
 
-  // מיקום החללית (מעודכן לפי תנועת העכבר/מגע)
+  // מיקום החללית (מעודכן לפי תנועת העכבר/לחיצה)
   const playerPosRef = useRef({ x: window.innerWidth / 2, y: window.innerHeight - 100 });
 
   // רפרנסים לקאנבס ולמיכל
   const canvasRef = useRef(null);
   const containerRef = useRef(null);
-
-  // לצורך טיפול במגע – נשמור את המיקום ההתחלתי של האצבע
-  const initialTouchRef = useRef(null);
-  useEffect(() => {
-    const handleTouchStart = (e) => {
-      initialTouchRef.current = {
-        x: e.touches[0].clientX,
-        y: e.touches[0].clientY
-      };
-    };
-    window.addEventListener('touchstart', handleTouchStart, { passive: true });
-    return () => window.removeEventListener('touchstart', handleTouchStart);
-  }, []);
 
   // אתחול מערך הכוכבים – 60 כוכבים
   useEffect(() => {
@@ -246,31 +233,27 @@ const MagicGame = () => {
     return () => window.removeEventListener('mousemove', handleMouseMove);
   }, [containerSize, paused]);
 
-  // מאזין לתנועת מגע – לעדכון מיקום החללית; אם התנועה אופקית, נמנע תנועת גלילה בתוך המשחק בלבד
+  // במצב טלפון - מבצעים עדכון מיקום החללית לפי לחיצה (ולא לפי החלקה)
   useEffect(() => {
-    const handleTouchMove = (e) => {
-      lastMouseMoveRef.current = Date.now();
-      if (paused) return;
-      if (!containerRef.current) return;
-      const rect = containerRef.current.getBoundingClientRect();
-      const touch = e.touches[0];
-      const currentX = touch.clientX;
-      const currentY = touch.clientY;
-      if (initialTouchRef.current) {
-        const dx = currentX - initialTouchRef.current.x;
-        const dy = currentY - initialTouchRef.current.y;
-        // אם התנועה אופקית – מניעת ברירת מחדל למניעת גלילת הדף בתוך המשחק
-        if (Math.abs(dx) > Math.abs(dy)) {
-          e.preventDefault();
-        }
+    const handleClick = (e) => {
+      if (!gameStarted || paused) return;
+      // אם במצב טלפון, מעדכנים את מיקום החללית לפי מיקום הלחיצה
+      if (isMobile && containerRef.current) {
+        const rect = containerRef.current.getBoundingClientRect();
+        const x = Math.max(40, Math.min(e.clientX - rect.left, containerSize.width - 40));
+        const y = Math.max(40, Math.min(e.clientY - rect.top, containerSize.height - 40));
+        playerPosRef.current = { x, y };
       }
-      const x = Math.max(40, Math.min(currentX - rect.left, containerSize.width - 40));
-      const y = Math.max(40, Math.min(currentY - rect.top, containerSize.height - 40));
-      playerPosRef.current = { x, y };
+      // יורים קסם
+      spellsRef.current.push({
+        id: Date.now(),
+        x: playerPosRef.current.x,
+        y: playerPosRef.current.y - 40,
+      });
     };
-    window.addEventListener('touchmove', handleTouchMove, { passive: false });
-    return () => window.removeEventListener('touchmove', handleTouchMove);
-  }, [containerSize, paused]);
+    window.addEventListener('click', handleClick);
+    return () => window.removeEventListener('click', handleClick);
+  }, [gameStarted, paused, isMobile, containerSize]);
 
   // Auto Pause: אם אין תנועת עכבר במשך 60 שניות, מעבר למצב Pause (רק אם המשחק פעיל)
   useEffect(() => {
@@ -280,20 +263,6 @@ const MagicGame = () => {
       }
     }, 1000);
     return () => clearInterval(interval);
-  }, [gameStarted, paused]);
-
-  // מאזין ללחיצה – יורה קסם אם המשחק התחיל (ולא במצב פאוז)
-  useEffect(() => {
-    const handleClick = () => {
-      if (!gameStarted || paused) return;
-      spellsRef.current.push({
-        id: Date.now(),
-        x: playerPosRef.current.x,
-        y: playerPosRef.current.y - 40,
-      });
-    };
-    window.addEventListener('click', handleClick);
-    return () => window.removeEventListener('click', handleClick);
   }, [gameStarted, paused]);
 
   // ניהול לולאת האנימציה – רק כאשר המשחק פעיל (לא במצב פאוז)
@@ -648,7 +617,7 @@ const MagicGame = () => {
         className="w-full h-full"
       />
       {!gameStarted && (
-        <div className={`absolute inset-0 z-50 flex flex-col items-center justify-center ${isMobile ? "text-center" : ""} bg-gradient-to-br from-blue-700 to-blue-500`}>
+        <div className="absolute inset-0 z-50 flex flex-col items-center justify-center bg-gradient-to-br from-blue-700 to-blue-500">
           <h1 className="text-6xl text-white font-extrabold mb-6">
             {t('magicGame_startPrompt_title', 'האם אתה מוכן לגלות קסם?')}
           </h1>
@@ -665,7 +634,8 @@ const MagicGame = () => {
       )}
       {gameStarted && !gameOver && (
         <>
-          <div className={`${isMobile ? "absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2" : "absolute bottom-4 left-1/2 transform -translate-x-1/2"} z-50 px-10 py-5 rounded-3xl bg-blue-900 bg-opacity-90 border-4 border-blue-400 text-white font-extrabold text-4xl shadow-2xl ${isMobile ? "text-center" : ""}`}>
+          {/* בלוח הניקוד - במצב טלפון נשאיר את המיכל בתחתית, אך מרכזים את הטקסט */}
+          <div className={`absolute bottom-4 left-1/2 transform -translate-x-1/2 z-50 px-10 py-5 rounded-3xl bg-blue-900 bg-opacity-90 border-4 border-blue-400 text-white font-extrabold text-4xl shadow-2xl ${isMobile ? "text-center" : ""}`}>
             Score: {score}
           </div>
           <div className="absolute top-4 left-4 z-50 text-4xl flex items-center" dir="ltr">
