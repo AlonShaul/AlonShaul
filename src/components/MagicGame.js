@@ -127,6 +127,19 @@ const MagicGame = () => {
   const canvasRef = useRef(null);
   const containerRef = useRef(null);
 
+  // לצורך טיפול במגע – נשמור את המיקום ההתחלתי של האצבע
+  const initialTouchRef = useRef(null);
+  useEffect(() => {
+    const handleTouchStart = (e) => {
+      initialTouchRef.current = {
+        x: e.touches[0].clientX,
+        y: e.touches[0].clientY
+      };
+    };
+    window.addEventListener('touchstart', handleTouchStart, { passive: true });
+    return () => window.removeEventListener('touchstart', handleTouchStart);
+  }, []);
+
   // אתחול מערך הכוכבים – 60 כוכבים
   useEffect(() => {
     const stars = [];
@@ -233,7 +246,7 @@ const MagicGame = () => {
     return () => window.removeEventListener('mousemove', handleMouseMove);
   }, [containerSize, paused]);
 
-  // הוספת מאזין לתנועת מגע עבור מכשירים ניידים
+  // מאזין לתנועת מגע – לעדכון מיקום החללית; אם התנועה אופקית, נמנע תנועת גלילה בתוך המשחק בלבד
   useEffect(() => {
     const handleTouchMove = (e) => {
       lastMouseMoveRef.current = Date.now();
@@ -241,11 +254,21 @@ const MagicGame = () => {
       if (!containerRef.current) return;
       const rect = containerRef.current.getBoundingClientRect();
       const touch = e.touches[0];
-      const x = Math.max(40, Math.min(touch.clientX - rect.left, containerSize.width - 40));
-      const y = Math.max(40, Math.min(touch.clientY - rect.top, containerSize.height - 40));
+      const currentX = touch.clientX;
+      const currentY = touch.clientY;
+      if (initialTouchRef.current) {
+        const dx = currentX - initialTouchRef.current.x;
+        const dy = currentY - initialTouchRef.current.y;
+        // אם התנועה אופקית – מניעת ברירת מחדל למניעת גלילת הדף בתוך המשחק
+        if (Math.abs(dx) > Math.abs(dy)) {
+          e.preventDefault();
+        }
+      }
+      const x = Math.max(40, Math.min(currentX - rect.left, containerSize.width - 40));
+      const y = Math.max(40, Math.min(currentY - rect.top, containerSize.height - 40));
       playerPosRef.current = { x, y };
     };
-    window.addEventListener('touchmove', handleTouchMove);
+    window.addEventListener('touchmove', handleTouchMove, { passive: false });
     return () => window.removeEventListener('touchmove', handleTouchMove);
   }, [containerSize, paused]);
 
@@ -625,7 +648,7 @@ const MagicGame = () => {
         className="w-full h-full"
       />
       {!gameStarted && (
-        <div className="absolute inset-0 z-50 flex flex-col items-center justify-center bg-gradient-to-br from-blue-700 to-blue-500">
+        <div className={`absolute inset-0 z-50 flex flex-col items-center justify-center ${isMobile ? "text-center" : ""} bg-gradient-to-br from-blue-700 to-blue-500`}>
           <h1 className="text-6xl text-white font-extrabold mb-6">
             {t('magicGame_startPrompt_title', 'האם אתה מוכן לגלות קסם?')}
           </h1>
@@ -642,7 +665,7 @@ const MagicGame = () => {
       )}
       {gameStarted && !gameOver && (
         <>
-          <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 z-50 px-10 py-5 rounded-3xl bg-blue-900 bg-opacity-90 border-4 border-blue-400 text-white font-extrabold text-4xl shadow-2xl">
+          <div className={`${isMobile ? "absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2" : "absolute bottom-4 left-1/2 transform -translate-x-1/2"} z-50 px-10 py-5 rounded-3xl bg-blue-900 bg-opacity-90 border-4 border-blue-400 text-white font-extrabold text-4xl shadow-2xl ${isMobile ? "text-center" : ""}`}>
             Score: {score}
           </div>
           <div className="absolute top-4 left-4 z-50 text-4xl flex items-center" dir="ltr">
