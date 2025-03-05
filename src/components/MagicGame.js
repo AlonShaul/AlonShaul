@@ -88,10 +88,11 @@ const MagicGame = () => {
   // זיהוי מצב נייד (טלפון) לעומת מחשב – לפי רוחב החלון
   const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
 
-  // הגדרת גודל התחלתי לפי מצב המכשיר
+  // הגדרת גודל התחלתי לפי מצב המכשיר:
+  // במצב טלפון - גובה = 80% מהחלון, במחשב - 90% מהחלון
   const [containerSize, setContainerSize] = useState({
     width: window.innerWidth,
-    height: (window.innerWidth <= 768 ? window.innerHeight : window.innerHeight * 0.9),
+    height: (window.innerWidth <= 768 ? window.innerHeight * 0.8 : window.innerHeight * 0.9),
   });
 
   // Refs עבור יריות, אויבים, יריות אויב והתפוצצויות
@@ -198,7 +199,7 @@ const MagicGame = () => {
       const newWidth = window.innerWidth;
       const mobile = newWidth <= 768;
       setIsMobile(mobile);
-      const newHeight = mobile ? window.innerHeight : window.innerHeight * 0.9;
+      const newHeight = mobile ? window.innerHeight * 0.8 : window.innerHeight * 0.9;
       setContainerSize({ width: newWidth, height: newHeight });
       if (canvasRef.current) {
         canvasRef.current.width = newWidth;
@@ -615,7 +616,8 @@ const MagicGame = () => {
         className="w-full h-full"
       />
       {!gameStarted && (
-        <div className="absolute inset-0 z-50 flex flex-col items-center justify-center bg-gradient-to-br from-blue-700 to-blue-500">
+        // מסך פתיחה - במצב טלפון מוסיפים text-center כדי למרכז את כל הטקסט, במצב מחשב אין שינוי
+        <div className={`absolute inset-0 z-50 flex flex-col items-center justify-center ${isMobile ? "text-center" : ""} bg-gradient-to-br from-blue-700 to-blue-500`}>
           <h1 className="text-6xl text-white font-extrabold mb-6">
             {t('magicGame_startPrompt_title', 'האם אתה מוכן לגלות קסם?')}
           </h1>
@@ -632,7 +634,7 @@ const MagicGame = () => {
       )}
       {gameStarted && !gameOver && (
         <>
-          {/* לוח הניקוד - במצב טלפון מוקטן (גודל קטן יותר) אך במיקום התחתית */}
+          {/* לוח הניקוד - במצב טלפון מוקטן (גודל קטן יותר) אך נשאר בתחתית וממוצב אופקית */}
           <div className={`absolute bottom-4 left-1/2 transform -translate-x-1/2 z-50 ${isMobile ? "px-4 py-2 rounded-xl border-2 border-blue-400 text-white font-extrabold text-2xl text-center" : "px-10 py-5 rounded-3xl bg-blue-900 bg-opacity-90 border-4 border-blue-400 text-white font-extrabold text-4xl shadow-2xl"}`}>
             Score: {score}
           </div>
