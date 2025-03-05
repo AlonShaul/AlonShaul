@@ -84,6 +84,15 @@ const MagicGame = () => {
   const [gameOver, setGameOver] = useState(false);
   const [gameStarted, setGameStarted] = useState(false);
   const [paused, setPaused] = useState(false);
+  
+  // זיהוי מצב נייד (טלפון) לעומת מחשב – לפי רוחב החלון
+  const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
+
+  // הגדרת גודל התחלתי לפי מצב המכשיר
+  const [containerSize, setContainerSize] = useState({
+    width: window.innerWidth,
+    height: (window.innerWidth <= 768 ? window.innerHeight : window.innerHeight * 0.9),
+  });
 
   // Refs עבור יריות, אויבים, יריות אויב והתפוצצויות
   const spellsRef = useRef([]);
@@ -111,16 +120,12 @@ const MagicGame = () => {
   // מניעת פגיעות חוזרות
   const invulnerableUntilRef = useRef(0);
 
-  // מיקום החללית (מעודכן לפי תנועת העכבר)
+  // מיקום החללית (מעודכן לפי תנועת העכבר/מגע)
   const playerPosRef = useRef({ x: window.innerWidth / 2, y: window.innerHeight - 100 });
 
-  // רפרנסים לקאנבס ולמיכל, עם הגדרת גובה 90vh
+  // רפרנסים לקאנבס ולמיכל
   const canvasRef = useRef(null);
   const containerRef = useRef(null);
-  const [containerSize, setContainerSize] = useState({
-    width: window.innerWidth,
-    height: window.innerHeight * 0.9,
-  });
 
   // אתחול מערך הכוכבים – 60 כוכבים
   useEffect(() => {
@@ -187,11 +192,13 @@ const MagicGame = () => {
     return () => clearInterval(interval);
   }, [containerSize.width, containerSize.height, gameOver, gameStarted, paused]);
 
-  // עדכון גודל הקאנבס בעת שינוי חלון
+  // עדכון גודל הקאנבס בעת שינוי חלון, תוך זיהוי מצב נייד לעומת מחשב
   useEffect(() => {
     const handleResize = () => {
       const newWidth = window.innerWidth;
-      const newHeight = window.innerHeight * 0.9;
+      const mobile = newWidth <= 768;
+      setIsMobile(mobile);
+      const newHeight = mobile ? window.innerHeight : window.innerHeight * 0.9;
       setContainerSize({ width: newWidth, height: newHeight });
       if (canvasRef.current) {
         canvasRef.current.width = newWidth;
@@ -224,6 +231,22 @@ const MagicGame = () => {
     };
     window.addEventListener('mousemove', handleMouseMove);
     return () => window.removeEventListener('mousemove', handleMouseMove);
+  }, [containerSize, paused]);
+
+  // הוספת מאזין לתנועת מגע עבור מכשירים ניידים
+  useEffect(() => {
+    const handleTouchMove = (e) => {
+      lastMouseMoveRef.current = Date.now();
+      if (paused) return;
+      if (!containerRef.current) return;
+      const rect = containerRef.current.getBoundingClientRect();
+      const touch = e.touches[0];
+      const x = Math.max(40, Math.min(touch.clientX - rect.left, containerSize.width - 40));
+      const y = Math.max(40, Math.min(touch.clientY - rect.top, containerSize.height - 40));
+      playerPosRef.current = { x, y };
+    };
+    window.addEventListener('touchmove', handleTouchMove);
+    return () => window.removeEventListener('touchmove', handleTouchMove);
   }, [containerSize, paused]);
 
   // Auto Pause: אם אין תנועת עכבר במשך 60 שניות, מעבר למצב Pause (רק אם המשחק פעיל)
@@ -589,7 +612,7 @@ const MagicGame = () => {
   return (
     <div
       ref={containerRef}
-      className="relative w-full h-[90vh] overflow-hidden select-none"
+      className={`relative w-full ${isMobile ? "h-full" : "h-[90vh]"} overflow-hidden select-none`}
       style={{
         background: 'radial-gradient(ellipse at center, #001f3f 0%, #004080 50%, #005f99 100%)',
         cursor: (gameStarted && !paused && !gameOver) ? 'none' : 'default',
