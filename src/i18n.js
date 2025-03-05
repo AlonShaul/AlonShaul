@@ -57,7 +57,7 @@ const resources = {
       // Projects.js
       projects_title: "הפרויקטים שלי",
       // מפתחות תרגום לפרויקט MoveMentor:
-      project_title_moveMentor: "מנטור תנועה: מערכת שיקום מותאמת אישית",
+      project_title_moveMentor: "MoveMentor: מערכת שיקום מותאמת אישית",
       project_description_moveMentor: "מערכת שיקום מותאמת אישית לשיקום פיזי, הכוללת תוכניות אימון אישיות, צ'אטבוט אינטואיטיבי, מערכת אימייל מתקדמת ומעקב סטטיסטי. הפרויקט בנוי בטכנולוגיות React, Node.js, MongoDB, TailwindCSS, HTML, CSS, JavaScript, Chart.js, SendGrid ו-Render.",
       // מפתחות תרגום לפרויקט To Do List:
       project_title_toDoList: "To Do List: אפליקציה לניהול משימות",
