@@ -4,6 +4,7 @@ require('dotenv').config(); // טעינת משתני סביבה מהקובץ .en
 
 const nodemailer = require('nodemailer');
 const validator = require('validator');
+const crypto = require('crypto');
 
 // כותרות CORS – מאפשרות גישה מכל מקור, ומגדירות את השיטות המותרים
 const headers = {
@@ -11,6 +12,11 @@ const headers = {
   "Access-Control-Allow-Headers": "Content-Type",
   "Access-Control-Allow-Methods": "POST, OPTIONS"
 };
+
+// משתנים לשמירת נתוני הבקשה האחרונה (איידמפוטנסי)
+// זכרו: בתהליכי Lambda יתכן והקונטיינר ייאתחל, אבל לרוב הם משתמשים באותה מופע במשך מספר קריאות עוקבות
+let lastRequestHash = null;
+let lastRequestTime = 0;
 
 // הגדרת transporter עבור Mailjet SMTP עם TLS
 const transporter = nodemailer.createTransport({
@@ -71,6 +77,20 @@ exports.handler = async (event, context) => {
       body: JSON.stringify({ error: 'יש לספק הודעה' })
     };
   }
+
+  // מנגנון איידמפוטנסי: חשב hash של תוכן הבקשה ובדוק אם זו בקשה כפולה בתוך חלון זמן קצר (5 שניות)
+  const currentHash = crypto.createHash('md5').update(`${name}-${email}-${message}`).digest('hex');
+  const now = Date.now();
+  if (lastRequestHash === currentHash && (now - lastRequestTime) < 5000) {
+    console.log('Duplicate request detected. Ignoring duplicate email sending.');
+    return {
+      statusCode: 200,
+      headers,
+      body: JSON.stringify({ message: 'ההודעה התקבלה והמייל נשלח!' })
+    };
+  }
+  lastRequestHash = currentHash;
+  lastRequestTime = now;
 
   try {
     // יצירת תוכן HTML להודעת המייל
