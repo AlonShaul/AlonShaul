@@ -89,7 +89,7 @@ const HeroSection = () => {
   const formatQuote = (quote) =>
     quote
       .split('.')
-      .filter(sentence => sentence.trim() !== '')
+      .filter((sentence) => sentence.trim() !== '')
       .map((sentence, index, arr) => (
         <span key={index}>
           {sentence.trim()}
@@ -102,7 +102,7 @@ const HeroSection = () => {
     <section className="relative min-h-screen flex flex-col md:flex-row items-center justify-center px-6 py-12 bg-transparent text-gray-900 dark:text-white">
       {isHebrew ? (
         <>
-          {/* טקסט בעברית */}
+          {/* עבור השפה העברית – אין שינוי */}
           <div className="md:w-1/2" dir="rtl">
             <motion.h1
               className="text-5xl md:text-7xl font-extrabold"
@@ -142,8 +142,8 @@ const HeroSection = () => {
         </>
       ) : (
         <>
-          {/* טקסט בשפות אנגלית ורוסית – מיקום זהה לעברית */}
-          <div className="md:w-1/2" dir="ltr">
+          {/* עבור אנגלית ורוסית – סדר הרכיבים זהה לעברית (הטקסט מוצג באותו מיקום) */}
+          <div className="md:w-1/2 text-left mt-16 md:mt-0" dir="ltr">
             <motion.h1
               className="text-5xl md:text-7xl font-extrabold"
               initial={{ opacity: 0, y: -50 }}
