@@ -18,7 +18,7 @@ const resources = {
       // Home.js
       home_header_titleName: "Alon Shaul",
       home_header_subtitle: "מפתח Frontend",
-      home_header_quote: "\"אני משלב גישה חדשנית עם התמחות טכנולוגית מתקדמת, ומקפיד על כל פרט מתוך מחויבות לעיצוב חוויית משתמש מעצימה.\"",
+      home_header_quote: "\"אני משלב גישה חדשנית עם התמחות טכנולוגית מתקדמת, ומקפיד על כל פרט מתוך מחויבות לעיצוב חוויית משתמש מעצימה.\nבכל פרויקט שאני מוביל, אני מתכנן פתרונות יעילים ואסתטיים שמעניקים ערך אמיתי ומדגישים את כישוריי כמפתח מקצועי\".",
 
       home_skills_title: "המיומנויות שלי",
       home_skills_subtext: "כל כישור מתואר בקצרה, עם דגש על היכולות וההתמחות שלי.",
@@ -100,7 +100,7 @@ const resources = {
       // Home.js
       home_header_titleName: "Alon Shaul",
       home_header_subtitle: "Frontend Developer",
-      home_header_quote: "\"I bring creativity, innovation, and professionalism to every project, focusing on an advanced user experience\"",
+      home_header_quote: "\"I combine an innovative approach with advanced technological expertise, and I pay attention to every detail with a commitment to designing an empowering user experience.\nIn every project I lead, I plan efficient and aesthetic solutions that deliver true value and highlight my skills as a professional developer\"",
 
       home_skills_title: "My Skills",
       home_skills_subtext: "Each skill is briefly described, highlighting my strengths and specialties.",
@@ -182,7 +182,7 @@ const resources = {
       // Home.js
       home_header_titleName: "Алон Шауль",
       home_header_subtitle: "Frontend Разработчик",
-      home_header_quote: "\"Я привношу креативность, инновации и профессионализм в каждый проект, уделяя особое внимание продвинутому пользовательскому опыту\"",
+      home_header_quote: "\"Я сочетаю инновационный подход с передовыми технологическими знаниями и уделяю внимание каждой детали, исходя из стремления создавать вдохновляющий пользовательский опыт.\nВ каждом проекте, которым я руководствуюсь, я разрабатываю эффективные и эстетичные решения, приносящие реальную ценность и подчеркивающие мои навыки как профессионального разработчика\"",
 
       home_skills_title: "Мои навыки",
       home_skills_subtext: "Каждый навык описан кратко, с акцентом на мои сильные стороны и специализации.",

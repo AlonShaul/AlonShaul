@@ -151,9 +151,9 @@ const HeroSection = () => {
               transition={{ duration: 1.2, delay: 0.5 }}
             />
           </div>
-          <div className="md:w-1/2 text-right">
+          <div className="md:w-1/2 text-left" dir="ltr">
             <motion.h1
-              className="text-5xl md:text-7xl font-extrabold"
+              className="text-5xl md:text-7xl font-extrabold ml-80" // added ml-4 to shift right
               initial={{ opacity: 0, y: -50 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 1.2 }}
@@ -161,7 +161,7 @@ const HeroSection = () => {
               {t('home_header_titleName')}
             </motion.h1>
             <motion.h2
-              className="text-2xl md:text-3xl font-semibold mt-4" 
+              className="text-2xl md:text-3xl font-semibold mt-4 ml-80" // added ml-4 to shift right
               initial={{ opacity: 0, y: -30 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 1.2, delay: 0.3 }}
@@ -169,8 +169,7 @@ const HeroSection = () => {
               {t('home_header_subtitle')}
             </motion.h2>
             <motion.p
-              className="max-w-lg text-lg italic mt-4 ml-auto"
-              dir="ltr"
+              className="max-w-lg text-lg italic mt-4 ml-80" // added ml-4 to shift right
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ duration: 1.2, delay: 0.6 }}
@@ -183,6 +182,7 @@ const HeroSection = () => {
     </section>
   );
 };
+
 
 
 const SkillsSection = () => {
