@@ -18,7 +18,7 @@ const resources = {
       // Home.js
       home_header_titleName: "Alon Shaul",
       home_header_subtitle: "מפתח Frontend",
-      home_header_quote: "\"אני משלב גישה חדשנית עם התמחות טכנולוגית מתקדמת, ומקפיד על כל פרט מתוך מחויבות לעיצוב חוויית משתמש מעצימה. בכל פרויקט שאני מוביל, אני מתכנן פתרונות יעילים ואסתטיים שמעניקים ערך אמיתי ומדגישים את כישוריי כמפתח מקצועי\".",
+      home_header_quote: "\"אני משלב גישה חדשנית עם התמחות טכנולוגית מתקדמת, ומקפיד על כל פרט מתוך מחויבות לעיצוב חוויית משתמש מעצימה.\"",
 
       home_skills_title: "המיומנויות שלי",
       home_skills_subtext: "כל כישור מתואר בקצרה, עם דגש על היכולות וההתמחות שלי.",
@@ -134,8 +134,8 @@ const resources = {
 
       // Profile.js
       profile_title: "About Me",
-      profile_text: "I am Alon Shaul, a Frontend Developer specializing in creating modern websites, advanced user experiences, and clean design. I believe in combining innovation and technology, bringing creativity to every project.",
-
+      profile_text: "I am Alon Shaul, a Frontend Developer with a degree in Computer Science and professional training in web development, specializing in creating dynamic and modern interfaces. Throughout my studies and professional experience, I have honed my ability to blend deep theoretical knowledge with the practical application of cutting-edge technologies, all while upholding high standards to craft seamless and intuitive user experiences. I am committed to bringing my expertise to every project by developing innovative digital solutions that embody professionalism, quality, and excellence.",
+      
       // Projects.js
       projects_title: "My Projects",
       // Translation keys for project MoveMentor:
@@ -216,8 +216,8 @@ const resources = {
 
       // Profile.js
       profile_title: "Обо мне",
-      profile_text: "Я Алон Шауль, Frontend-разработчик, специализирующийся на создании современных сайтов, продвинутом пользовательском опыте и чистом дизайне. Я верю в сочетание инноваций и технологий, внося творческий подход в каждый проект.",
-
+      profile_text: "Я Алон Шауль, Frontend-разработчик с дипломом по информатике и профессиональной подготовкой в веб-разработке, специализирующийся на создании динамичных и современных интерфейсов. В процессе обучения и профессиональной деятельности я развил способность сочетать глубокие теоретические знания с практическим применением передовых технологий, соблюдая высокие стандарты для создания безупречного и интуитивного пользовательского опыта. Я стремлюсь применять свой опыт и знания в каждом проекте, разрабатывая инновационные цифровые решения, воплощающие профессионализм, качество и совершенство.",
+      
       // Projects.js
       projects_title: "Мои проекты",
       // Translation keys for project MoveMentor:
