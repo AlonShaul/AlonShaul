@@ -92,7 +92,7 @@ const MagicGame = () => {
   // במצב טלפון - גובה = 80% מהחלון, במחשב - 90% מהחלון
   const [containerSize, setContainerSize] = useState({
     width: window.innerWidth,
-    height: (window.innerWidth <= 768 ? window.innerHeight * 0.8 : window.innerHeight * 0.9),
+    height: (window.innerWidth <= 768 ? window.innerHeight * 0.9 : window.innerHeight * 0.9),
   });
 
   // Refs עבור יריות, אויבים, יריות אויב והתפוצצויות
