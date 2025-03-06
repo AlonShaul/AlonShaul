@@ -43,8 +43,8 @@ const Contact = () => {
       setResponseMsg(t('contact_error_fixFields'));
       return;
     }
-    // כאן המשתנה REACT_APP_API_URL יקבל את הערך שהוגדר בסביבת הפריסה
-    fetch(`${process.env.REACT_APP_API_URL}/contact`, {
+    // הפנייה ישירות לפונקציה דרך הנתיב המיוחד של Netlify
+    fetch(`/.netlify/functions/contact`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(formData)
