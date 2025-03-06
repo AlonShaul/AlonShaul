@@ -102,6 +102,7 @@ const HeroSection = () => {
     <section className="relative min-h-screen flex flex-col md:flex-row items-center justify-center px-6 py-12 bg-transparent text-gray-900 dark:text-white">
       {isHebrew ? (
         <>
+          {/* טקסט בעברית */}
           <div className="md:w-1/2" dir="rtl">
             <motion.h1
               className="text-5xl md:text-7xl font-extrabold"
@@ -141,6 +142,33 @@ const HeroSection = () => {
         </>
       ) : (
         <>
+          {/* טקסט בשפות אנגלית ורוסית – מיקום זהה לעברית */}
+          <div className="md:w-1/2" dir="ltr">
+            <motion.h1
+              className="text-5xl md:text-7xl font-extrabold"
+              initial={{ opacity: 0, y: -50 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 1.2 }}
+            >
+              {t('home_header_titleName')}
+            </motion.h1>
+            <motion.h2
+              className="text-2xl md:text-3xl font-semibold mt-4"
+              initial={{ opacity: 0, y: -30 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 1.2, delay: 0.3 }}
+            >
+              {t('home_header_subtitle')}
+            </motion.h2>
+            <motion.p
+              className="max-w-lg text-lg italic mt-4"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ duration: 1.2, delay: 0.6 }}
+            >
+              {formatQuote(t('home_header_quote'))}
+            </motion.p>
+          </div>
           <div className="md:w-1/4 flex justify-center items-center mb-6 md:mb-0">
             <motion.img
               src="/AlonShaul.png"
@@ -150,32 +178,6 @@ const HeroSection = () => {
               animate={{ opacity: 1, scale: 1 }}
               transition={{ duration: 1.2, delay: 0.5 }}
             />
-          </div>
-          <div className="md:w-1/2 text-left" dir="ltr">
-            <motion.h1
-              className="text-5xl md:text-7xl font-extrabold ml-80" // added ml-4 to shift right
-              initial={{ opacity: 0, y: -50 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 1.2 }}
-            >
-              {t('home_header_titleName')}
-            </motion.h1>
-            <motion.h2
-              className="text-2xl md:text-3xl font-semibold mt-4 ml-80" // added ml-4 to shift right
-              initial={{ opacity: 0, y: -30 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 1.2, delay: 0.3 }}
-            >
-              {t('home_header_subtitle')}
-            </motion.h2>
-            <motion.p
-              className="max-w-lg text-lg italic mt-4 ml-80" // added ml-4 to shift right
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ duration: 1.2, delay: 0.6 }}
-            >
-              {formatQuote(t('home_header_quote'))}
-            </motion.p>
           </div>
         </>
       )}
