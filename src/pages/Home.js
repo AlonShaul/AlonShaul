@@ -102,7 +102,8 @@ const HeroSection = () => {
     <section className="relative min-h-screen flex flex-col md:flex-row items-center justify-center px-6 py-12 bg-transparent text-gray-900 dark:text-white">
       {isHebrew ? (
         <>
-          <div className="w-full md:w-1/2" dir="rtl">
+          {/* עבור השפה העברית – אין שינוי */}
+          <div className="md:w-1/2" dir="rtl">
             <motion.h1
               className="text-5xl md:text-7xl font-extrabold"
               initial={{ opacity: 0, y: -50 }}
@@ -141,6 +142,7 @@ const HeroSection = () => {
         </>
       ) : (
         <>
+          {/* עבור אנגלית ורוסית – סדר הרכיבים זהה לעברית (הטקסט מוצג באותו מיקום) */}
           <div className="md:w-1/2 text-left mt-16 md:mt-0" dir="ltr">
             <motion.h1
               className="text-5xl md:text-7xl font-extrabold"
@@ -182,6 +184,8 @@ const HeroSection = () => {
     </section>
   );
 };
+
+
 
 const SkillsSection = () => {
   const { t } = useTranslation();
@@ -493,13 +497,8 @@ const ScrollIndicator = () => {
 };
 
 const Home = () => {
-  const { i18n } = useTranslation();
-  // חשב את הכיוון כבר בזמן הרינדור הראשוני
-  const dir = i18n.language === 'he' ? 'rtl' : 'ltr';
-
   return (
-    // עטוף את התוכן ב-div שמגדיר dir כבר מהרינדור הראשון
-    <div dir={dir} className="relative font-sans overflow-hidden">
+    <div className="relative font-sans overflow-hidden">
       <ScrollIndicator />
       <CursorTrail />
       <Dynamic3DBackground />
