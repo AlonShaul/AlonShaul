@@ -82,4 +82,3 @@ Before running this project locally, ensure you have the following installed:
 This personal website is a testament to my dedication to modern web development, user experience, and accessibility. It not only showcases my skills as a Frontend Developer but also serves as a platform to share my projects and professional journey. I look forward to connecting with like-minded professionals and exploring new opportunities for collaboration.
 
 *Crafted with passion and precision – a true reflection of my professional path as a Frontend Developer.*
-```
