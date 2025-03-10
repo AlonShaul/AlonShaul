@@ -39,6 +39,7 @@ This website is crafted to reflect my technical expertise and design philosophy.
   <img src="https://img.icons8.com/color/48/000000/html-5--v1.png" alt="HTML" width="50px"/>
   <img src="https://img.icons8.com/color/48/000000/css3.png" alt="CSS" width="50px"/>
   <img src="https://img.icons8.com/color/48/000000/javascript--v1.png" alt="JavaScript" width="50px"/>
+  <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/b/b6/SendGrid_2016_Logo.png/1200px-SendGrid_2016_Logo.png" alt="SendGrid" width="120px"/>
 </div>
 
 - **React:** For building the interactive user interface.
