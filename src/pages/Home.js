@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo, useLayoutEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { motion, useMotionValue, useTransform } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
 import MagicGame from '../components/MagicGame';
@@ -102,7 +102,6 @@ const HeroSection = () => {
     <section className="relative min-h-screen flex flex-col md:flex-row items-center justify-center px-6 py-12 bg-transparent text-gray-900 dark:text-white">
       {isHebrew ? (
         <>
-          {/* במצב עברית, במכשירים ניידים (w-full) יוגדר dir="rtl" */}
           <div className="w-full md:w-1/2" dir="rtl">
             <motion.h1
               className="text-5xl md:text-7xl font-extrabold"
@@ -495,19 +494,12 @@ const ScrollIndicator = () => {
 
 const Home = () => {
   const { i18n } = useTranslation();
-
-  // useLayoutEffect כדי להגדיר את כיוון הדף לפני הציור הראשון
-  useLayoutEffect(() => {
-    if (!i18n.isInitialized) return;
-    if (i18n.language === 'he') {
-      document.documentElement.setAttribute('dir', 'rtl');
-    } else {
-      document.documentElement.setAttribute('dir', 'ltr');
-    }
-  }, [i18n.language, i18n.isInitialized]);
+  // חשב את הכיוון כבר בזמן הרינדור הראשוני
+  const dir = i18n.language === 'he' ? 'rtl' : 'ltr';
 
   return (
-    <div className="relative font-sans overflow-hidden">
+    // עטוף את התוכן ב-div שמגדיר dir כבר מהרינדור הראשון
+    <div dir={dir} className="relative font-sans overflow-hidden">
       <ScrollIndicator />
       <CursorTrail />
       <Dynamic3DBackground />
@@ -515,7 +507,7 @@ const Home = () => {
       <SkillsSection />
       <ParallaxSection />
       <BeyondHorizonSection />
-      {/* משחק הקסם */}
+      {/* כאן נוסף משחק הקסם */}
       <MagicGame />
       {/* Footer removed to avoid duplication */}
     </div>
