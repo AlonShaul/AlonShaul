@@ -102,7 +102,6 @@ const HeroSection = () => {
     <section className="relative min-h-screen flex flex-col md:flex-row items-center justify-center px-6 py-12 bg-transparent text-gray-900 dark:text-white">
       {isHebrew ? (
         <>
-          {/* במצב עברית – מוסיפים w-full במכשירים ניידים כדי שהטקסט יהיה ממורכז, ושומרים את ה־dir="rtl" */}
           <div className="w-full md:w-1/2" dir="rtl">
             <motion.h1
               className="text-5xl md:text-7xl font-extrabold"
@@ -494,6 +493,17 @@ const ScrollIndicator = () => {
 };
 
 const Home = () => {
+  const { i18n } = useTranslation();
+
+  // עם טעינת הקומפוננטה, נקבע את כיוון ה־document לפי השפה
+  useEffect(() => {
+    if (i18n.language === 'he') {
+      document.documentElement.setAttribute('dir', 'rtl');
+    } else {
+      document.documentElement.setAttribute('dir', 'ltr');
+    }
+  }, [i18n.language]);
+
   return (
     <div className="relative font-sans overflow-hidden">
       <ScrollIndicator />
