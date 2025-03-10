@@ -1,4 +1,3 @@
-```md
 # Personal Website – Alon Shaul
 
 This is my personal website that showcases my professional journey as a Frontend Developer. The site highlights my profile, projects, and contact details through a modern, responsive, and accessible design.
@@ -60,7 +59,6 @@ Before running this project locally, ensure you have the following installed:
    ```bash
    git clone https://github.com/YourUsername/your-personal-website.git
    cd your-personal-website
-   ```
 
 2. **Install dependencies:**
    ```bash
