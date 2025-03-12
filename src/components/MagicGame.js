@@ -153,10 +153,11 @@ const MagicGame = () => {
     }
   }, [containerSize]);
 
-  // אתחול מערך הכוכבים – 60 כוכבים
+  // אתחול מערך הכוכבים – במצב מחשב 60 כוכבים, במצב נייד פחות (למשל 30)
   useEffect(() => {
+    const starCount = isMobile ? 30 : 60;
     const stars = [];
-    for (let i = 0; i < 60; i++) {
+    for (let i = 0; i < starCount; i++) {
       stars.push({
         x: Math.random() * containerSize.width,
         y: Math.random() * containerSize.height,
@@ -165,11 +166,10 @@ const MagicGame = () => {
       });
     }
     starsRef.current = stars;
-  }, [containerSize]);
+  }, [containerSize, isMobile]);
 
   // אתחול "כוכבי הלכת הפעילים" – 3 כוכבי לכת
   useEffect(() => {
-    // בעת ההתחלה אין כוכבים בשימוש, לכן לא צריך exclude
     activePlanetsRef.current = [
       getRandomPlanet(containerSize.width, containerSize.height),
       getRandomPlanet(containerSize.width, containerSize.height),
@@ -177,20 +177,21 @@ const MagicGame = () => {
     ];
   }, [containerSize]);
 
-  // יצירת מטאורים – כל METEOR_SPAWN_INTERVAL, כשהמשחק התחיל ולא במצב פאוז
+  // יצירת מטאורים – פחות תדירות ובפחות כמות במצב נייד
   useEffect(() => {
     if (gameOver || !gameStarted || paused) return;
     const spawnMeteors = () => {
-      const count = Math.floor(Math.random() * 3) + 1;
+      const count = isMobile ? 1 : Math.floor(Math.random() * 3) + 1;
       for (let i = 0; i < count; i++) {
         meteorsRef.current.push(getRandomMeteor(containerSize.width, containerSize.height));
       }
     };
-    const interval = setInterval(spawnMeteors, METEOR_SPAWN_INTERVAL);
+    const intervalTime = isMobile ? METEOR_SPAWN_INTERVAL * 1.5 : METEOR_SPAWN_INTERVAL;
+    const interval = setInterval(spawnMeteors, intervalTime);
     return () => clearInterval(interval);
-  }, [containerSize.width, containerSize.height, gameOver, gameStarted, paused]);
+  }, [containerSize.width, containerSize.height, gameOver, gameStarted, paused, isMobile]);
 
-  // יצירת לבבות – כל HEART_SPAWN_INTERVAL, כשהמשחק התחיל ולא במצב פאוז
+  // יצירת לבבות – פחות תדירות במצב נייד
   useEffect(() => {
     if (gameOver || !gameStarted || paused) return;
     const spawnHeart = () => {
@@ -198,15 +199,17 @@ const MagicGame = () => {
         heartsRef.current.push(getRandomHeart(containerSize.width, containerSize.height));
       }
     };
-    const interval = setInterval(spawnHeart, HEART_SPAWN_INTERVAL);
+    const intervalTime = isMobile ? HEART_SPAWN_INTERVAL * 1.5 : HEART_SPAWN_INTERVAL;
+    const interval = setInterval(spawnHeart, intervalTime);
     return () => clearInterval(interval);
-  }, [containerSize.width, containerSize.height, gameOver, gameStarted, paused]);
+  }, [containerSize.width, containerSize.height, gameOver, gameStarted, paused, isMobile]);
 
-  // יצירת אויבים – מופעלת רק לאחר התחלת המשחק (כשמשחק לא במצב פאוז)
+  // יצירת אויבים – במצב נייד מוגבל ל-10 אויבים, ובפחות תדירות
   useEffect(() => {
     if (gameOver || !gameStarted || paused) return;
     const spawnEnemy = () => {
-      if (enemiesRef.current.length > 20) return;
+      const maxEnemies = isMobile ? 10 : 20;
+      if (enemiesRef.current.length > maxEnemies) return;
       enemiesRef.current.push({
         id: Date.now(),
         x: 40 + Math.random() * (containerSize.width - 80),
@@ -215,9 +218,10 @@ const MagicGame = () => {
         type: Math.floor(Math.random() * 3),
       });
     };
-    const interval = setInterval(spawnEnemy, ENEMY_SPAWN_INTERVAL);
+    const intervalTime = isMobile ? ENEMY_SPAWN_INTERVAL * 1.5 : ENEMY_SPAWN_INTERVAL;
+    const interval = setInterval(spawnEnemy, intervalTime);
     return () => clearInterval(interval);
-  }, [containerSize.width, containerSize.height, gameOver, gameStarted, paused]);
+  }, [containerSize.width, containerSize.height, gameOver, gameStarted, paused, isMobile]);
 
   // עדכון גודל הקאנבס בעת שינוי חלון
   useEffect(() => {
@@ -262,7 +266,7 @@ const MagicGame = () => {
     return () => window.removeEventListener('mousemove', handleMouseMove);
   }, [containerSize, paused]);
 
-  // במצב טלפון – עדכון מיקום החללית לפי לחיצה, וירי קסם עם סאונד Fire.mp3 (בקול עדין)
+  // במצב טלפון – עדכון מיקום החללית לפי לחיצה, וירי קסם עם סאונד Fire.mp3
   useEffect(() => {
     const handleClick = (e) => {
       if (!gameStarted || paused || gameOver) return;
@@ -295,7 +299,7 @@ const MagicGame = () => {
     return () => clearInterval(interval);
   }, [gameStarted, paused]);
 
-  // עדכון סמן העכבר – הסמן יהיה מוסתר כאשר המשחק פעיל או בזמן ספירה (countdown !== null)
+  // עדכון סמן העכבר
   useEffect(() => {
     if (((gameStarted || countdown !== null) && !paused && !gameOver)) {
       document.body.style.cursor = 'none';
@@ -307,8 +311,7 @@ const MagicGame = () => {
     };
   }, [gameStarted, countdown, paused, gameOver]);
 
-  // ניהול לולאת האנימציה – תופעל גם בזמן הספירה או כשהמשחק התחיל,
-  // כל עוד המשחק לא נגמר ולא נמצא במצב פאוז.
+  // ניהול לולאת האנימציה
   const lastTimeRefAnim = useRef(null);
   const animationFrameIdRef = useRef(null);
   const gameLoop = useCallback((time) => {
@@ -334,9 +337,7 @@ const MagicGame = () => {
     activePlanetsRef.current = activePlanetsRef.current.map(planet => {
       planet.y += planet.speed * deltaTime;
       if (planet.y > containerSize.height + 100) {
-        // הסרת הכוכב שיוצא מהרשימה לצורך בחירה מחדש
         currentPlanetNames = currentPlanetNames.filter(name => name !== planet.name);
-        // בחירה של כוכב חדש, תוך הבטחה שהשם שלו לא מופיע כבר ברשימה
         const newPlanet = getRandomPlanet(containerSize.width, containerSize.height, currentPlanetNames);
         currentPlanetNames.push(newPlanet.name);
         return newPlanet;
@@ -365,7 +366,8 @@ const MagicGame = () => {
     // עדכון אויבים וירי אויב
     enemiesRef.current.forEach(enemy => {
       enemy.y += enemy.speed * deltaTime;
-      if (Math.random() < ENEMY_SHOOT_PROBABILITY * deltaTime) {
+      const shootProb = isMobile ? ENEMY_SHOOT_PROBABILITY * 0.5 : ENEMY_SHOOT_PROBABILITY;
+      if (Math.random() < shootProb * deltaTime) {
         enemyBulletsRef.current.push({
           id: Date.now() + Math.random(),
           x: enemy.x,
@@ -389,7 +391,7 @@ const MagicGame = () => {
         bullet.y >= -50 && bullet.y <= containerSize.height + 100
       );
 
-    // התנגשות קסמים עם אויבים – ירי קסם על אויב מפעיל EnemyBoom
+    // התנגשות קסמים עם אויבים
     const collidedSpellIds = new Set();
     enemiesRef.current = enemiesRef.current.filter(enemy => {
       let hit = false;
@@ -542,12 +544,12 @@ const MagicGame = () => {
       return true;
     });
 
-    // הסרת התפוצצויות ישנות (גיל מעל 800ms)
+    // הסרת התפוצצויות ישנות
     explosionsRef.current = explosionsRef.current.filter(exp => Date.now() - exp.start < 800);
 
     draw();
     animationFrameIdRef.current = requestAnimationFrame(gameLoop);
-  }, [containerSize, gameOver, gameStarted, paused, countdown]);
+  }, [containerSize, gameOver, gameStarted, paused, countdown, isMobile]);
 
   const draw = () => {
     const canvas = canvasRef.current;
@@ -712,7 +714,6 @@ const MagicGame = () => {
     startCountdown();
   };
 
-  // כאשר המשחק נגמר, אין צורך בהשמעת סאונדים נוספים.
   useEffect(() => {
     if (gameOver) {
       // אין צורך בשום פעולה נוספת כאן.
