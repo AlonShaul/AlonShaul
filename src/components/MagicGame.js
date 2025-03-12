@@ -122,6 +122,7 @@ const MagicGame = () => {
   const canvasRef = useRef(null);
   const containerRef = useRef(null);
 
+  // אתחול כוכבים
   useEffect(() => {
     const stars = [];
     for (let i = 0; i < 60; i++) {
@@ -135,15 +136,13 @@ const MagicGame = () => {
     starsRef.current = stars;
   }, [containerSize]);
 
+  // אתחול כוכבי לכת – 3 כוכבים
   useEffect(() => {
-    const newPlanets = [];
-    while(newPlanets.length < 3) {
-      const candidate = getRandomPlanet(containerSize.width, containerSize.height);
-      if (!newPlanets.some(p => p.name === candidate.name)) {
-        newPlanets.push(candidate);
-      }
-    }
-    activePlanetsRef.current = newPlanets;
+    activePlanetsRef.current = [
+      getRandomPlanet(containerSize.width, containerSize.height),
+      getRandomPlanet(containerSize.width, containerSize.height),
+      getRandomPlanet(containerSize.width, containerSize.height)
+    ];
   }, [containerSize]);
 
   useEffect(() => {
@@ -223,7 +222,7 @@ const MagicGame = () => {
     return () => window.removeEventListener('mousemove', handleMouseMove);
   }, [containerSize, paused]);
 
-  // במובייל – עדכון מיקום החללית לפי לחיצה וירי קסם (ללא סאונד fire)
+  // במצב טלפון – עדכון מיקום החללית לפי לחיצה, וירי קסם עם סאונד Fire.mp3
   useEffect(() => {
     const handleClick = (e) => {
       if (!gameStarted || paused || gameOver) return;
@@ -238,17 +237,15 @@ const MagicGame = () => {
         x: playerPosRef.current.x,
         y: playerPosRef.current.y - 40,
       });
-      if (!isMobile) {
-        const fireAudio = new Audio(fireSound);
-        fireAudio.volume = 0.05;
-        fireAudio.play();
-      }
+      const fireAudio = new Audio(fireSound);
+      fireAudio.volume = 0.05;
+      fireAudio.play();
     };
     window.addEventListener('click', handleClick);
     return () => window.removeEventListener('click', handleClick);
   }, [gameStarted, paused, gameOver, isMobile, containerSize]);
 
-  // הפסקה אוטומטית במקרה שאין תנועת עכבר במשך 60 שניות
+  // Auto Pause: אם אין תנועת עכבר במשך 60 שניות
   useEffect(() => {
     const interval = setInterval(() => {
       if (gameStarted && !paused && Date.now() - lastMouseMoveRef.current >= 60000) {
@@ -258,7 +255,7 @@ const MagicGame = () => {
     return () => clearInterval(interval);
   }, [gameStarted, paused]);
 
-  // הפסקת המשחק כאשר המשתמש עובר ללשונית אחרת
+  // עצירת המשחק כאשר המשתמש עובר ללשונית אחרת
   useEffect(() => {
     const handleVisibilityChange = () => {
       if (document.hidden) {
@@ -300,33 +297,14 @@ const MagicGame = () => {
       }
     });
 
-    // עדכון כוכבי לכת עם בדיקת ייחודיות
-    const hasDuplicate = (planets, candidate) => {
-      for (let j = 0; j < planets.length; j++) {
-        if (planets[j].name === candidate.name) {
-          return true;
-        }
-      }
-      return false;
-    };
-
-    let updatedPlanets = [];
-    for (let i = 0; i < activePlanetsRef.current.length; i++) {
-      let planet = activePlanetsRef.current[i];
+    // עדכון כוכבי לכת
+    activePlanetsRef.current = activePlanetsRef.current.map(planet => {
       planet.y += planet.speed * deltaTime;
       if (planet.y > containerSize.height + 100) {
-        let candidate;
-        let attempts = 0;
-        do {
-          candidate = getRandomPlanet(containerSize.width, containerSize.height);
-          attempts++;
-        } while (hasDuplicate(updatedPlanets, candidate) && attempts < 10);
-        updatedPlanets.push(candidate);
-      } else {
-        updatedPlanets.push(planet);
+        return getRandomPlanet(containerSize.width, containerSize.height);
       }
-    }
-    activePlanetsRef.current = updatedPlanets;
+      return planet;
+    });
 
     // עדכון מטאורים
     meteorsRef.current = meteorsRef.current.map(meteor => {
@@ -586,7 +564,7 @@ const MagicGame = () => {
       ctx.fill();
     });
 
-    // ציור אויבים – עיצוב המטוסים נעשה כך שהאפקט של צבעי האדום-צהוב יופעל בכל מצב
+    // ציור אויבים – העיצוב נלקח מהקוד שסיפקת (עיצוב עם גווני אדום-צהוב)
     enemiesRef.current.forEach(enemy => {
       ctx.save();
       ctx.translate(enemy.x, enemy.y);
@@ -594,18 +572,13 @@ const MagicGame = () => {
       const flameGradient = ctx.createLinearGradient(0, 30, 0, 50);
       flameGradient.addColorStop(0, "rgba(255,200,0,1)");
       flameGradient.addColorStop(1, "rgba(255,0,0,0)");
-      // ציור פלם מתחת לתמונה
       ctx.fillStyle = flameGradient;
       ctx.beginPath();
       ctx.ellipse(0, 40, 10, 20, 0, 0, Math.PI * 2);
       ctx.fill();
-      // ציור המטוס עצמו
+      ctx.filter = "sepia(1) saturate(5000%) hue-rotate(0deg) brightness(1.1)";
       ctx.drawImage(spaceshipImgRef.current, -20, -20, 40, 40);
-      // צביעת המטוס עם ה-gradient באמצעות composite operation
-      ctx.globalCompositeOperation = 'source-atop';
-      ctx.fillStyle = flameGradient;
-      ctx.fillRect(-20, -20, 40, 40);
-      ctx.globalCompositeOperation = 'source-over';
+      ctx.filter = "none";
       ctx.restore();
     });
 
