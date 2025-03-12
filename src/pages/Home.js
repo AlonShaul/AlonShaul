@@ -2,7 +2,7 @@ import React, { useState, useEffect, useMemo } from 'react';
 import { motion, useMotionValue, useTransform } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
 import MagicGame from '../components/MagicGame';
-import MonsterSideRunnerGame from '../components/MonsterSideRunnerGame';
+// import MonsterSideRunnerGame from '../components/MonsterSideRunnerGame';
 
 const Dynamic3DBackground = () => {
   return (
