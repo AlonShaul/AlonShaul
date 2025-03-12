@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import React, { useEffect, useRef, useState, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import spaceship from '../spaceship.png';
@@ -138,7 +139,7 @@ const MagicGame = () => {
   const canvasRef = useRef(null);
   const containerRef = useRef(null);
 
-  // טעינת סאונדים מראש לשיפור ביצועים (מניעת יצירת מופעים בכל הפעלה)
+  // טעינת סאונדים מראש לשיפור ביצועים
   const fireAudioRef = useRef(null);
   const enemyBoomAudioRef = useRef(null);
   const userBoomAudioRef = useRef(null);
@@ -319,7 +320,7 @@ const MagicGame = () => {
     };
   }, [gameStarted, countdown, paused, gameOver]);
 
-  // ניהול לולאת האנימציה – הוספנו את countdown למערך התלויות
+  // ניהול לולאת האנימציה – כולל countdown במערך התלויות
   const lastTimeRefAnim = useRef(null);
   const animationFrameIdRef = useRef(null);
   const gameLoop = useCallback((time) => {
@@ -340,7 +341,7 @@ const MagicGame = () => {
       }
     });
 
-    // עדכון כוכבי לכת – מניעת כפילויות:
+    // עדכון כוכבי לכת – מניעת כפילויות
     for (let i = 0; i < activePlanetsRef.current.length; i++) {
       const planet = activePlanetsRef.current[i];
       planet.y += planet.speed * deltaTime;
@@ -616,7 +617,7 @@ const MagicGame = () => {
       ctx.fill();
       // במצב נייד לא משתמשים בפילטרים כבדים
       if (!isMobile) {
-        ctx.filter = "sepia(1) saturate(5000%) hue-rotate(0deg) brightness(1.1)";
+        ctx.filter = "sepia(1) saturate(5000%) hue-rotate(190deg) brightness(1.1)";
       }
       ctx.drawImage(spaceshipImgRef.current, -20, -20, 40, 40);
       if (!isMobile) {
@@ -656,7 +657,7 @@ const MagicGame = () => {
       }
     });
 
-    // ציור החללית של השחקן – במצב נייד מציירים ללא פילטרים כבדים
+    // ציור החללית של השחקן – במצב נייד ללא פילטרים כבדים
     if (spaceshipImgRef.current) {
       ctx.save();
       ctx.translate(playerPosRef.current.x, playerPosRef.current.y);
