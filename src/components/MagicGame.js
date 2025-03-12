@@ -92,7 +92,7 @@ const getRandomHeart = (containerWidth, containerHeight) => {
   };
 };
 
-// פונקציה להפעלת סאונד תוך שכפול המופע הקיים (כדי לא ליצור מופע חדש בכל פעם)
+// פונקציה להפעלת סאונד תוך שכפול מופע קיים (למניעת יצירת מופעים חדשים בכל פעם)
 const playSound = (audioRef) => {
   if (!audioRef.current) return;
   const clone = audioRef.current.cloneNode();
@@ -109,6 +109,7 @@ const MagicGame = () => {
   const [paused, setPaused] = useState(false);
   const [countdown, setCountdown] = useState(null);
   
+  // זיהוי מצב נייד לפי רוחב החלון
   const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
   const [containerSize, setContainerSize] = useState({
     width: window.innerWidth,
@@ -137,7 +138,7 @@ const MagicGame = () => {
   const canvasRef = useRef(null);
   const containerRef = useRef(null);
 
-  // טעינת סאונדים מראש לאופטימיזציה – כל סאונד נטען ומאוחסן ב־Ref
+  // טעינת סאונדים מראש לשיפור ביצועים (מניעת יצירת מופעים בכל הפעלה)
   const fireAudioRef = useRef(null);
   const enemyBoomAudioRef = useRef(null);
   const userBoomAudioRef = useRef(null);
@@ -155,7 +156,7 @@ const MagicGame = () => {
     addHeartAudioRef.current = new Audio(addHeartSoundSrc);
   }, []);
 
-  // עדכון קנבס לפי devicePixelRatio לשיפור הרזולוציה
+  // עדכון קנבס לפי devicePixelRatio
   useEffect(() => {
     if (canvasRef.current) {
       const ratio = window.devicePixelRatio || 1;
@@ -296,7 +297,7 @@ const MagicGame = () => {
     return () => window.removeEventListener('click', handleClick);
   }, [gameStarted, paused, gameOver, isMobile, containerSize]);
 
-  // Auto Pause: אם אין תנועת עכבר במשך 60 שניות
+  // Auto Pause – אם אין תנועת עכבר במשך 60 שניות
   useEffect(() => {
     const interval = setInterval(() => {
       if (gameStarted && !paused && Date.now() - lastMouseMoveRef.current >= 60000) {
@@ -340,7 +341,6 @@ const MagicGame = () => {
     });
 
     // עדכון כוכבי לכת – מניעת כפילויות:
-    // עבור כל כוכב, אם הוא עבר את הגבול, מחליפים אותו בכוכב חדש שלא קיים ברשימה (מלבד זה שעוזב)
     for (let i = 0; i < activePlanetsRef.current.length; i++) {
       const planet = activePlanetsRef.current[i];
       planet.y += planet.speed * deltaTime;
@@ -546,7 +546,7 @@ const MagicGame = () => {
 
     draw();
     animationFrameIdRef.current = requestAnimationFrame(gameLoop);
-  }, [containerSize, gameOver, gameStarted, paused, countdown]); // הוספנו את countdown כאן
+  }, [containerSize, gameOver, gameStarted, paused, countdown]);
 
   const draw = () => {
     const canvas = canvasRef.current;
@@ -614,9 +614,14 @@ const MagicGame = () => {
       ctx.beginPath();
       ctx.ellipse(0, 40, 10, 20, 0, 0, Math.PI * 2);
       ctx.fill();
-      ctx.filter = "sepia(1) saturate(5000%) hue-rotate(0deg) brightness(1.1)";
+      // במצב נייד לא משתמשים בפילטרים כבדים
+      if (!isMobile) {
+        ctx.filter = "sepia(1) saturate(5000%) hue-rotate(0deg) brightness(1.1)";
+      }
       ctx.drawImage(spaceshipImgRef.current, -20, -20, 40, 40);
-      ctx.filter = "none";
+      if (!isMobile) {
+        ctx.filter = "none";
+      }
       ctx.restore();
     });
 
@@ -628,22 +633,30 @@ const MagicGame = () => {
       ctx.fill();
     });
 
-    // ציור התפוצצויות
+    // ציור התפוצצויות – במצב נייד מציירים אפקט פשוט יותר
     explosionsRef.current.forEach(exp => {
       const age = Date.now() - exp.start;
-      const progress = age / 800;
-      const radius = 15 + progress * 20;
-      ctx.beginPath();
-      const gradient = ctx.createRadialGradient(exp.x, exp.y, 0, exp.x, exp.y, radius);
-      gradient.addColorStop(0, `rgba(255,255,255,${1 - progress})`);
-      gradient.addColorStop(0.3, `rgba(255,100,0,${0.8 - progress * 0.8})`);
-      gradient.addColorStop(1, "rgba(0,212,255,0)");
-      ctx.fillStyle = gradient;
-      ctx.arc(exp.x, exp.y, radius, 0, Math.PI * 2);
-      ctx.fill();
+      if (isMobile) {
+        const radius = 15 + (age / 800) * 20;
+        ctx.beginPath();
+        ctx.fillStyle = "rgba(255,150,0," + Math.max(0, 1 - age / 800) + ")";
+        ctx.arc(exp.x, exp.y, radius, 0, Math.PI * 2);
+        ctx.fill();
+      } else {
+        const progress = age / 800;
+        const radius = 15 + progress * 20;
+        ctx.beginPath();
+        const gradient = ctx.createRadialGradient(exp.x, exp.y, 0, exp.x, exp.y, radius);
+        gradient.addColorStop(0, `rgba(255,255,255,${1 - progress})`);
+        gradient.addColorStop(0.3, `rgba(255,100,0,${0.8 - progress * 0.8})`);
+        gradient.addColorStop(1, "rgba(0,212,255,0)");
+        ctx.fillStyle = gradient;
+        ctx.arc(exp.x, exp.y, radius, 0, Math.PI * 2);
+        ctx.fill();
+      }
     });
 
-    // ציור החללית של השחקן
+    // ציור החללית של השחקן – במצב נייד מציירים ללא פילטרים כבדים
     if (spaceshipImgRef.current) {
       ctx.save();
       ctx.translate(playerPosRef.current.x, playerPosRef.current.y);
@@ -654,9 +667,13 @@ const MagicGame = () => {
       ctx.beginPath();
       ctx.ellipse(0, 40, 10, 20, 0, 0, Math.PI * 2);
       ctx.fill();
-      ctx.filter = "sepia(1) saturate(5000%) hue-rotate(190deg) brightness(1.1)";
+      if (!isMobile) {
+        ctx.filter = "sepia(1) saturate(5000%) hue-rotate(190deg) brightness(1.1)";
+      }
       ctx.drawImage(spaceshipImgRef.current, -20, -20, 40, 40);
-      ctx.filter = "none";
+      if (!isMobile) {
+        ctx.filter = "none";
+      }
       ctx.restore();
     }
   };
