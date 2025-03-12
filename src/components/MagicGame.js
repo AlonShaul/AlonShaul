@@ -222,7 +222,7 @@ const MagicGame = () => {
     return () => window.removeEventListener('mousemove', handleMouseMove);
   }, [containerSize, paused]);
 
-  // במצב טלפון – עדכון מיקום החללית לפי לחיצה, וירי קסם עם סאונד Fire.mp3
+  // במצב טלפון – עדכון מיקום החללית לפי לחיצה, וירי קסם (fire) ללא סאונד במובייל
   useEffect(() => {
     const handleClick = (e) => {
       if (!gameStarted || paused || gameOver) return;
@@ -237,9 +237,12 @@ const MagicGame = () => {
         x: playerPosRef.current.x,
         y: playerPosRef.current.y - 40,
       });
-      const fireAudio = new Audio(fireSound);
-      fireAudio.volume = 0.05;
-      fireAudio.play();
+      // ניגון סאונד "fire" רק במצב מחשב
+      if (!isMobile) {
+        const fireAudio = new Audio(fireSound);
+        fireAudio.volume = 0.05;
+        fireAudio.play();
+      }
     };
     window.addEventListener('click', handleClick);
     return () => window.removeEventListener('click', handleClick);
@@ -508,7 +511,7 @@ const MagicGame = () => {
 
     draw();
     animationFrameIdRef.current = requestAnimationFrame(gameLoop);
-  }, [containerSize, gameOver, gameStarted, paused, countdown]);
+  }, [containerSize, gameOver, gameStarted, paused, countdown, isMobile]);
 
   const draw = () => {
     const canvas = canvasRef.current;
@@ -609,16 +612,31 @@ const MagicGame = () => {
     if (spaceshipImgRef.current) {
       ctx.save();
       ctx.translate(playerPosRef.current.x, playerPosRef.current.y);
-      const flameGradient = ctx.createLinearGradient(0, 20, 0, 60);
-      flameGradient.addColorStop(0, "rgba(255,200,0,1)");
-      flameGradient.addColorStop(1, "rgba(255,0,0,0)");
-      ctx.fillStyle = flameGradient;
-      ctx.beginPath();
-      ctx.ellipse(0, 40, 10, 20, 0, 0, Math.PI * 2);
-      ctx.fill();
-      ctx.filter = "sepia(1) saturate(5000%) hue-rotate(190deg) brightness(1.1)";
-      ctx.drawImage(spaceshipImgRef.current, -20, -20, 40, 40);
-      ctx.filter = "none";
+      if (isMobile) {
+        // במובייל – משתמשים בעיצוב זהה לעיצוב האויב (גווני צהוב-אדום)
+        const flameGradient = ctx.createLinearGradient(0, 30, 0, 50);
+        flameGradient.addColorStop(0, "rgba(255,200,0,1)");
+        flameGradient.addColorStop(1, "rgba(255,0,0,0)");
+        ctx.fillStyle = flameGradient;
+        ctx.beginPath();
+        ctx.ellipse(0, 40, 10, 20, 0, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.filter = "sepia(1) saturate(5000%) hue-rotate(0deg) brightness(1.1)";
+        ctx.drawImage(spaceshipImgRef.current, -20, -20, 40, 40);
+        ctx.filter = "none";
+      } else {
+        // במחשב – העיצוב הקיים
+        const flameGradient = ctx.createLinearGradient(0, 20, 0, 60);
+        flameGradient.addColorStop(0, "rgba(255,200,0,1)");
+        flameGradient.addColorStop(1, "rgba(255,0,0,0)");
+        ctx.fillStyle = flameGradient;
+        ctx.beginPath();
+        ctx.ellipse(0, 40, 10, 20, 0, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.filter = "sepia(1) saturate(5000%) hue-rotate(190deg) brightness(1.1)";
+        ctx.drawImage(spaceshipImgRef.current, -20, -20, 40, 40);
+        ctx.filter = "none";
+      }
       ctx.restore();
     }
   };
