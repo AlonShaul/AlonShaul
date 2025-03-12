@@ -2,6 +2,7 @@ import React, { useState, useEffect, useMemo } from 'react';
 import { motion, useMotionValue, useTransform } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
 import MagicGame from '../components/MagicGame';
+import MonsterSideRunnerGame from '../components/MonsterSideRunnerGame';
 
 const Dynamic3DBackground = () => {
   return (
@@ -184,8 +185,6 @@ const HeroSection = () => {
     </section>
   );
 };
-
-
 
 const SkillsSection = () => {
   const { t } = useTranslation();
@@ -508,6 +507,8 @@ const Home = () => {
       <BeyondHorizonSection />
       {/* כאן נוסף משחק הקסם */}
       <MagicGame />
+      {/* כאן נוסף המשחק החדש */}
+      {/* <MonsterSideRunnerGame /> */}
       {/* Footer removed to avoid duplication */}
     </div>
   );
