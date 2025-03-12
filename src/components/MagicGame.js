@@ -199,7 +199,7 @@ const MagicGame = () => {
     return () => window.removeEventListener('resize', handleResize);
   }, []);
 
-  // אתחול תמונת החללית של השחקן (משתמש)
+  // אתחול תמונת החללית של המשתמש
   const userSpaceshipImgRef = useRef(null);
   useEffect(() => {
     const img = new Image();
@@ -265,7 +265,7 @@ const MagicGame = () => {
     return () => clearInterval(interval);
   }, [gameStarted, paused]);
 
-  // עצירת המשחק כאשר המשתמש עובר ללשונית אחרת
+  // עצירת המשחק כאשר המשתמש עובר ללשונית אחרת (או עובר לטאב אחר)
   useEffect(() => {
     const handleVisibilityChange = () => {
       if (document.hidden) {
@@ -574,11 +574,19 @@ const MagicGame = () => {
       ctx.fill();
     });
 
-    // ציור אויבים – ללא העיצוב המוקדם, רק התמונה המעוצבת של היריב
+    // ציור אויבים – כולל ציור אפקט האש מאחוריהם
     enemiesRef.current.forEach(enemy => {
       ctx.save();
       ctx.translate(enemy.x, enemy.y);
       ctx.rotate(Math.PI);
+      // ציור אש מאחור לחללית היריבה
+      const flameGradientEnemy = ctx.createLinearGradient(0, 30, 0, 50);
+      flameGradientEnemy.addColorStop(0, "rgba(255,200,0,1)");
+      flameGradientEnemy.addColorStop(1, "rgba(255,0,0,0)");
+      ctx.fillStyle = flameGradientEnemy;
+      ctx.beginPath();
+      ctx.ellipse(0, 40, 10, 20, 0, 0, Math.PI * 2);
+      ctx.fill();
       ctx.drawImage(enemySpaceshipImgRef.current, -20, -20, 40, 40);
       ctx.restore();
     });
@@ -606,10 +614,18 @@ const MagicGame = () => {
       ctx.fill();
     });
 
-    // ציור החללית של השחקן – מציגים את התמונה המעוצבת ללא עיצובים נוספים
+    // ציור החללית של השחקן – כולל ציור אש מאחוריה
     if (userSpaceshipImgRef.current) {
       ctx.save();
       ctx.translate(playerPosRef.current.x, playerPosRef.current.y);
+      // ציור אש מאחור לחללית המשתמש
+      const flameGradientUser = ctx.createLinearGradient(0, 20, 0, 60);
+      flameGradientUser.addColorStop(0, "rgba(255,200,0,1)");
+      flameGradientUser.addColorStop(1, "rgba(255,0,0,0)");
+      ctx.fillStyle = flameGradientUser;
+      ctx.beginPath();
+      ctx.ellipse(0, 40, 10, 20, 0, 0, Math.PI * 2);
+      ctx.fill();
       ctx.drawImage(userSpaceshipImgRef.current, -20, -20, 40, 40);
       ctx.restore();
     }
