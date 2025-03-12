@@ -222,7 +222,7 @@ const MagicGame = () => {
     return () => window.removeEventListener('mousemove', handleMouseMove);
   }, [containerSize, paused]);
 
-  // במצב טלפון – עדכון מיקום החללית לפי לחיצה, וירי קסם (fire) ללא סאונד במובייל
+  // במצב טלפון – עדכון מיקום החללית לפי לחיצה, וירי קסם (fire) ללא ניגון סאונד במובייל
   useEffect(() => {
     const handleClick = (e) => {
       if (!gameStarted || paused || gameOver) return;
@@ -613,7 +613,7 @@ const MagicGame = () => {
       ctx.save();
       ctx.translate(playerPosRef.current.x, playerPosRef.current.y);
       if (isMobile) {
-        // במובייל – משתמשים בעיצוב זהה לעיצוב האויב (גווני צהוב-אדום)
+        // במצב מובייל – עיצוב החללית יהיה זהה לעיצוב האויב (גווני צהוב-אדום)
         const flameGradient = ctx.createLinearGradient(0, 30, 0, 50);
         flameGradient.addColorStop(0, "rgba(255,200,0,1)");
         flameGradient.addColorStop(1, "rgba(255,0,0,0)");
@@ -625,7 +625,7 @@ const MagicGame = () => {
         ctx.drawImage(spaceshipImgRef.current, -20, -20, 40, 40);
         ctx.filter = "none";
       } else {
-        // במחשב – העיצוב הקיים
+        // במצב מחשב – העיצוב הקיים
         const flameGradient = ctx.createLinearGradient(0, 20, 0, 60);
         flameGradient.addColorStop(0, "rgba(255,200,0,1)");
         flameGradient.addColorStop(1, "rgba(255,0,0,0)");
