@@ -318,6 +318,16 @@ const MagicGame = () => {
     });
 
     // עדכון כוכבי לכת עם בדיקת ייחודיות
+    // פונקציית עזר לבדיקת כפילות – מוגדרת מחוץ ללולאה
+    const hasDuplicate = (planets, candidate) => {
+      for (let j = 0; j < planets.length; j++) {
+        if (planets[j].name === candidate.name) {
+          return true;
+        }
+      }
+      return false;
+    };
+
     let updatedPlanets = [];
     for (let i = 0; i < activePlanetsRef.current.length; i++) {
       let planet = activePlanetsRef.current[i];
@@ -328,7 +338,7 @@ const MagicGame = () => {
         do {
           candidate = getRandomPlanet(containerSize.width, containerSize.height);
           attempts++;
-        } while (updatedPlanets.some(p => p.name === candidate.name) && attempts < 10);
+        } while (hasDuplicate(updatedPlanets, candidate) && attempts < 10);
         updatedPlanets.push(candidate);
       } else {
         updatedPlanets.push(planet);
