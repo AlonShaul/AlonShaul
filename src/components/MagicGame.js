@@ -86,23 +86,19 @@ const getRandomHeart = (containerWidth, containerHeight) => {
 
 const MagicGame = () => {
   const { t } = useTranslation();
-
-  // נבדוק אם אנו בסביבת דפדפן
-  const isBrowser = typeof window !== 'undefined';
-
-  // הגדרות ראשוניות עם ערכי ברירת מחדל בסביבת בנייה
-  const [isMobile, setIsMobile] = useState(isBrowser ? window.innerWidth <= 768 : false);
-  const [containerSize, setContainerSize] = useState({
-    width: isBrowser ? window.innerWidth : 800,
-    height: isBrowser ? (window.innerWidth <= 768 ? window.innerHeight * 0.9 : window.innerHeight * 0.9) : 600,
-  });
-
+  
   const [score, setScore] = useState(0);
   const [lives, setLives] = useState(5);
   const [gameOver, setGameOver] = useState(false);
   const [gameStarted, setGameStarted] = useState(false);
   const [paused, setPaused] = useState(false);
   const [countdown, setCountdown] = useState(null);
+  
+  const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
+  const [containerSize, setContainerSize] = useState({
+    width: window.innerWidth,
+    height: window.innerWidth <= 768 ? window.innerHeight * 0.9 : window.innerHeight * 0.9,
+  });
 
   const spellsRef = useRef([]);
   const enemiesRef = useRef([]);
@@ -112,7 +108,7 @@ const MagicGame = () => {
   const activePlanetsRef = useRef([]);
   const meteorsRef = useRef([]);
   const heartsRef = useRef([]);
-
+  
   const meteorImgRef = useRef(null);
   useEffect(() => {
     const img = new Image();
@@ -121,7 +117,7 @@ const MagicGame = () => {
   }, []);
 
   const invulnerableUntilRef = useRef(0);
-  const playerPosRef = useRef({ x: isBrowser ? window.innerWidth / 2 : 400, y: isBrowser ? window.innerHeight - 100 : 500 });
+  const playerPosRef = useRef({ x: window.innerWidth / 2, y: window.innerHeight - 100 });
 
   const canvasRef = useRef(null);
   const containerRef = useRef(null);
@@ -190,27 +186,19 @@ const MagicGame = () => {
 
   useEffect(() => {
     const handleResize = () => {
-      if (isBrowser) {
-        const newWidth = window.innerWidth;
-        const mobile = newWidth <= 768;
-        setIsMobile(mobile);
-        const newHeight = mobile ? window.innerHeight * 0.8 : window.innerHeight * 0.9;
-        setContainerSize({ width: newWidth, height: newHeight });
-        if (canvasRef.current) {
-          canvasRef.current.width = newWidth;
-          canvasRef.current.height = newHeight;
-        }
+      const newWidth = window.innerWidth;
+      const mobile = newWidth <= 768;
+      setIsMobile(mobile);
+      const newHeight = mobile ? window.innerHeight * 0.8 : window.innerHeight * 0.9;
+      setContainerSize({ width: newWidth, height: newHeight });
+      if (canvasRef.current) {
+        canvasRef.current.width = newWidth;
+        canvasRef.current.height = newHeight;
       }
     };
-    if (isBrowser) {
-      window.addEventListener('resize', handleResize);
-    }
-    return () => {
-      if (isBrowser) {
-        window.removeEventListener('resize', handleResize);
-      }
-    };
-  }, [isBrowser]);
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
 
   const spaceshipImgRef = useRef(null);
   useEffect(() => {
@@ -230,17 +218,11 @@ const MagicGame = () => {
       const y = Math.max(40, Math.min(e.clientY - rect.top, containerSize.height - 40));
       playerPosRef.current = { x, y };
     };
-    if (isBrowser) {
-      window.addEventListener('mousemove', handleMouseMove);
-    }
-    return () => {
-      if (isBrowser) {
-        window.removeEventListener('mousemove', handleMouseMove);
-      }
-    };
-  }, [containerSize, paused, isBrowser]);
+    window.addEventListener('mousemove', handleMouseMove);
+    return () => window.removeEventListener('mousemove', handleMouseMove);
+  }, [containerSize, paused]);
 
-  // במצב טלפון – עדכון מיקום החללית לפי לחיצה, וירי קסם (fire) ללא ניגון סאונד במובייל
+  // במצב טלפון – עדכון מיקום החללית לפי לחיצה, וירי קסם עם סאונד Fire.mp3
   useEffect(() => {
     const handleClick = (e) => {
       if (!gameStarted || paused || gameOver) return;
@@ -255,22 +237,16 @@ const MagicGame = () => {
         x: playerPosRef.current.x,
         y: playerPosRef.current.y - 40,
       });
-      // ניגון סאונד "fire" רק במצב מחשב
+      // נגן סאונד fire רק במצב מחשב
       if (!isMobile) {
         const fireAudio = new Audio(fireSound);
         fireAudio.volume = 0.05;
         fireAudio.play();
       }
     };
-    if (isBrowser) {
-      window.addEventListener('click', handleClick);
-    }
-    return () => {
-      if (isBrowser) {
-        window.removeEventListener('click', handleClick);
-      }
-    };
-  }, [gameStarted, paused, gameOver, isMobile, containerSize, isBrowser]);
+    window.addEventListener('click', handleClick);
+    return () => window.removeEventListener('click', handleClick);
+  }, [gameStarted, paused, gameOver, isMobile, containerSize]);
 
   // Auto Pause: אם אין תנועת עכבר במשך 60 שניות
   useEffect(() => {
@@ -289,18 +265,12 @@ const MagicGame = () => {
         setPaused(true);
       }
     };
-    if (isBrowser) {
-      document.addEventListener('visibilitychange', handleVisibilityChange);
-    }
-    return () => {
-      if (isBrowser) {
-        document.removeEventListener('visibilitychange', handleVisibilityChange);
-      }
-    };
-  }, [isBrowser]);
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+    return () => document.removeEventListener('visibilitychange', handleVisibilityChange);
+  }, []);
 
   useEffect(() => {
-    if ((gameStarted || countdown !== null) && !gameOver && !paused) {
+    if (((gameStarted || countdown !== null) && !paused && !gameOver)) {
       document.body.style.cursor = 'none';
     } else {
       document.body.style.cursor = 'default';
@@ -541,7 +511,7 @@ const MagicGame = () => {
 
     draw();
     animationFrameIdRef.current = requestAnimationFrame(gameLoop);
-  }, [containerSize, gameOver, gameStarted, paused, countdown, isMobile]);
+  }, [containerSize, gameOver, gameStarted, paused, countdown]);
 
   const draw = () => {
     const canvas = canvasRef.current;
@@ -597,7 +567,7 @@ const MagicGame = () => {
       ctx.fill();
     });
 
-    // ציור אויבים – עיצוב עם גווני אדום-צהוב
+    // ציור אויבים – עיצוב עם גווני אדום-צהוב (מוצג גם במצב מובייל)
     enemiesRef.current.forEach(enemy => {
       ctx.save();
       ctx.translate(enemy.x, enemy.y);
@@ -609,6 +579,7 @@ const MagicGame = () => {
       ctx.beginPath();
       ctx.ellipse(0, 40, 10, 20, 0, 0, Math.PI * 2);
       ctx.fill();
+      // שימוש במסנן צבעים כדי לעצב את המטוס ביריבים – אותו עיצוב כמו בגרסת המחשב
       ctx.filter = "sepia(1) saturate(5000%) hue-rotate(0deg) brightness(1.1)";
       ctx.drawImage(spaceshipImgRef.current, -20, -20, 40, 40);
       ctx.filter = "none";
@@ -642,31 +613,16 @@ const MagicGame = () => {
     if (spaceshipImgRef.current) {
       ctx.save();
       ctx.translate(playerPosRef.current.x, playerPosRef.current.y);
-      if (isMobile) {
-        // במצב מובייל – עיצוב החללית יהיה זהה לעיצוב האויב (גווני צהוב-אדום)
-        const flameGradient = ctx.createLinearGradient(0, 30, 0, 50);
-        flameGradient.addColorStop(0, "rgba(255,200,0,1)");
-        flameGradient.addColorStop(1, "rgba(255,0,0,0)");
-        ctx.fillStyle = flameGradient;
-        ctx.beginPath();
-        ctx.ellipse(0, 40, 10, 20, 0, 0, Math.PI * 2);
-        ctx.fill();
-        ctx.filter = "sepia(1) saturate(5000%) hue-rotate(0deg) brightness(1.1)";
-        ctx.drawImage(spaceshipImgRef.current, -20, -20, 40, 40);
-        ctx.filter = "none";
-      } else {
-        // במצב מחשב – העיצוב הקיים
-        const flameGradient = ctx.createLinearGradient(0, 20, 0, 60);
-        flameGradient.addColorStop(0, "rgba(255,200,0,1)");
-        flameGradient.addColorStop(1, "rgba(255,0,0,0)");
-        ctx.fillStyle = flameGradient;
-        ctx.beginPath();
-        ctx.ellipse(0, 40, 10, 20, 0, 0, Math.PI * 2);
-        ctx.fill();
-        ctx.filter = "sepia(1) saturate(5000%) hue-rotate(190deg) brightness(1.1)";
-        ctx.drawImage(spaceshipImgRef.current, -20, -20, 40, 40);
-        ctx.filter = "none";
-      }
+      const flameGradient = ctx.createLinearGradient(0, 20, 0, 60);
+      flameGradient.addColorStop(0, "rgba(255,200,0,1)");
+      flameGradient.addColorStop(1, "rgba(255,0,0,0)");
+      ctx.fillStyle = flameGradient;
+      ctx.beginPath();
+      ctx.ellipse(0, 40, 10, 20, 0, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.filter = "sepia(1) saturate(5000%) hue-rotate(190deg) brightness(1.1)";
+      ctx.drawImage(spaceshipImgRef.current, -20, -20, 40, 40);
+      ctx.filter = "none";
       ctx.restore();
     }
   };
