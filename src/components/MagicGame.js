@@ -86,19 +86,23 @@ const getRandomHeart = (containerWidth, containerHeight) => {
 
 const MagicGame = () => {
   const { t } = useTranslation();
-  
+
+  // נבדוק אם אנו בסביבת דפדפן
+  const isBrowser = typeof window !== 'undefined';
+
+  // הגדרות ראשוניות עם ערכי ברירת מחדל בסביבת בנייה
+  const [isMobile, setIsMobile] = useState(isBrowser ? window.innerWidth <= 768 : false);
+  const [containerSize, setContainerSize] = useState({
+    width: isBrowser ? window.innerWidth : 800,
+    height: isBrowser ? (window.innerWidth <= 768 ? window.innerHeight * 0.9 : window.innerHeight * 0.9) : 600,
+  });
+
   const [score, setScore] = useState(0);
   const [lives, setLives] = useState(5);
   const [gameOver, setGameOver] = useState(false);
   const [gameStarted, setGameStarted] = useState(false);
   const [paused, setPaused] = useState(false);
   const [countdown, setCountdown] = useState(null);
-  
-  const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
-  const [containerSize, setContainerSize] = useState({
-    width: window.innerWidth,
-    height: window.innerWidth <= 768 ? window.innerHeight * 0.9 : window.innerHeight * 0.9,
-  });
 
   const spellsRef = useRef([]);
   const enemiesRef = useRef([]);
@@ -108,7 +112,7 @@ const MagicGame = () => {
   const activePlanetsRef = useRef([]);
   const meteorsRef = useRef([]);
   const heartsRef = useRef([]);
-  
+
   const meteorImgRef = useRef(null);
   useEffect(() => {
     const img = new Image();
@@ -117,7 +121,7 @@ const MagicGame = () => {
   }, []);
 
   const invulnerableUntilRef = useRef(0);
-  const playerPosRef = useRef({ x: window.innerWidth / 2, y: window.innerHeight - 100 });
+  const playerPosRef = useRef({ x: isBrowser ? window.innerWidth / 2 : 400, y: isBrowser ? window.innerHeight - 100 : 500 });
 
   const canvasRef = useRef(null);
   const containerRef = useRef(null);
@@ -186,19 +190,27 @@ const MagicGame = () => {
 
   useEffect(() => {
     const handleResize = () => {
-      const newWidth = window.innerWidth;
-      const mobile = newWidth <= 768;
-      setIsMobile(mobile);
-      const newHeight = mobile ? window.innerHeight * 0.8 : window.innerHeight * 0.9;
-      setContainerSize({ width: newWidth, height: newHeight });
-      if (canvasRef.current) {
-        canvasRef.current.width = newWidth;
-        canvasRef.current.height = newHeight;
+      if (isBrowser) {
+        const newWidth = window.innerWidth;
+        const mobile = newWidth <= 768;
+        setIsMobile(mobile);
+        const newHeight = mobile ? window.innerHeight * 0.8 : window.innerHeight * 0.9;
+        setContainerSize({ width: newWidth, height: newHeight });
+        if (canvasRef.current) {
+          canvasRef.current.width = newWidth;
+          canvasRef.current.height = newHeight;
+        }
       }
     };
-    window.addEventListener('resize', handleResize);
-    return () => window.removeEventListener('resize', handleResize);
-  }, []);
+    if (isBrowser) {
+      window.addEventListener('resize', handleResize);
+    }
+    return () => {
+      if (isBrowser) {
+        window.removeEventListener('resize', handleResize);
+      }
+    };
+  }, [isBrowser]);
 
   const spaceshipImgRef = useRef(null);
   useEffect(() => {
@@ -218,9 +230,15 @@ const MagicGame = () => {
       const y = Math.max(40, Math.min(e.clientY - rect.top, containerSize.height - 40));
       playerPosRef.current = { x, y };
     };
-    window.addEventListener('mousemove', handleMouseMove);
-    return () => window.removeEventListener('mousemove', handleMouseMove);
-  }, [containerSize, paused]);
+    if (isBrowser) {
+      window.addEventListener('mousemove', handleMouseMove);
+    }
+    return () => {
+      if (isBrowser) {
+        window.removeEventListener('mousemove', handleMouseMove);
+      }
+    };
+  }, [containerSize, paused, isBrowser]);
 
   // במצב טלפון – עדכון מיקום החללית לפי לחיצה, וירי קסם (fire) ללא ניגון סאונד במובייל
   useEffect(() => {
@@ -244,9 +262,15 @@ const MagicGame = () => {
         fireAudio.play();
       }
     };
-    window.addEventListener('click', handleClick);
-    return () => window.removeEventListener('click', handleClick);
-  }, [gameStarted, paused, gameOver, isMobile, containerSize]);
+    if (isBrowser) {
+      window.addEventListener('click', handleClick);
+    }
+    return () => {
+      if (isBrowser) {
+        window.removeEventListener('click', handleClick);
+      }
+    };
+  }, [gameStarted, paused, gameOver, isMobile, containerSize, isBrowser]);
 
   // Auto Pause: אם אין תנועת עכבר במשך 60 שניות
   useEffect(() => {
@@ -265,9 +289,15 @@ const MagicGame = () => {
         setPaused(true);
       }
     };
-    document.addEventListener('visibilitychange', handleVisibilityChange);
-    return () => document.removeEventListener('visibilitychange', handleVisibilityChange);
-  }, []);
+    if (isBrowser) {
+      document.addEventListener('visibilitychange', handleVisibilityChange);
+    }
+    return () => {
+      if (isBrowser) {
+        document.removeEventListener('visibilitychange', handleVisibilityChange);
+      }
+    };
+  }, [isBrowser]);
 
   useEffect(() => {
     if ((gameStarted || countdown !== null) && !gameOver && !paused) {
@@ -509,7 +539,6 @@ const MagicGame = () => {
 
     explosionsRef.current = explosionsRef.current.filter(exp => Date.now() - exp.start < 800);
 
-    // ציור המסך
     draw();
     animationFrameIdRef.current = requestAnimationFrame(gameLoop);
   }, [containerSize, gameOver, gameStarted, paused, countdown, isMobile]);
