@@ -270,7 +270,7 @@ const MagicGame = () => {
   }, []);
 
   useEffect(() => {
-    if (((gameStarted || countdown !== null) && !paused && !gameOver)) {
+    if ((gameStarted || countdown !== null) && !gameOver && !paused) {
       document.body.style.cursor = 'none';
     } else {
       document.body.style.cursor = 'default';
@@ -509,6 +509,7 @@ const MagicGame = () => {
 
     explosionsRef.current = explosionsRef.current.filter(exp => Date.now() - exp.start < 800);
 
+    // ציור המסך
     draw();
     animationFrameIdRef.current = requestAnimationFrame(gameLoop);
   }, [containerSize, gameOver, gameStarted, paused, countdown, isMobile]);
@@ -567,7 +568,7 @@ const MagicGame = () => {
       ctx.fill();
     });
 
-    // ציור אויבים – העיצוב נלקח מהקוד שסיפקת (עיצוב עם גווני אדום-צהוב)
+    // ציור אויבים – עיצוב עם גווני אדום-צהוב
     enemiesRef.current.forEach(enemy => {
       ctx.save();
       ctx.translate(enemy.x, enemy.y);
