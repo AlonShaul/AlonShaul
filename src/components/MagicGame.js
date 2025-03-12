@@ -46,7 +46,7 @@ const planetData = [
   { name: 'Neptune', src: require('../planets/neptune.png') },
 ];
 
-// פונקציה ליצירת כוכב לכת אקראי, תוך מניעת כפילות ביחס לשמות נתונים
+// פונקציה ליצירת כוכב לכת אקראי תוך מניעת כפילות ביחס לשמות שכבר בשימוש
 const getRandomPlanet = (containerWidth, containerHeight, excludeNames = []) => {
   const availablePlanets = planetData.filter(p => !excludeNames.includes(p.name));
   const chosenPlanet = availablePlanets.length > 0 
@@ -92,7 +92,7 @@ const getRandomHeart = (containerWidth, containerHeight) => {
   };
 };
 
-// פונקציה להפעלת סאונד תוך שכפול
+// פונקציה להפעלת סאונד תוך שכפול המופע הקיים (כדי לא ליצור מופע חדש בכל פעם)
 const playSound = (audioRef) => {
   if (!audioRef.current) return;
   const clone = audioRef.current.cloneNode();
@@ -115,7 +115,7 @@ const MagicGame = () => {
     height: window.innerWidth <= 768 ? window.innerHeight * 0.9 : window.innerHeight * 0.9,
   });
 
-  // Refs עבור אובייקטים שונים
+  // Refs עבור אובייקטים שונים במשחק
   const spellsRef = useRef([]);
   const enemiesRef = useRef([]);
   const enemyBulletsRef = useRef([]);
@@ -137,7 +137,7 @@ const MagicGame = () => {
   const canvasRef = useRef(null);
   const containerRef = useRef(null);
 
-  // טעינת סאונדים מראש לאופטימיזציה – נשמרים ב־Refs
+  // טעינת סאונדים מראש לאופטימיזציה – כל סאונד נטען ומאוחסן ב־Ref
   const fireAudioRef = useRef(null);
   const enemyBoomAudioRef = useRef(null);
   const userBoomAudioRef = useRef(null);
@@ -155,7 +155,7 @@ const MagicGame = () => {
     addHeartAudioRef.current = new Audio(addHeartSoundSrc);
   }, []);
 
-  // עדכון קנבס לפי devicePixelRatio
+  // עדכון קנבס לפי devicePixelRatio לשיפור הרזולוציה
   useEffect(() => {
     if (canvasRef.current) {
       const ratio = window.devicePixelRatio || 1;
@@ -166,9 +166,9 @@ const MagicGame = () => {
     }
   }, [containerSize]);
 
-  // אתחול כוכבים
+  // אתחול כוכבים – 60 כוכבים
   useEffect(() => {
-    const starCount = 60; // זהה לשולחן במחשב, לא משנה מצב
+    const starCount = 60;
     const stars = [];
     for (let i = 0; i < starCount; i++) {
       stars.push({
@@ -296,7 +296,7 @@ const MagicGame = () => {
     return () => window.removeEventListener('click', handleClick);
   }, [gameStarted, paused, gameOver, isMobile, containerSize]);
 
-  // Auto Pause
+  // Auto Pause: אם אין תנועת עכבר במשך 60 שניות
   useEffect(() => {
     const interval = setInterval(() => {
       if (gameStarted && !paused && Date.now() - lastMouseMoveRef.current >= 60000) {
@@ -318,7 +318,7 @@ const MagicGame = () => {
     };
   }, [gameStarted, countdown, paused, gameOver]);
 
-  // ניהול לולאת האנימציה
+  // ניהול לולאת האנימציה – הוספנו את countdown למערך התלויות
   const lastTimeRefAnim = useRef(null);
   const animationFrameIdRef = useRef(null);
   const gameLoop = useCallback((time) => {
@@ -339,13 +339,12 @@ const MagicGame = () => {
       }
     });
 
-    // עדכון כוכבי לכת – פתרון מניעת כפילות:
-    // עבור כל כוכב, אם הוא עבר את הגבול, מחליפים אותו בכוכב חדש שלא קיים ברשימה הנוכחית (למעט זה שעוזב)
+    // עדכון כוכבי לכת – מניעת כפילויות:
+    // עבור כל כוכב, אם הוא עבר את הגבול, מחליפים אותו בכוכב חדש שלא קיים ברשימה (מלבד זה שעוזב)
     for (let i = 0; i < activePlanetsRef.current.length; i++) {
       const planet = activePlanetsRef.current[i];
       planet.y += planet.speed * deltaTime;
       if (planet.y > containerSize.height + 100) {
-        // בונים רשימת שמות של שאר הכוכבים שמופיעים כרגע
         const exclude = activePlanetsRef.current
                           .filter((_, j) => j !== i)
                           .map(p => p.name);
@@ -542,12 +541,12 @@ const MagicGame = () => {
       return true;
     });
 
-    // הסרת התפוצצויות ישנות
+    // הסרת התפוצצויות ישנות (גיל מעל 800ms)
     explosionsRef.current = explosionsRef.current.filter(exp => Date.now() - exp.start < 800);
 
     draw();
     animationFrameIdRef.current = requestAnimationFrame(gameLoop);
-  }, [containerSize, gameOver, gameStarted, paused]);
+  }, [containerSize, gameOver, gameStarted, paused, countdown]); // הוספנו את countdown כאן
 
   const draw = () => {
     const canvas = canvasRef.current;
@@ -713,7 +712,7 @@ const MagicGame = () => {
 
   useEffect(() => {
     if (gameOver) {
-      // אין צורך בפעולות נוספות
+      // אין צורך בפעולות נוספות בעת סיום המשחק
     }
   }, [gameOver]);
 
