@@ -93,7 +93,7 @@ const getRandomHeart = (containerWidth, containerHeight) => {
   };
 };
 
-// פונקציה להפעלת סאונד תוך שכפול מופע קיים (למניעת יצירת מופעים חדשים בכל פעם)
+// פונקציה להפעלת סאונד תוך שכפול מופע קיים
 const playSound = (audioRef) => {
   if (!audioRef.current) return;
   const clone = audioRef.current.cloneNode();
@@ -139,7 +139,7 @@ const MagicGame = () => {
   const canvasRef = useRef(null);
   const containerRef = useRef(null);
 
-  // טעינת סאונדים מראש לשיפור ביצועים
+  // טעינת סאונדים מראש
   const fireAudioRef = useRef(null);
   const enemyBoomAudioRef = useRef(null);
   const userBoomAudioRef = useRef(null);
@@ -156,6 +156,13 @@ const MagicGame = () => {
     takeoffAudioRef.current = new Audio(takeoffSoundSrc);
     addHeartAudioRef.current = new Audio(addHeartSoundSrc);
   }, []);
+
+  // פונקציה שמפעילה סאונד רק אם לא במצב נייד
+  const playSoundIfNotMobile = (audioRef) => {
+    if (!isMobile) {
+      playSound(audioRef);
+    }
+  };
 
   // עדכון קנבס לפי devicePixelRatio
   useEffect(() => {
@@ -292,7 +299,8 @@ const MagicGame = () => {
         x: playerPosRef.current.x,
         y: playerPosRef.current.y - 40,
       });
-      playSound(fireAudioRef);
+      // הפעלת סאונד רק אם לא במצב נייד
+      playSoundIfNotMobile(fireAudioRef);
     };
     window.addEventListener('click', handleClick);
     return () => window.removeEventListener('click', handleClick);
@@ -341,7 +349,7 @@ const MagicGame = () => {
       }
     });
 
-    // עדכון כוכבי לכת – מניעת כפילויות
+    // עדכון כוכבי לכת – מניעת כפילויות:
     for (let i = 0; i < activePlanetsRef.current.length; i++) {
       const planet = activePlanetsRef.current[i];
       planet.y += planet.speed * deltaTime;
@@ -415,7 +423,7 @@ const MagicGame = () => {
           y: enemy.y,
           start: Date.now(),
         });
-        playSound(enemyBoomAudioRef);
+        playSoundIfNotMobile(enemyBoomAudioRef);
         setScore(prev => prev + 1);
       }
       return !hit;
@@ -438,7 +446,7 @@ const MagicGame = () => {
           start: Date.now(),
         });
         setScore(prev => prev + 1);
-        playSound(enemyBoomAudioRef);
+        playSoundIfNotMobile(enemyBoomAudioRef);
         return false;
       }
       return true;
@@ -458,15 +466,15 @@ const MagicGame = () => {
         setLives(prev => {
           const newLives = prev - 1;
           if (newLives <= 0 && !gameOver) {
-            playSound(superExplosionAudioRef);
+            playSoundIfNotMobile(superExplosionAudioRef);
             superExplosionAudioRef.current.addEventListener('ended', () => {
               setTimeout(() => {
-                playSound(gameOverAudioRef);
+                playSoundIfNotMobile(gameOverAudioRef);
               }, GAME_OVER_DELAY);
             });
             setGameOver(true);
           } else {
-            playSound(userBoomAudioRef);
+            playSoundIfNotMobile(userBoomAudioRef);
           }
           return newLives;
         });
@@ -480,15 +488,15 @@ const MagicGame = () => {
         setLives(prev => {
           const newLives = prev - 1;
           if (newLives <= 0 && !gameOver) {
-            playSound(superExplosionAudioRef);
+            playSoundIfNotMobile(superExplosionAudioRef);
             superExplosionAudioRef.current.addEventListener('ended', () => {
               setTimeout(() => {
-                playSound(gameOverAudioRef);
+                playSoundIfNotMobile(gameOverAudioRef);
               }, GAME_OVER_DELAY);
             });
             setGameOver(true);
           } else {
-            playSound(userBoomAudioRef);
+            playSoundIfNotMobile(userBoomAudioRef);
           }
           return newLives;
         });
@@ -506,7 +514,7 @@ const MagicGame = () => {
     // התנגשות לבבות עם החללית
     heartsRef.current = heartsRef.current.filter(heart => {
       if (distance(heart, playerPosRef.current) < 20) {
-        playSound(addHeartAudioRef);
+        playSoundIfNotMobile(addHeartAudioRef);
         setLives(prev => prev + 1);
         return false;
       }
@@ -525,15 +533,15 @@ const MagicGame = () => {
         setLives(prev => {
           const newLives = prev - 1;
           if (newLives <= 0 && !gameOver) {
-            playSound(superExplosionAudioRef);
+            playSoundIfNotMobile(superExplosionAudioRef);
             superExplosionAudioRef.current.addEventListener('ended', () => {
               setTimeout(() => {
-                playSound(gameOverAudioRef);
+                playSoundIfNotMobile(gameOverAudioRef);
               }, GAME_OVER_DELAY);
             });
             setGameOver(true);
           } else {
-            playSound(userBoomAudioRef);
+            playSoundIfNotMobile(userBoomAudioRef);
           }
           return newLives;
         });
@@ -634,7 +642,7 @@ const MagicGame = () => {
       ctx.fill();
     });
 
-    // ציור התפוצצויות – במצב נייד מציירים אפקט פשוט יותר
+    // ציור התפוצצויות – במצב נייד אפקט פשוט יותר
     explosionsRef.current.forEach(exp => {
       const age = Date.now() - exp.start;
       if (isMobile) {
@@ -694,7 +702,7 @@ const MagicGame = () => {
   // ספירת האחור עם סאונד Takeoff
   const startCountdown = () => {
     setCountdown(3);
-    playSound(takeoffAudioRef);
+    playSoundIfNotMobile(takeoffAudioRef);
     let count = 3;
     const interval = setInterval(() => {
       count -= 1;
