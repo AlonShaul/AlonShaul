@@ -94,23 +94,17 @@ const MagicGame = () => {
   const [score, setScore] = useState(0);
   const [lives, setLives] = useState(5);
   const [gameOver, setGameOver] = useState(false);
-  // gameStarted יוגדר רק לאחר סיום ספירת האחור
   const [gameStarted, setGameStarted] = useState(false);
   const [paused, setPaused] = useState(false);
-  // state לספירה לאחור – מופעלת גם בהפעלה ראשונית וגם בריסטרט
   const [countdown, setCountdown] = useState(null);
   
-  // זיהוי מצב נייד (טלפון) לעומת מחשב – לפי רוחב החלון
   const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
 
-  // הגדרת גודל התחלתי לפי מצב המכשיר:
-  // במצב טלפון - גובה = 80% מהחלון, במחשב - 90% מהחלון
   const [containerSize, setContainerSize] = useState({
     width: window.innerWidth,
     height: window.innerWidth <= 768 ? window.innerHeight * 0.9 : window.innerHeight * 0.9,
   });
 
-  // Refs עבור יריות, אויבים, יריות אויב, התפוצצויות, מטאורים, לבבות
   const spellsRef = useRef([]);
   const enemiesRef = useRef([]);
   const enemyBulletsRef = useRef([]);
@@ -120,7 +114,6 @@ const MagicGame = () => {
   const meteorsRef = useRef([]);
   const heartsRef = useRef([]);
   
-  // הגדרת meteorImgRef
   const meteorImgRef = useRef(null);
   useEffect(() => {
     const img = new Image();
@@ -128,17 +121,13 @@ const MagicGame = () => {
     meteorImgRef.current = img;
   }, []);
 
-  // מניעת פגיעות חוזרות
   const invulnerableUntilRef = useRef(0);
-
-  // מיקום החללית (מעודכן לפי לחיצה/עכבר)
   const playerPosRef = useRef({ x: window.innerWidth / 2, y: window.innerHeight - 100 });
 
-  // רפרנסים לקאנבס ולמיכל
   const canvasRef = useRef(null);
   const containerRef = useRef(null);
 
-  // אתחול כוכבים – 60 כוכבים
+  // אתחול כוכבים
   useEffect(() => {
     const stars = [];
     for (let i = 0; i < 60; i++) {
@@ -152,7 +141,7 @@ const MagicGame = () => {
     starsRef.current = stars;
   }, [containerSize]);
 
-  // אתחול "כוכבי הלכת הפעילים" – 3 כוכבי לכת שונים
+  // אתחול כוכבי לכת ייחודיים – 3 כוכבים שונים
   useEffect(() => {
     const newPlanets = [];
     while(newPlanets.length < 3) {
@@ -164,7 +153,6 @@ const MagicGame = () => {
     activePlanetsRef.current = newPlanets;
   }, [containerSize]);
 
-  // יצירת מטאורים – כל METEOR_SPAWN_INTERVAL, כשהמשחק התחיל ולא במצב פאוז
   useEffect(() => {
     if (gameOver || !gameStarted || paused) return;
     const spawnMeteors = () => {
@@ -177,7 +165,6 @@ const MagicGame = () => {
     return () => clearInterval(interval);
   }, [containerSize.width, containerSize.height, gameOver, gameStarted, paused]);
 
-  // יצירת לבבות – כל HEART_SPAWN_INTERVAL, כשהמשחק התחיל ולא במצב פאוז
   useEffect(() => {
     if (gameOver || !gameStarted || paused) return;
     const spawnHeart = () => {
@@ -189,7 +176,6 @@ const MagicGame = () => {
     return () => clearInterval(interval);
   }, [containerSize.width, containerSize.height, gameOver, gameStarted, paused]);
 
-  // יצירת אויבים – מופעלת רק לאחר התחלת המשחק (כשמשחק לא במצב פאוז)
   useEffect(() => {
     if (gameOver || !gameStarted || paused) return;
     const spawnEnemy = () => {
@@ -206,7 +192,6 @@ const MagicGame = () => {
     return () => clearInterval(interval);
   }, [containerSize.width, containerSize.height, gameOver, gameStarted, paused]);
 
-  // עדכון גודל הקאנבס בעת שינוי חלון
   useEffect(() => {
     const handleResize = () => {
       const newWidth = window.innerWidth;
@@ -223,7 +208,6 @@ const MagicGame = () => {
     return () => window.removeEventListener('resize', handleResize);
   }, []);
 
-  // טעינת תמונת החללית
   const spaceshipImgRef = useRef(null);
   useEffect(() => {
     const img = new Image();
@@ -231,7 +215,6 @@ const MagicGame = () => {
     spaceshipImgRef.current = img;
   }, []);
 
-  // עדכון מיקום החללית לפי תנועת העכבר
   const lastMouseMoveRef = useRef(Date.now());
   useEffect(() => {
     const handleMouseMove = (e) => {
@@ -247,8 +230,7 @@ const MagicGame = () => {
     return () => window.removeEventListener('mousemove', handleMouseMove);
   }, [containerSize, paused]);
 
-  // במצב טלפון – עדכון מיקום החללית לפי לחיצה, וירי קסם
-  // שימו לב: כעת במובייל לא מופעל סאונד fire כדי לשפר ביצועים.
+  // במצב מובייל – עדכון מיקום החללית לפי לחיצה + ירי קסם (ללא סאונד fire)
   useEffect(() => {
     const handleClick = (e) => {
       if (!gameStarted || paused || gameOver) return;
@@ -273,7 +255,6 @@ const MagicGame = () => {
     return () => window.removeEventListener('click', handleClick);
   }, [gameStarted, paused, gameOver, isMobile, containerSize]);
 
-  // Auto Pause: אם אין תנועת עכבר במשך 60 שניות
   useEffect(() => {
     const interval = setInterval(() => {
       if (gameStarted && !paused && Date.now() - lastMouseMoveRef.current >= 60000) {
@@ -283,7 +264,6 @@ const MagicGame = () => {
     return () => clearInterval(interval);
   }, [gameStarted, paused]);
 
-  // עדכון סמן העכבר – מוסתר כאשר המשחק פעיל או בזמן ספירה
   useEffect(() => {
     if (((gameStarted || countdown !== null) && !paused && !gameOver)) {
       document.body.style.cursor = 'none';
@@ -295,8 +275,6 @@ const MagicGame = () => {
     };
   }, [gameStarted, countdown, paused, gameOver]);
 
-  // ניהול לולאת האנימציה – תופעל גם בזמן הספירה או כשהמשחק התחיל,
-  // כל עוד המשחק לא נגמר ולא נמצא במצב פאוז.
   const lastTimeRefAnim = useRef(null);
   const animationFrameIdRef = useRef(null);
   const gameLoop = useCallback((time) => {
@@ -318,7 +296,6 @@ const MagicGame = () => {
     });
 
     // עדכון כוכבי לכת עם בדיקת ייחודיות
-    // פונקציית עזר לבדיקת כפילות – מוגדרת מחוץ ללולאה
     const hasDuplicate = (planets, candidate) => {
       for (let j = 0; j < planets.length; j++) {
         if (planets[j].name === candidate.name) {
@@ -391,7 +368,7 @@ const MagicGame = () => {
         bullet.y >= -50 && bullet.y <= containerSize.height + 100
       );
 
-    // התנגשות קסמים עם אויבים – ירי קסם על אויב מפעיל EnemyBoom
+    // התנגשות קסמים עם אויבים
     const collidedSpellIds = new Set();
     enemiesRef.current = enemiesRef.current.filter(enemy => {
       let hit = false;
@@ -544,7 +521,6 @@ const MagicGame = () => {
       return true;
     });
 
-    // הסרת התפוצצויות ישנות (גיל מעל 800ms)
     explosionsRef.current = explosionsRef.current.filter(exp => Date.now() - exp.start < 800);
 
     draw();
@@ -605,7 +581,7 @@ const MagicGame = () => {
       ctx.fill();
     });
 
-    // ציור אויבים
+    // ציור אויבים – העיצוב נשאר בגווני אדום-צהוב בכל מצב
     enemiesRef.current.forEach(enemy => {
       ctx.save();
       ctx.translate(enemy.x, enemy.y);
@@ -676,7 +652,6 @@ const MagicGame = () => {
     };
   }, [gameStarted, gameOver, paused, gameLoop, countdown]);
 
-  // הפעלת ספירת האחור – בעת התחלת המשחק, ריסטרט או נפסלות, מופעלת ספירה עם סאונד Takeoff.mp3
   const startCountdown = () => {
     setCountdown(3);
     const takeoffAudio = new Audio(takeoffSound);
@@ -714,10 +689,9 @@ const MagicGame = () => {
     startCountdown();
   };
 
-  // כאשר המשחק נגמר, אין צורך בהשמעת סאונדים נוספים.
   useEffect(() => {
     if (gameOver) {
-      // אין צורך בשום פעולה נוספת כאן.
+      // אין צורך בפעולות נוספות בעת סיום המשחק.
     }
   }, [gameOver]);
 
