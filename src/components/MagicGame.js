@@ -1,6 +1,5 @@
 import React, { useEffect, useRef, useState, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
-import spaceship from '../spaceship.png';
 import pauseIcon from '../planets/pause.png';
 import restartIcon from '../planets/Restart.png';
 import resumeIcon from '../planets/Resume.png';
@@ -200,55 +199,21 @@ const MagicGame = () => {
     return () => window.removeEventListener('resize', handleResize);
   }, []);
 
-  const spaceshipImgRef = useRef(null);
+  // אתחול תמונת החללית של השחקן (משתמש)
+  const userSpaceshipImgRef = useRef(null);
   useEffect(() => {
     const img = new Image();
-    img.src = spaceship;
-    spaceshipImgRef.current = img;
+    img.src = require('../spaceship 1.png');
+    userSpaceshipImgRef.current = img;
   }, []);
 
-  // יצירת גרסה מצונפת (tinted) של תמונת החללית עבור היריבים במצב מובייל
+  // אתחול תמונת החללית של היריב
   const enemySpaceshipImgRef = useRef(null);
   useEffect(() => {
-    if (isMobile && spaceshipImgRef.current) {
-      // ודא שהתמונה נטענה
-      if (spaceshipImgRef.current.complete) {
-        const offscreen = document.createElement('canvas');
-        offscreen.width = spaceshipImgRef.current.width;
-        offscreen.height = spaceshipImgRef.current.height;
-        const offCtx = offscreen.getContext('2d');
-        offCtx.drawImage(spaceshipImgRef.current, 0, 0);
-        // החלפת הצבעים באמצעות קומפוזיציה
-        offCtx.globalCompositeOperation = 'source-atop';
-        const gradient = offCtx.createLinearGradient(0, 0, 0, spaceshipImgRef.current.height);
-        gradient.addColorStop(0, "rgba(255,200,0,1)");
-        gradient.addColorStop(1, "rgba(255,0,0,1)");
-        offCtx.fillStyle = gradient;
-        offCtx.fillRect(0, 0, offscreen.width, offscreen.height);
-        const tintedImg = new Image();
-        tintedImg.src = offscreen.toDataURL();
-        enemySpaceshipImgRef.current = tintedImg;
-      } else {
-        // אם לא נטענה עדיין, ננסה שוב בהמשך
-        spaceshipImgRef.current.onload = () => {
-          const offscreen = document.createElement('canvas');
-          offscreen.width = spaceshipImgRef.current.width;
-          offscreen.height = spaceshipImgRef.current.height;
-          const offCtx = offscreen.getContext('2d');
-          offCtx.drawImage(spaceshipImgRef.current, 0, 0);
-          offCtx.globalCompositeOperation = 'source-atop';
-          const gradient = offCtx.createLinearGradient(0, 0, 0, spaceshipImgRef.current.height);
-          gradient.addColorStop(0, "rgba(255,200,0,1)");
-          gradient.addColorStop(1, "rgba(255,0,0,1)");
-          offCtx.fillStyle = gradient;
-          offCtx.fillRect(0, 0, offscreen.width, offscreen.height);
-          const tintedImg = new Image();
-          tintedImg.src = offscreen.toDataURL();
-          enemySpaceshipImgRef.current = tintedImg;
-        };
-      }
-    }
-  }, [isMobile, spaceshipImgRef.current]);
+    const img = new Image();
+    img.src = require('../spaceship 2.png');
+    enemySpaceshipImgRef.current = img;
+  }, []);
 
   const lastMouseMoveRef = useRef(Date.now());
   useEffect(() => {
@@ -265,7 +230,7 @@ const MagicGame = () => {
     return () => window.removeEventListener('mousemove', handleMouseMove);
   }, [containerSize, paused]);
 
-  // במצב טלפון – עדכון מיקום החללית לפי לחיצה, וירי קסם (סאונד Fire מנוגן רק במחשב)
+  // במצב טלפון – עדכון מיקום החללית לפי לחיצה, וירי קסם (סאונד fire מופעל רק במחשב)
   useEffect(() => {
     const handleClick = (e) => {
       if (!gameStarted || paused || gameOver) return;
@@ -280,7 +245,6 @@ const MagicGame = () => {
         x: playerPosRef.current.x,
         y: playerPosRef.current.y - 40,
       });
-      // נגן סאונד fire רק במצב מחשב
       if (!isMobile) {
         const fireAudio = new Audio(fireSound);
         fireAudio.volume = 0.05;
@@ -610,25 +574,12 @@ const MagicGame = () => {
       ctx.fill();
     });
 
-    // ציור אויבים – עיצוב עם גווני אדום-צהוב (עבור מחשב, משתמשים במסנן; עבור מובייל, מוצגת גרסה מצונפת)
+    // ציור אויבים – ללא העיצוב המוקדם, רק התמונה המעוצבת של היריב
     enemiesRef.current.forEach(enemy => {
       ctx.save();
       ctx.translate(enemy.x, enemy.y);
       ctx.rotate(Math.PI);
-      const flameGradient = ctx.createLinearGradient(0, 30, 0, 50);
-      flameGradient.addColorStop(0, "rgba(255,200,0,1)");
-      flameGradient.addColorStop(1, "rgba(255,0,0,0)");
-      ctx.fillStyle = flameGradient;
-      ctx.beginPath();
-      ctx.ellipse(0, 40, 10, 20, 0, 0, Math.PI * 2);
-      ctx.fill();
-      if (isMobile && enemySpaceshipImgRef.current) {
-        ctx.drawImage(enemySpaceshipImgRef.current, -20, -20, 40, 40);
-      } else {
-        ctx.filter = "sepia(1) saturate(5000%) hue-rotate(0deg) brightness(1.1)";
-        ctx.drawImage(spaceshipImgRef.current, -20, -20, 40, 40);
-        ctx.filter = "none";
-      }
+      ctx.drawImage(enemySpaceshipImgRef.current, -20, -20, 40, 40);
       ctx.restore();
     });
 
@@ -655,20 +606,11 @@ const MagicGame = () => {
       ctx.fill();
     });
 
-    // ציור החללית של השחקן
-    if (spaceshipImgRef.current) {
+    // ציור החללית של השחקן – מציגים את התמונה המעוצבת ללא עיצובים נוספים
+    if (userSpaceshipImgRef.current) {
       ctx.save();
       ctx.translate(playerPosRef.current.x, playerPosRef.current.y);
-      const flameGradient = ctx.createLinearGradient(0, 20, 0, 60);
-      flameGradient.addColorStop(0, "rgba(255,200,0,1)");
-      flameGradient.addColorStop(1, "rgba(255,0,0,0)");
-      ctx.fillStyle = flameGradient;
-      ctx.beginPath();
-      ctx.ellipse(0, 40, 10, 20, 0, 0, Math.PI * 2);
-      ctx.fill();
-      ctx.filter = "sepia(1) saturate(5000%) hue-rotate(190deg) brightness(1.1)";
-      ctx.drawImage(spaceshipImgRef.current, -20, -20, 40, 40);
-      ctx.filter = "none";
+      ctx.drawImage(userSpaceshipImgRef.current, -20, -20, 40, 40);
       ctx.restore();
     }
   };
