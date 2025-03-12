@@ -265,16 +265,18 @@ const MagicGame = () => {
     return () => clearInterval(interval);
   }, [gameStarted, paused]);
 
-  // עצירת המשחק כאשר המשתמש עובר ללשונית אחרת (או עובר לטאב אחר)
+  // עצירת המשחק כאשר המשתמש עובר ללשונית אחרת (פועל רק אם המשחק התחיל)
   useEffect(() => {
+    if (!gameStarted) return;
     const handleVisibilityChange = () => {
       if (document.hidden) {
         setPaused(true);
       }
     };
     document.addEventListener('visibilitychange', handleVisibilityChange);
-    return () => document.removeEventListener('visibilitychange', handleVisibilityChange);
-  }, []);
+    return () =>
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
+  }, [gameStarted]);
 
   useEffect(() => {
     if (((gameStarted || countdown !== null) && !paused && !gameOver)) {
