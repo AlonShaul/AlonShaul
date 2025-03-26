@@ -96,14 +96,14 @@ const MagicGame = () => {
   const [paused, setPaused] = useState(false);
   const [countdown, setCountdown] = useState(null);
   
-  // הפיצ'ר מופיע רק במצב מובייל
+  // הפיצ'ר יהיה רק במובייל
   const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
   const [containerSize, setContainerSize] = useState({
     width: window.innerWidth,
     height: window.innerWidth <= 768 ? window.innerHeight * 0.9 : window.innerHeight * 0.9,
   });
   
-  // במכשירי מובייל, אם אין תמיכה אמיתית במסך מלא (כמו ב-iOS), נעבור למצב סימולציה
+  // במכשירי מובייל: אם אין תמיכה אמיתית במסך מלא (למשל, iOS), נשתמש במצב סימולציה
   const [simulatedFullscreen, setSimulatedFullscreen] = useState(false);
   const isiOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
 
@@ -132,7 +132,7 @@ const MagicGame = () => {
   const canvasRef = useRef(null);
   const containerRef = useRef(null);
 
-  // פונקציות ל-Fullscreen
+  // פונקציות Fullscreen – עבור מכשירים התומכים
   const requestFullScreen = () => {
     if (containerRef.current) {
       if (containerRef.current.requestFullscreen) {
@@ -157,18 +157,20 @@ const MagicGame = () => {
     return Promise.reject('Fullscreen API not supported');
   };
 
-  // בעת לחיצה על "התחל" במובייל – הפעלת Fullscreen
+  // הפעלת מצב מסך מלא – עבור מובייל: אם לא iOS, נשתמש ב-Fullscreen API, אחרת נעביר למצב סימולציה
   const activateFullScreen = () => {
     if (isMobile) {
       if (!isiOS) {
         requestFullScreen().catch(err => console.error(err));
       } else {
         setSimulatedFullscreen(true);
+        // עבור iOS, הסתרת גלילה:
+        document.documentElement.style.overflow = 'hidden';
       }
     }
   };
 
-  // מאזין לאירועי Fullscreen (עבור מכשירים שתומכים בו)
+  // מאזין לאירועי Fullscreen (עבור מכשירים שתומכים בהם)
   useEffect(() => {
     const handleFullscreenChange = () => {
       const fsElement = document.fullscreenElement || document.webkitFullscreenElement || document.msFullscreenElement;
@@ -185,6 +187,15 @@ const MagicGame = () => {
       document.removeEventListener("msfullscreenchange", handleFullscreenChange);
     };
   }, [isiOS]);
+
+  // effect לעדכון overflow של ה־document במצב סימולציה (ל-iOS)
+  useEffect(() => {
+    if (isMobile && isiOS && simulatedFullscreen) {
+      document.documentElement.style.overflow = 'hidden';
+    } else {
+      document.documentElement.style.overflow = '';
+    }
+  }, [isMobile, isiOS, simulatedFullscreen]);
 
   // עדכון גודל הקונטיינר
   useEffect(() => {
@@ -706,7 +717,18 @@ const MagicGame = () => {
 
   const toggleFullscreen = () => {
     if (!isMobile) return;
-    if (!isiOS) {
+    if (isiOS) {
+      // במכשירי iOS – הפעל/כבה מצב סימולציה למסך מלא
+      if (simulatedFullscreen) {
+        setSimulatedFullscreen(false);
+        setPaused(true);
+      } else {
+        setSimulatedFullscreen(true);
+        if (paused) setPaused(false);
+        if (!gameStarted) startGame();
+      }
+    } else {
+      // במכשירים התומכים ב-Fullscreen API
       if (document.fullscreenElement || document.webkitFullscreenElement || document.msFullscreenElement) {
         exitFullScreen().catch(err => console.error(err));
         setPaused(true);
@@ -715,17 +737,10 @@ const MagicGame = () => {
         if (paused) setPaused(false);
         if (!gameStarted) startGame();
       }
-    } else {
-      setSimulatedFullscreen(!simulatedFullscreen);
-      if (!simulatedFullscreen) {
-        if (paused) setPaused(false);
-        if (!gameStarted) startGame();
-      } else {
-        setPaused(true);
-      }
     }
   };
 
+  // במצב סימולציה (ל-iOS), הקונטיינר יקבל סגנון שמכסה את כל המסך
   const containerStyle = simulatedFullscreen
     ? { position: 'fixed', top: 0, left: 0, width: '100vw', height: '100vh', zIndex: 9999 }
     : {};
