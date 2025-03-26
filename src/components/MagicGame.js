@@ -3,6 +3,8 @@ import { useTranslation } from 'react-i18next';
 import pauseIcon from '../planets/pause.png';
 import restartIcon from '../planets/Restart.png';
 import resumeIcon from '../planets/Resume.png';
+import fullScreenIcon from '../planets/full screen.png';
+import minimizeScreenIcon from '../planets/minimize screen.png';
 
 // ייבוא סאונדים
 import addHeartSound from '../planets/AddHeart.mp3';
@@ -99,6 +101,9 @@ const MagicGame = () => {
     height: window.innerWidth <= 768 ? window.innerHeight * 0.9 : window.innerHeight * 0.9,
   });
 
+  // State לניהול מצב מסך מלא
+  const [isFullscreen, setIsFullscreen] = useState(document.fullscreenElement != null);
+
   const spellsRef = useRef([]);
   const enemiesRef = useRef([]);
   const enemyBulletsRef = useRef([]);
@@ -120,6 +125,27 @@ const MagicGame = () => {
 
   const canvasRef = useRef(null);
   const containerRef = useRef(null);
+
+  // מאזינים לשינוי מצב מסך מלא
+  useEffect(() => {
+    const handleFullscreenChange = () => {
+      const fsElement = document.fullscreenElement || document.webkitFullscreenElement || document.msFullscreenElement;
+      setIsFullscreen(!!fsElement);
+      if (!fsElement) {
+        // יציאה ממסך מלא – עצירת המשחק והחזרה למסך ההתחלה
+        setGameStarted(false);
+        setCountdown(null);
+      }
+    };
+    document.addEventListener("fullscreenchange", handleFullscreenChange);
+    document.addEventListener("webkitfullscreenchange", handleFullscreenChange);
+    document.addEventListener("msfullscreenchange", handleFullscreenChange);
+    return () => {
+      document.removeEventListener("fullscreenchange", handleFullscreenChange);
+      document.removeEventListener("webkitfullscreenchange", handleFullscreenChange);
+      document.removeEventListener("msfullscreenchange", handleFullscreenChange);
+    };
+  }, []);
 
   // אתחול כוכבים
   useEffect(() => {
@@ -715,16 +741,15 @@ const MagicGame = () => {
           <button
             className="px-6 py-3 text-2xl font-bold rounded bg-blue-400 text-white hover:bg-blue-500"
             onClick={() => {
-              if (isMobile && containerRef.current && !document.fullscreenElement) {
-                const element = containerRef.current;
-                if (element.requestFullscreen) {
-                  element.requestFullscreen().catch((err) => {
+              if (containerRef.current && !document.fullscreenElement) {
+                if (containerRef.current.requestFullscreen) {
+                  containerRef.current.requestFullscreen().catch((err) => {
                     console.error("Error attempting to enable full-screen mode:", err);
                   });
-                } else if (element.webkitRequestFullscreen) { // Safari
-                  element.webkitRequestFullscreen();
-                } else if (element.msRequestFullscreen) { // IE11
-                  element.msRequestFullscreen();
+                } else if (containerRef.current.webkitRequestFullscreen) {
+                  containerRef.current.webkitRequestFullscreen();
+                } else if (containerRef.current.msRequestFullscreen) {
+                  containerRef.current.msRequestFullscreen();
                 }
               }
               startGame();
@@ -806,6 +831,36 @@ const MagicGame = () => {
           </div>
         </div>
       )}
+      {/* לחצן מסך מלא/מינימייז – ממוקם בפינה הימנית התחתונה */}
+      <button
+        className="absolute bottom-4 right-4 z-50 p-2 bg-blue-400 rounded-full"
+        onClick={() => {
+          if (document.fullscreenElement) {
+            if (document.exitFullscreen) {
+              document.exitFullscreen().catch(err => { console.error(err); });
+            } else if (document.webkitExitFullscreen) {
+              document.webkitExitFullscreen();
+            } else if (document.msExitFullscreen) {
+              document.msExitFullscreen();
+            }
+          } else {
+            if (containerRef.current) {
+              if (containerRef.current.requestFullscreen) {
+                containerRef.current.requestFullscreen().catch(err => { console.error(err); });
+              } else if (containerRef.current.webkitRequestFullscreen) {
+                containerRef.current.webkitRequestFullscreen();
+              } else if (containerRef.current.msRequestFullscreen) {
+                containerRef.current.msRequestFullscreen();
+              }
+            }
+            if (!gameStarted) {
+              startGame();
+            }
+          }
+        }}
+      >
+        <img src={isFullscreen ? minimizeScreenIcon : fullScreenIcon} alt="Fullscreen Toggle" className="w-8 h-8" />
+      </button>
     </div>
   );
 };
