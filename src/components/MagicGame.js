@@ -32,6 +32,12 @@ const GAME_OVER_DELAY = 20;
 
 const distance = (a, b) => Math.hypot(a.x - b.x, a.y - b.y);
 
+// בודקים האם אנחנו על iOS (אייפון/אייפד)
+const isIOS = () => {
+  if (typeof navigator === 'undefined') return false;
+  return /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+};
+
 const planetData = [
   { name: 'Mercury', src: require('../planets/mercury.png') },
   { name: 'Venus', src: require('../planets/venus.png') },
@@ -100,8 +106,11 @@ const MagicGame = () => {
     width: window.innerWidth,
     height: window.innerWidth <= 768 ? window.innerHeight * 0.9 : window.innerHeight * 0.9,
   });
-  // מצב מסך מלא – רק במובייל
+
+  // מצב מסך מלא "אמיתי" (באנדרואיד/דסקטופ) או "מדומה" (ב-iOS)
   const [fullScreenMode, setFullScreenMode] = useState(false);
+  // אם אנחנו על iOS, נשתמש בפייק פול-סקרין
+  const [iosFullScreen, setIosFullScreen] = useState(false);
 
   const spellsRef = useRef([]);
   const enemiesRef = useRef([]);
@@ -125,16 +134,24 @@ const MagicGame = () => {
   const canvasRef = useRef(null);
   const containerRef = useRef(null);
 
-  // פונקציות למסך מלא – כולל vendor prefixes לתמיכה בכל הדפדפנים
+  // פונקציות למסך מלא אמיתי (למכשירים תומכים: אנדרואיד/דסקטופ)
   const enterFullScreen = () => {
     if (!containerRef.current) return;
+    // אם אנחנו ב-iOS, נעשה "מסך מלא מדומה"
+    if (isIOS()) {
+      setIosFullScreen(true);
+      setFullScreenMode(true);
+      return;
+    }
+
+    // אחרת, ננסה Fullscreen API
     if (containerRef.current.requestFullscreen) {
       containerRef.current.requestFullscreen().then(() => {
         setFullScreenMode(true);
       }).catch(err => {
         console.error("Failed to enter full screen:", err);
       });
-    } else if (containerRef.current.webkitRequestFullscreen) { // Safari
+    } else if (containerRef.current.webkitRequestFullscreen) { // Safari ישן
       containerRef.current.webkitRequestFullscreen();
       setFullScreenMode(true);
     } else if (containerRef.current.msRequestFullscreen) { // IE11
@@ -144,13 +161,21 @@ const MagicGame = () => {
   };
 
   const exitFullScreen = () => {
+    // אם אנחנו ב-iOS, פשוט נצא מה"מסך מלא המדומה"
+    if (isIOS()) {
+      setIosFullScreen(false);
+      setFullScreenMode(false);
+      return;
+    }
+
+    // מכשירים תומכים
     if (document.exitFullscreen) {
       document.exitFullscreen().then(() => {
         setFullScreenMode(false);
       }).catch(err => {
         console.error("Failed to exit full screen:", err);
       });
-    } else if (document.webkitExitFullscreen) { // Safari
+    } else if (document.webkitExitFullscreen) { // Safari ישן
       document.webkitExitFullscreen();
       setFullScreenMode(false);
     } else if (document.msExitFullscreen) { // IE11
@@ -162,7 +187,9 @@ const MagicGame = () => {
   // מאזין לשינוי מצב מסך מלא (אם המשתמש נכנס/יוצא באופן ידני)
   useEffect(() => {
     const handleFullScreenChange = () => {
-      if (document.fullscreenElement === containerRef.current || document.webkitFullscreenElement === containerRef.current) {
+      // בודקים אם אנחנו במסך מלא
+      const fsElement = document.fullscreenElement || document.webkitFullscreenElement || document.msFullscreenElement;
+      if (fsElement === containerRef.current) {
         setFullScreenMode(true);
       } else {
         setFullScreenMode(false);
@@ -170,9 +197,12 @@ const MagicGame = () => {
     };
     document.addEventListener('fullscreenchange', handleFullScreenChange);
     document.addEventListener('webkitfullscreenchange', handleFullScreenChange);
+    document.addEventListener('msfullscreenchange', handleFullScreenChange);
+
     return () => {
       document.removeEventListener('fullscreenchange', handleFullScreenChange);
       document.removeEventListener('webkitfullscreenchange', handleFullScreenChange);
+      document.removeEventListener('msfullscreenchange', handleFullScreenChange);
     };
   }, []);
 
@@ -716,7 +746,7 @@ const MagicGame = () => {
   };
 
   const startGame = () => {
-    // עבור מובייל – כניסה למסך מלא בעת לחיצה על "התחל"
+    // במובייל – ננסה מיד לעבור למסך מלא (אמיתי אם אנדרואיד, או מדומה אם iOS)
     if (isMobile) {
       enterFullScreen();
     }
@@ -745,11 +775,37 @@ const MagicGame = () => {
     }
   }, [gameOver]);
 
+  // בפעולת ההקטנה (minimize) – נחזור לדף הבית, נעצור את המשחק
+  const handleMinimize = () => {
+    exitFullScreen();
+    setPaused(true);
+    setGameStarted(false);
+    // כאן אפשר להפנות לדף הבית אם רוצים:
+    // window.location.href = '/'; // לדוגמה
+  };
+
+  // CSS inline ל"מסך מלא מדומה" ב-iOS
+  // מונע גלילה, ממקם הכל על כל המסך, רקע שחור
+  const iosFullScreenStyle = iosFullScreen
+    ? {
+        position: 'fixed',
+        top: 0,
+        left: 0,
+        width: '100vw',
+        height: '100vh',
+        zIndex: 9999,
+        background: 'black',
+        overflow: 'hidden',
+      }
+    : {};
+
   return (
     <div
       ref={containerRef}
       className={`relative w-full ${isMobile ? "h-full" : "h-[90vh]"} overflow-hidden select-none`}
       style={{
+        // אם iosFullScreen פעיל – נוסיף את ה-style שמדמה מסך מלא
+        ...iosFullScreenStyle,
         background: 'radial-gradient(ellipse at center, #001f3f 0%, #004080 50%, #005f99 100%)',
         cursor: (((gameStarted || countdown !== null) && !paused && !gameOver) ? 'none' : 'default')
       }}
@@ -760,16 +816,14 @@ const MagicGame = () => {
         height={containerSize.height}
         className="w-full h-full"
       />
-      {/* כפתור מסך מלא – רק במובייל, מוצב במיקום x זהה לכפתור הפאוז (right-4) אך בתחתית העמוד */}
+      {/* כפתור מסך מלא במובייל: למטה בצד ימין (bottom-4 right-4).
+          כאשר fullScreenMode פעיל או iosFullScreen פעיל – מציגים כפתור הקטנה, אחרת כפתור הגדלה */}
       {isMobile && gameStarted && !gameOver && (
         <div className="absolute bottom-4 right-4 z-50">
-          {fullScreenMode ? (
+          {fullScreenMode || iosFullScreen ? (
             <button
               className="w-12 h-12 flex items-center justify-center rounded-full bg-blue-400 hover:bg-blue-500"
-              onClick={() => {
-                exitFullScreen();
-                setPaused(true);
-              }}
+              onClick={handleMinimize}
             >
               <img src={minimizeScreenIcon} alt="Minimize" className="w-8 h-8" />
             </button>
@@ -783,7 +837,7 @@ const MagicGame = () => {
           )}
         </div>
       )}
-      {/* כפתור Pause */}
+      {/* כפתור Pause למעלה בצד ימין */}
       <div className="absolute top-4 right-4 z-50">
         <button
           className="w-12 h-12 flex items-center justify-center rounded-full bg-blue-400 hover:bg-blue-500"
@@ -824,6 +878,7 @@ const MagicGame = () => {
           </h1>
         </div>
       )}
+      {/* HUD (Score + Lives) */}
       {gameStarted && !gameOver && (
         <>
           <div className={`absolute bottom-4 left-1/2 transform -translate-x-1/2 z-50 ${isMobile ? "px-4 py-2 rounded-xl border-2 border-blue-400 text-white font-extrabold text-2xl text-center" : "px-10 py-5 rounded-3xl bg-blue-900 bg-opacity-90 border-4 border-blue-400 text-white font-extrabold text-4xl shadow-2xl"}`}>
@@ -837,6 +892,7 @@ const MagicGame = () => {
           </div>
         </>
       )}
+      {/* Game Over */}
       {gameOver && (
         <div className="absolute inset-0 z-50 flex flex-col items-center justify-center bg-black bg-opacity-70">
           <div className="p-10 rounded-xl text-center" style={{ background: 'linear-gradient(135deg, #004080, #005f99)' }}>
@@ -850,6 +906,7 @@ const MagicGame = () => {
           </div>
         </div>
       )}
+      {/* מסך Pause */}
       {paused && (
         <div className="absolute inset-0 z-50 flex flex-col items-center justify-center bg-black bg-opacity-70">
           <div className="p-10 rounded-xl text-center bg-gradient-to-br from-blue-700 to-blue-500">
@@ -859,7 +916,10 @@ const MagicGame = () => {
                 className="w-48 h-12 flex flex-row items-center justify-between px-4 rounded bg-blue-400 hover:bg-blue-500 text-white text-xl"
                 onClick={() => {
                   setPaused(false);
-                  if (isMobile && !fullScreenMode) enterFullScreen();
+                  // אם אנחנו במובייל iOS ולא במסך מלא מדומה – נחזור למסך מלא
+                  if (isMobile && !fullScreenMode && !iosFullScreen) {
+                    enterFullScreen();
+                  }
                 }}
               >
                 <img src={resumeIcon} alt="Resume" className="w-6 h-6" />
@@ -870,7 +930,10 @@ const MagicGame = () => {
                 onClick={() => {
                   restartGame();
                   setPaused(false);
-                  if (isMobile && !fullScreenMode) enterFullScreen();
+                  // אם אנחנו במובייל iOS ולא במסך מלא – נפתח שוב למסך מלא
+                  if (isMobile && !fullScreenMode && !iosFullScreen) {
+                    enterFullScreen();
+                  }
                 }}
               >
                 <img src={restartIcon} alt="Restart" className="w-6 h-6" />
