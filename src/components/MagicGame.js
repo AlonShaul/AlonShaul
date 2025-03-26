@@ -793,7 +793,7 @@ const MagicGame = () => {
       />
       {/* כפתור מסך מלא/minimize – למובייל, ממוקם מעט גבוה יותר */}
       {isMobile && gameStarted && !gameOver && (
-        <div className="absolute bottom-12 right-4 z-50">
+        <div className="absolute bottom-20 right-4 z-50">
           {fullScreenMode || iosFullScreen ? (
             <button
               className="w-12 h-12 flex items-center justify-center rounded-full bg-blue-400 hover:bg-blue-500"
