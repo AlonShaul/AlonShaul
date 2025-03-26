@@ -197,7 +197,7 @@ const MagicGame = () => {
     };
   }, []);
 
-  // iosFullScreenStyle – משתמש ב-safe-area-inset כדי להתאים לגובה הסרגל התחתון
+  // iosFullScreenStyle – מתחשב ב-env(safe-area-inset-bottom) כדי למנוע החלקה על ידי הסרגל התחתון
   const iosFullScreenStyle = iosFullScreen
     ? {
         position: 'fixed',
@@ -210,6 +210,19 @@ const MagicGame = () => {
         overflow: 'hidden',
       }
     : {};
+
+  // השבתת גלילה במצב מסך מלא בלבד (מובייל)
+  useEffect(() => {
+    if (isMobile && fullScreenMode) {
+      document.body.style.overflow = "hidden";
+      const preventTouchMove = e => e.preventDefault();
+      window.addEventListener("touchmove", preventTouchMove, { passive: false });
+      return () => {
+        document.body.style.overflow = "";
+        window.removeEventListener("touchmove", preventTouchMove);
+      };
+    }
+  }, [isMobile, fullScreenMode]);
 
   // אתחול כוכבים
   useEffect(() => {
@@ -749,7 +762,7 @@ const MagicGame = () => {
     }, 1000);
   };
 
-  // הפונקציה restartGame לאתחל את המשחק מחדש – כאן היא משמשת רק במקרים בהם נבחר "Restart"
+  // restartGame – מאתחל את המשחק מחדש (בשימוש רק ב- Restart)
   const restartGame = () => {
     setScore(0);
     setLives(5);
@@ -766,14 +779,14 @@ const MagicGame = () => {
     startCountdown();
   };
 
-  // handleMinimize – בלחיצה על "minimize" פשוט יוצאים ממצב המסך המלא ומפעילים את הפאוז,
-  // אך לא מאפסים את מצב gameStarted כך שהמשחק ממשיך מאותה נקודה.
+  // handleMinimize – יוצא ממצב מסך מלא, מעביר למצב Pause, ומבצע גלילה אוטומטית לתחתית העמוד (רק במובייל)
   const handleMinimize = () => {
     exitFullScreen();
     setPaused(true);
-    // שמירת מצב המשחק כך שהמשתמש יחזור לאותה נקודה
-    // כמו כן, נוודא שלא מתבצעת גלילה – ניתן להוסיף כאן:
-    window.scrollTo(0, 0);
+    // מאפשר גלילה חזרה
+    document.body.style.overflow = "";
+    // גלילה אוטומטית לתחתית העמוד כך שהמשחק יהיה גלוי
+    window.scrollTo(0, document.body.scrollHeight);
   };
 
   return (
@@ -792,7 +805,7 @@ const MagicGame = () => {
         height={containerSize.height}
         className="w-full h-full"
       />
-      {/* כפתור מסך מלא/minimize – למובייל, ממוקם ב-bottom-12 כדי שלא יוסתר */}
+      {/* כפתור full screen/minimize – מוצג רק במובייל */}
       {isMobile && gameStarted && !gameOver && (
         <div className="absolute bottom-12 right-4 z-50">
           {fullScreenMode || iosFullScreen ? (
@@ -822,7 +835,7 @@ const MagicGame = () => {
         </button>
       </div>
       {/* מסך התחלה – יוצג רק אם המשחק לא התחיל בכלל */}
-      {!gameStarted && countdown === null && !gameOver && (
+      {(!gameStarted && countdown === null && !gameOver) && (
         <div className={`absolute inset-0 z-50 flex flex-col items-center justify-center ${isMobile ? "text-center" : ""}`}>
           <h1 className="text-6xl text-white font-extrabold mb-6">
             {t('magicGame_startPrompt_title', 'האם אתה מוכן לגלות קסם?')}
@@ -890,7 +903,7 @@ const MagicGame = () => {
               <button
                 className="w-48 h-12 flex flex-row items-center justify-between px-4 rounded bg-blue-400 hover:bg-blue-500 text-white text-xl"
                 onClick={() => {
-                  // Resume – פשוט מבטל פאוז ולא מאתחל מחדש
+                  // Resume: מסירים את מצב הפאוז ומפעילים מחדש את מסך מלא (למובייל)
                   setPaused(false);
                   if (isMobile && !fullScreenMode && !iosFullScreen) {
                     enterFullScreen();
