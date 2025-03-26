@@ -101,8 +101,8 @@ const MagicGame = () => {
     height: window.innerWidth <= 768 ? window.innerHeight * 0.9 : window.innerHeight * 0.9,
   });
 
-  // State לניהול מצב מסך מלא
-  const [isFullscreen, setIsFullscreen] = useState(document.fullscreenElement != null);
+  // ניהול מצב המסך המלא – רק במצב טלפון
+  const [isFullscreen, setIsFullscreen] = useState(false);
 
   const spellsRef = useRef([]);
   const enemiesRef = useRef([]);
@@ -126,15 +126,14 @@ const MagicGame = () => {
   const canvasRef = useRef(null);
   const containerRef = useRef(null);
 
-  // מאזינים לשינוי מצב מסך מלא
+  // מאזין לשינויי מצב מסך מלא – רק במכשירים ניידים
   useEffect(() => {
     const handleFullscreenChange = () => {
       const fsElement = document.fullscreenElement || document.webkitFullscreenElement || document.msFullscreenElement;
       setIsFullscreen(!!fsElement);
-      if (!fsElement) {
-        // יציאה ממסך מלא – עצירת המשחק והחזרה למסך ההתחלה
-        setGameStarted(false);
-        setCountdown(null);
+      if (!fsElement && isMobile) {
+        // יציאה ממסך מלא במצב טלפון – מציג חלון Pause
+        setPaused(true);
       }
     };
     document.addEventListener("fullscreenchange", handleFullscreenChange);
@@ -145,9 +144,9 @@ const MagicGame = () => {
       document.removeEventListener("webkitfullscreenchange", handleFullscreenChange);
       document.removeEventListener("msfullscreenchange", handleFullscreenChange);
     };
-  }, []);
+  }, [isMobile]);
 
-  // אתחול כוכבים
+  // אתחול כוכבים (לא שיניתי את הלוגיקה של כוכבי הלכת)
   useEffect(() => {
     const stars = [];
     for (let i = 0; i < 60; i++) {
@@ -161,7 +160,7 @@ const MagicGame = () => {
     starsRef.current = stars;
   }, [containerSize]);
 
-  // אתחול כוכבי לכת – 3 כוכבים
+  // אתחול כוכבי לכת – 3 כוכבים, עם תחלופה
   useEffect(() => {
     activePlanetsRef.current = [
       getRandomPlanet(containerSize.width, containerSize.height),
@@ -256,7 +255,7 @@ const MagicGame = () => {
     return () => window.removeEventListener('mousemove', handleMouseMove);
   }, [containerSize, paused]);
 
-  // במצב טלפון – עדכון מיקום החללית לפי לחיצה, וירי קסם (סאונד fire מופעל רק במחשב)
+  // קליק למשחק – עדכון מיקום החללית וירי קסם (במחשב, סאונד מופעל)
   useEffect(() => {
     const handleClick = (e) => {
       if (!gameStarted || paused || gameOver) return;
@@ -281,7 +280,7 @@ const MagicGame = () => {
     return () => window.removeEventListener('click', handleClick);
   }, [gameStarted, paused, gameOver, isMobile, containerSize]);
 
-  // Auto Pause: אם אין תנועת עכבר במשך 60 שניות
+  // Auto Pause – אם אין תנועת עכבר במשך 60 שניות
   useEffect(() => {
     const interval = setInterval(() => {
       if (gameStarted && !paused && Date.now() - lastMouseMoveRef.current >= 60000) {
@@ -291,7 +290,7 @@ const MagicGame = () => {
     return () => clearInterval(interval);
   }, [gameStarted, paused]);
 
-  // עצירת המשחק כאשר המשתמש עובר ללשונית אחרת (פועל רק אם המשחק התחיל)
+  // עצירת המשחק כאשר המשתמש עובר ללשונית אחרת
   useEffect(() => {
     if (!gameStarted) return;
     const handleVisibilityChange = () => {
@@ -607,7 +606,6 @@ const MagicGame = () => {
       ctx.save();
       ctx.translate(enemy.x, enemy.y);
       ctx.rotate(Math.PI);
-      // ציור אש מאחור לחללית היריבה
       const flameGradientEnemy = ctx.createLinearGradient(0, 30, 0, 50);
       flameGradientEnemy.addColorStop(0, "rgba(255,200,0,1)");
       flameGradientEnemy.addColorStop(1, "rgba(255,0,0,0)");
@@ -646,7 +644,6 @@ const MagicGame = () => {
     if (userSpaceshipImgRef.current) {
       ctx.save();
       ctx.translate(playerPosRef.current.x, playerPosRef.current.y);
-      // ציור אש מאחור לחללית המשתמש
       const flameGradientUser = ctx.createLinearGradient(0, 20, 0, 60);
       flameGradientUser.addColorStop(0, "rgba(255,200,0,1)");
       flameGradientUser.addColorStop(1, "rgba(255,0,0,0)");
@@ -708,11 +705,69 @@ const MagicGame = () => {
     startCountdown();
   };
 
-  useEffect(() => {
-    if (gameOver) {
-      // אין צורך בפעולות נוספות בעת סיום המשחק.
+  // handlers עבור לחצני Resume ו-Restart במצב Pause – במצב טלפון, אם לא במסך מלא, מבקשים מסך מלא
+  const handleResume = () => {
+    if (isMobile && !(document.fullscreenElement || document.webkitFullscreenElement || document.msFullscreenElement)) {
+      if (containerRef.current) {
+        if (containerRef.current.requestFullscreen) {
+          containerRef.current.requestFullscreen().catch(err => console.error(err));
+        } else if (containerRef.current.webkitRequestFullscreen) {
+          containerRef.current.webkitRequestFullscreen();
+        } else if (containerRef.current.msRequestFullscreen) {
+          containerRef.current.msRequestFullscreen();
+        }
+      }
     }
-  }, [gameOver]);
+    setPaused(false);
+  };
+
+  const handleRestart = () => {
+    if (isMobile && !(document.fullscreenElement || document.webkitFullscreenElement || document.msFullscreenElement)) {
+      if (containerRef.current) {
+        if (containerRef.current.requestFullscreen) {
+          containerRef.current.requestFullscreen().catch(err => console.error(err));
+        } else if (containerRef.current.webkitRequestFullscreen) {
+          containerRef.current.webkitRequestFullscreen();
+        } else if (containerRef.current.msRequestFullscreen) {
+          containerRef.current.msRequestFullscreen();
+        }
+      }
+    }
+    restartGame();
+    setPaused(false);
+  };
+
+  // Toggle fullscreen – בלחיצה על כפתור המסך המלא (מופיע רק במצב טלפון)
+  const toggleFullscreen = () => {
+    if (document.fullscreenElement || document.webkitFullscreenElement || document.msFullscreenElement) {
+      // אם במסך מלא – יציאה ממנו והצגת חלון Pause
+      if (document.exitFullscreen) {
+        document.exitFullscreen().catch(err => console.error(err));
+      } else if (document.webkitExitFullscreen) {
+        document.webkitExitFullscreen();
+      } else if (document.msExitFullscreen) {
+        document.msExitFullscreen();
+      }
+      setPaused(true);
+    } else {
+      // אם לא במסך מלא – בקשה לכניסה למסך מלא, ואם המשחק לא התחיל – מתחילים
+      if (containerRef.current) {
+        if (containerRef.current.requestFullscreen) {
+          containerRef.current.requestFullscreen().catch(err => console.error(err));
+        } else if (containerRef.current.webkitRequestFullscreen) {
+          containerRef.current.webkitRequestFullscreen();
+        } else if (containerRef.current.msRequestFullscreen) {
+          containerRef.current.msRequestFullscreen();
+        }
+      }
+      if (paused) {
+        setPaused(false);
+      }
+      if (!gameStarted) {
+        startGame();
+      }
+    }
+  };
 
   return (
     <div
@@ -741,11 +796,9 @@ const MagicGame = () => {
           <button
             className="px-6 py-3 text-2xl font-bold rounded bg-blue-400 text-white hover:bg-blue-500"
             onClick={() => {
-              if (containerRef.current && !document.fullscreenElement) {
+              if (isMobile && containerRef.current && !(document.fullscreenElement || document.webkitFullscreenElement || document.msFullscreenElement)) {
                 if (containerRef.current.requestFullscreen) {
-                  containerRef.current.requestFullscreen().catch((err) => {
-                    console.error("Error attempting to enable full-screen mode:", err);
-                  });
+                  containerRef.current.requestFullscreen().catch(err => console.error(err));
                 } else if (containerRef.current.webkitRequestFullscreen) {
                   containerRef.current.webkitRequestFullscreen();
                 } else if (containerRef.current.msRequestFullscreen) {
@@ -815,14 +868,14 @@ const MagicGame = () => {
             <div className="flex flex-col gap-4 items-center">
               <button
                 className="w-48 h-12 flex flex-row items-center justify-between px-4 rounded bg-blue-400 hover:bg-blue-500 text-white text-xl"
-                onClick={() => setPaused(false)}
+                onClick={handleResume}
               >
                 <img src={resumeIcon} alt="Resume" className="w-6 h-6" />
                 <span>Resume</span>
               </button>
               <button
                 className="w-48 h-12 flex flex-row items-center justify-between px-4 rounded bg-blue-400 hover:bg-blue-500 text-white text-xl"
-                onClick={() => { restartGame(); setPaused(false); }}
+                onClick={handleRestart}
               >
                 <img src={restartIcon} alt="Restart" className="w-6 h-6" />
                 <span>Restart</span>
@@ -831,36 +884,15 @@ const MagicGame = () => {
           </div>
         </div>
       )}
-      {/* לחצן מסך מלא/מינימייז – ממוקם בפינה הימנית התחתונה */}
-      <button
-        className="absolute bottom-4 right-4 z-50 p-2 bg-blue-400 rounded-full"
-        onClick={() => {
-          if (document.fullscreenElement) {
-            if (document.exitFullscreen) {
-              document.exitFullscreen().catch(err => { console.error(err); });
-            } else if (document.webkitExitFullscreen) {
-              document.webkitExitFullscreen();
-            } else if (document.msExitFullscreen) {
-              document.msExitFullscreen();
-            }
-          } else {
-            if (containerRef.current) {
-              if (containerRef.current.requestFullscreen) {
-                containerRef.current.requestFullscreen().catch(err => { console.error(err); });
-              } else if (containerRef.current.webkitRequestFullscreen) {
-                containerRef.current.webkitRequestFullscreen();
-              } else if (containerRef.current.msRequestFullscreen) {
-                containerRef.current.msRequestFullscreen();
-              }
-            }
-            if (!gameStarted) {
-              startGame();
-            }
-          }
-        }}
-      >
-        <img src={isFullscreen ? minimizeScreenIcon : fullScreenIcon} alt="Fullscreen Toggle" className="w-8 h-8" />
-      </button>
+      {/* לחצן מסך מלא/מינימייז – מופיע רק במצב טלפון, ללא עיגול סביבו */}
+      {isMobile && (
+        <button
+          className="absolute bottom-4 right-4 z-50 p-2"
+          onClick={toggleFullscreen}
+        >
+          <img src={isFullscreen ? minimizeScreenIcon : fullScreenIcon} alt="Fullscreen Toggle" className="w-8 h-8" />
+        </button>
+      )}
     </div>
   );
 };
