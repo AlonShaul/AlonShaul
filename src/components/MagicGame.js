@@ -101,7 +101,7 @@ const MagicGame = () => {
     height: window.innerWidth <= 768 ? window.innerHeight * 0.9 : window.innerHeight * 0.9,
   });
   
-  // עבור מכשירים ניידים – נשתמש במצב סימולציה למסך מלא (במכשירים שאין תמיכה אמיתית)
+  // עבור מכשירים ניידים – במידה ואין תמיכה אמיתית ב-Fullscreen, נעבור למצב סימולציה למסך מלא
   const [simulatedFullscreen, setSimulatedFullscreen] = useState(false);
   const isiOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
 
@@ -237,6 +237,7 @@ const MagicGame = () => {
     enemySpaceshipImgRef.current = img;
   }, []);
 
+  // במכשירי מחשב – מאזין ל-mousemove
   useEffect(() => {
     if (isMobile) return;
     const handleMouseMove = (e) => {
@@ -252,12 +253,14 @@ const MagicGame = () => {
     return () => window.removeEventListener('mousemove', handleMouseMove);
   }, [containerSize, paused, isMobile]);
 
+  // עבור מכשירי מגע – מצרף את אירועי המגע ישירות לקונטיינר
   useEffect(() => {
     if (!isMobile) return;
+    const container = containerRef.current;
+    if (!container) return;
     const handleTouchMove = (e) => {
       lastMouseMoveRef.current = Date.now();
-      if (!containerRef.current) return;
-      const rect = containerRef.current.getBoundingClientRect();
+      const rect = container.getBoundingClientRect();
       const touch = e.touches[0];
       const x = Math.max(40, Math.min(touch.clientX - rect.left, containerSize.width - 40));
       const y = Math.max(40, Math.min(touch.clientY - rect.top, containerSize.height - 40));
@@ -275,16 +278,17 @@ const MagicGame = () => {
       });
       e.preventDefault();
     };
-    window.addEventListener('touchstart', handleTouchStart, { passive: false });
-    window.addEventListener('touchmove', handleTouchMove, { passive: false });
-    window.addEventListener('touchend', handleTouchEnd, { passive: false });
+    container.addEventListener('touchstart', handleTouchStart, { passive: false });
+    container.addEventListener('touchmove', handleTouchMove, { passive: false });
+    container.addEventListener('touchend', handleTouchEnd, { passive: false });
     return () => {
-      window.removeEventListener('touchstart', handleTouchStart);
-      window.removeEventListener('touchmove', handleTouchMove);
-      window.removeEventListener('touchend', handleTouchEnd);
+      container.removeEventListener('touchstart', handleTouchStart);
+      container.removeEventListener('touchmove', handleTouchMove);
+      container.removeEventListener('touchend', handleTouchEnd);
     };
   }, [containerSize, isMobile]);
 
+  // עבור מחשבים – מאזין ל-click
   useEffect(() => {
     if (isMobile) return;
     const handleClick = (e) => {
