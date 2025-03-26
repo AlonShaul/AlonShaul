@@ -714,7 +714,14 @@ const MagicGame = () => {
           </p>
           <button
             className="px-6 py-3 text-2xl font-bold rounded bg-blue-400 text-white hover:bg-blue-500"
-            onClick={startGame}
+            onClick={() => {
+              if (isMobile && containerRef.current && !document.fullscreenElement) {
+                containerRef.current.requestFullscreen().catch((err) => {
+                  console.error("Error attempting to enable full-screen mode:", err);
+                });
+              }
+              startGame();
+            }}
           >
             {t('magicGame_startPrompt_button', 'התחל')}
           </button>
