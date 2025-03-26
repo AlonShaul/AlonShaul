@@ -82,9 +82,9 @@ const Projects = () => {
               />
             </motion.div>
 
-            {/* Grid עם כרטיסי פרויקטים – אנימציית stagger */}
+            {/* Flex container ללא overflow-x כדי למנוע סרגלי גלילה */}
             <motion.div
-              className="grid grid-cols-1 md:grid-cols-2 gap-8"
+              className="flex flex-wrap justify-center gap-8"
               variants={containerVariants}
               initial="hidden"
               animate="visible"
@@ -97,7 +97,7 @@ const Projects = () => {
                   rel="noopener noreferrer"
                   variants={cardVariants}
                   whileHover={{ scale: 1.05, rotate: 1 }}
-                  // שינוי רוחב המלבן: 100% במובייל וב-md קבוע של 700px
+                  // שמירה על רוחב מלא במובייל ורוחב קבוע של 700px בדסקטופ
                   className="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl overflow-hidden transform transition duration-300 hover:shadow-3xl w-full md:w-[700px]"
                 >
                   {/* מיכל תמונה עם overlay והנפשת תמונה */}
