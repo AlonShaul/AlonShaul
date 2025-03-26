@@ -100,9 +100,12 @@ const MagicGame = () => {
     width: window.innerWidth,
     height: window.innerWidth <= 768 ? window.innerHeight * 0.9 : window.innerHeight * 0.9,
   });
-
-  // ניהול מצב המסך המלא – רק במצב טלפון
-  const [isFullscreen, setIsFullscreen] = useState(false);
+  
+  // state למצב סימולציה למסך מלא – רק במכשירי iOS (לא תומכים ב־Fullscreen API)
+  const [simulatedFullscreen, setSimulatedFullscreen] = useState(false);
+  
+  // זיהוי iOS
+  const isiOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
 
   const spellsRef = useRef([]);
   const enemiesRef = useRef([]);
@@ -126,13 +129,12 @@ const MagicGame = () => {
   const canvasRef = useRef(null);
   const containerRef = useRef(null);
 
-  // מאזין לשינויי מצב מסך מלא – רק במכשירים ניידים
+  // מאזין לאירועי fullscreen – רק במכשירים התומכים בו (לא ב-iOS)
   useEffect(() => {
     const handleFullscreenChange = () => {
       const fsElement = document.fullscreenElement || document.webkitFullscreenElement || document.msFullscreenElement;
-      setIsFullscreen(!!fsElement);
-      if (!fsElement && isMobile) {
-        // יציאה ממסך מלא במצב טלפון – מציג חלון Pause
+      if (!fsElement && !isiOS) {
+        // יציאה ממסך מלא במכשירים שתומכים בו
         setPaused(true);
       }
     };
@@ -144,9 +146,9 @@ const MagicGame = () => {
       document.removeEventListener("webkitfullscreenchange", handleFullscreenChange);
       document.removeEventListener("msfullscreenchange", handleFullscreenChange);
     };
-  }, [isMobile]);
+  }, [isiOS]);
 
-  // אתחול כוכבים (לא שיניתי את הלוגיקה של כוכבי הלכת)
+  // אתחול כוכבים ושמירה על לוגיקת כוכבי הלכת (לא שונה)
   useEffect(() => {
     const stars = [];
     for (let i = 0; i < 60; i++) {
@@ -160,7 +162,6 @@ const MagicGame = () => {
     starsRef.current = stars;
   }, [containerSize]);
 
-  // אתחול כוכבי לכת – 3 כוכבים, עם תחלופה
   useEffect(() => {
     activePlanetsRef.current = [
       getRandomPlanet(containerSize.width, containerSize.height),
@@ -224,7 +225,7 @@ const MagicGame = () => {
     return () => window.removeEventListener('resize', handleResize);
   }, []);
 
-  // אתחול תמונת החללית של המשתמש
+  // אתחול תמונות החלליות
   const userSpaceshipImgRef = useRef(null);
   useEffect(() => {
     const img = new Image();
@@ -232,7 +233,6 @@ const MagicGame = () => {
     userSpaceshipImgRef.current = img;
   }, []);
 
-  // אתחול תמונת החללית של היריב
   const enemySpaceshipImgRef = useRef(null);
   useEffect(() => {
     const img = new Image();
@@ -255,7 +255,6 @@ const MagicGame = () => {
     return () => window.removeEventListener('mousemove', handleMouseMove);
   }, [containerSize, paused]);
 
-  // קליק למשחק – עדכון מיקום החללית וירי קסם (במחשב, סאונד מופעל)
   useEffect(() => {
     const handleClick = (e) => {
       if (!gameStarted || paused || gameOver) return;
@@ -280,7 +279,6 @@ const MagicGame = () => {
     return () => window.removeEventListener('click', handleClick);
   }, [gameStarted, paused, gameOver, isMobile, containerSize]);
 
-  // Auto Pause – אם אין תנועת עכבר במשך 60 שניות
   useEffect(() => {
     const interval = setInterval(() => {
       if (gameStarted && !paused && Date.now() - lastMouseMoveRef.current >= 60000) {
@@ -290,7 +288,6 @@ const MagicGame = () => {
     return () => clearInterval(interval);
   }, [gameStarted, paused]);
 
-  // עצירת המשחק כאשר המשתמש עובר ללשונית אחרת
   useEffect(() => {
     if (!gameStarted) return;
     const handleVisibilityChange = () => {
@@ -705,76 +702,83 @@ const MagicGame = () => {
     startCountdown();
   };
 
-  // handlers עבור לחצני Resume ו-Restart במצב Pause – במצב טלפון, אם לא במסך מלא, מבקשים מסך מלא
+  // לחצני Resume ו-Restart – במצב טלפון, אם לא במסך מלא, מנסים להפעיל את מצב המסך מלא (ב-iOS, סימולציה)
   const handleResume = () => {
-    if (isMobile && !(document.fullscreenElement || document.webkitFullscreenElement || document.msFullscreenElement)) {
-      if (containerRef.current) {
-        if (containerRef.current.requestFullscreen) {
+    if (isMobile) {
+      if (!document.fullscreenElement && !isiOS) {
+        if (containerRef.current && containerRef.current.requestFullscreen) {
           containerRef.current.requestFullscreen().catch(err => console.error(err));
-        } else if (containerRef.current.webkitRequestFullscreen) {
-          containerRef.current.webkitRequestFullscreen();
-        } else if (containerRef.current.msRequestFullscreen) {
-          containerRef.current.msRequestFullscreen();
         }
+      } else if (isiOS && !simulatedFullscreen) {
+        setSimulatedFullscreen(true);
       }
     }
     setPaused(false);
   };
 
   const handleRestart = () => {
-    if (isMobile && !(document.fullscreenElement || document.webkitFullscreenElement || document.msFullscreenElement)) {
-      if (containerRef.current) {
-        if (containerRef.current.requestFullscreen) {
+    if (isMobile) {
+      if (!document.fullscreenElement && !isiOS) {
+        if (containerRef.current && containerRef.current.requestFullscreen) {
           containerRef.current.requestFullscreen().catch(err => console.error(err));
-        } else if (containerRef.current.webkitRequestFullscreen) {
-          containerRef.current.webkitRequestFullscreen();
-        } else if (containerRef.current.msRequestFullscreen) {
-          containerRef.current.msRequestFullscreen();
         }
+      } else if (isiOS && !simulatedFullscreen) {
+        setSimulatedFullscreen(true);
       }
     }
     restartGame();
     setPaused(false);
   };
 
-  // Toggle fullscreen – בלחיצה על כפתור המסך המלא (מופיע רק במצב טלפון)
+  // Toggle fullscreen – עבור מכשירי נייד בלבד
   const toggleFullscreen = () => {
-    if (document.fullscreenElement || document.webkitFullscreenElement || document.msFullscreenElement) {
-      // אם במסך מלא – יציאה ממנו והצגת חלון Pause
-      if (document.exitFullscreen) {
-        document.exitFullscreen().catch(err => console.error(err));
-      } else if (document.webkitExitFullscreen) {
-        document.webkitExitFullscreen();
-      } else if (document.msExitFullscreen) {
-        document.msExitFullscreen();
-      }
-      setPaused(true);
-    } else {
-      // אם לא במסך מלא – בקשה לכניסה למסך מלא, ואם המשחק לא התחיל – מתחילים
-      if (containerRef.current) {
-        if (containerRef.current.requestFullscreen) {
-          containerRef.current.requestFullscreen().catch(err => console.error(err));
-        } else if (containerRef.current.webkitRequestFullscreen) {
-          containerRef.current.webkitRequestFullscreen();
-        } else if (containerRef.current.msRequestFullscreen) {
-          containerRef.current.msRequestFullscreen();
+    if (!isMobile) return;
+    // במכשירים התומכים ב-Fullscreen API (למשל, Android)
+    if (!isiOS) {
+      if (document.fullscreenElement || document.webkitFullscreenElement || document.msFullscreenElement) {
+        if (document.exitFullscreen) {
+          document.exitFullscreen().catch(err => console.error(err));
+        } else if (document.webkitExitFullscreen) {
+          document.webkitExitFullscreen();
+        } else if (document.msExitFullscreen) {
+          document.msExitFullscreen();
         }
+        setPaused(true);
+      } else {
+        if (containerRef.current) {
+          if (containerRef.current.requestFullscreen) {
+            containerRef.current.requestFullscreen().catch(err => console.error(err));
+          } else if (containerRef.current.webkitRequestFullscreen) {
+            containerRef.current.webkitRequestFullscreen();
+          } else if (containerRef.current.msRequestFullscreen) {
+            containerRef.current.msRequestFullscreen();
+          }
+        }
+        if (paused) setPaused(false);
+        if (!gameStarted) startGame();
       }
-      if (paused) {
-        setPaused(false);
-      }
-      if (!gameStarted) {
-        startGame();
+    } else {
+      // עבור iOS – נעבור למצב סימולציה למסך מלא
+      setSimulatedFullscreen(!simulatedFullscreen);
+      if (!simulatedFullscreen) {
+        if (paused) setPaused(false);
+        if (!gameStarted) startGame();
+      } else {
+        setPaused(true);
       }
     }
   };
+
+  // אם במצב סימולציה למסך מלא, נעדכן את סגנון הקונטיינר
+  const containerStyle = simulatedFullscreen
+    ? { position: 'fixed', top: 0, left: 0, width: '100vw', height: '100vh', zIndex: 9999 }
+    : {};
 
   return (
     <div
       ref={containerRef}
       className={`relative w-full ${isMobile ? "h-full" : "h-[90vh]"} overflow-hidden select-none`}
-      style={{
-        background: 'radial-gradient(ellipse at center, #001f3f 0%, #004080 50%, #005f99 100%)',
+      style={{ background: 'radial-gradient(ellipse at center, #001f3f 0%, #004080 50%, #005f99 100%)', ...containerStyle,
         cursor: (((gameStarted || countdown !== null) && !paused && !gameOver) ? 'none' : 'default')
       }}
     >
@@ -796,13 +800,13 @@ const MagicGame = () => {
           <button
             className="px-6 py-3 text-2xl font-bold rounded bg-blue-400 text-white hover:bg-blue-500"
             onClick={() => {
-              if (isMobile && containerRef.current && !(document.fullscreenElement || document.webkitFullscreenElement || document.msFullscreenElement)) {
-                if (containerRef.current.requestFullscreen) {
-                  containerRef.current.requestFullscreen().catch(err => console.error(err));
-                } else if (containerRef.current.webkitRequestFullscreen) {
-                  containerRef.current.webkitRequestFullscreen();
-                } else if (containerRef.current.msRequestFullscreen) {
-                  containerRef.current.msRequestFullscreen();
+              if (isMobile) {
+                if (!document.fullscreenElement && !isiOS) {
+                  if (containerRef.current && containerRef.current.requestFullscreen) {
+                    containerRef.current.requestFullscreen().catch(err => console.error(err));
+                  }
+                } else if (isiOS && !simulatedFullscreen) {
+                  setSimulatedFullscreen(true);
                 }
               }
               startGame();
@@ -884,13 +888,15 @@ const MagicGame = () => {
           </div>
         </div>
       )}
-      {/* לחצן מסך מלא/מינימייז – מופיע רק במצב טלפון, ללא עיגול סביבו */}
+      {/* לחצן Fullscreen/Minimize – מופיע רק במצב נייד, ללא עיגול */}
       {isMobile && (
         <button
           className="absolute bottom-4 right-4 z-50 p-2"
           onClick={toggleFullscreen}
         >
-          <img src={isFullscreen ? minimizeScreenIcon : fullScreenIcon} alt="Fullscreen Toggle" className="w-8 h-8" />
+          <img src={isiOS ? (simulatedFullscreen ? minimizeScreenIcon : fullScreenIcon) 
+                      : (document.fullscreenElement ? minimizeScreenIcon : fullScreenIcon)}
+               alt="Fullscreen Toggle" className="w-8 h-8" />
         </button>
       )}
     </div>
