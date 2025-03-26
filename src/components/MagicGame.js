@@ -49,46 +49,53 @@ const planetData = [
   { name: 'Neptune', src: require('../planets/neptune.png') },
 ];
 
-const getRandomPlanet = (containerWidth, containerHeight) => {
-  const randomPlanet = planetData[Math.floor(Math.random() * planetData.length)];
+// פונקציה לבחירת כוכב לכת ייחודי מתוך planetData
+const getUniqueRandomPlanet = (currentPlanets, containerWidth, containerHeight) => {
+  const currentNames = currentPlanets.map(p => p.name);
+  const available = planetData.filter(p => !currentNames.includes(p.name));
+  let chosen;
+  if (available.length > 0) {
+    chosen = available[Math.floor(Math.random() * available.length)];
+  } else {
+    chosen = planetData[Math.floor(Math.random() * planetData.length)];
+  }
   const size = 40;
   const img = new Image();
-  img.src = randomPlanet.src;
+  img.src = chosen.src;
   const depth = 0.5 + Math.random() * 0.5;
   return {
-    name: randomPlanet.name,
-    img: img,
+    name: chosen.name,
+    img,
     x: Math.random() * (containerWidth - size),
     y: -Math.random() * (containerHeight / 2),
-    size: size,
+    size,
     speed: (12 + Math.random() * 70) * depth,
-    depth: depth,
+    depth,
   };
 };
 
-const getRandomMeteor = (containerWidth, containerHeight) => {
-  const size = 40;
-  return {
-    id: Date.now() + Math.random(),
-    x: Math.random() * (containerWidth - size),
-    y: -Math.random() * (containerHeight / 2),
-    size: size,
-    speed: 80 + Math.random() * 40,
-    dx: -20 + Math.random() * 40,
-    rotation: 0,
-    rotationSpeed: 0,
-  };
-};
-
-const getRandomHeart = (containerWidth, containerHeight) => {
-  const size = 20;
-  return {
-    id: Date.now() + Math.random(),
-    x: Math.random() * (containerWidth - size),
-    y: -Math.random() * (containerHeight / 2),
-    size: size,
-    speed: 60 + Math.random() * 20,
-  };
+// בשלב ההתחלתי, נבחר 3 כוכבי לכת ייחודיים
+const initializePlanets = (containerWidth, containerHeight) => {
+  const available = [...planetData];
+  const planets = [];
+  for (let i = 0; i < 3; i++) {
+    const index = Math.floor(Math.random() * available.length);
+    const chosen = available.splice(index, 1)[0];
+    const size = 40;
+    const img = new Image();
+    img.src = chosen.src;
+    const depth = 0.5 + Math.random() * 0.5;
+    planets.push({
+      name: chosen.name,
+      img,
+      x: Math.random() * (containerWidth - size),
+      y: -Math.random() * (containerHeight / 2),
+      size,
+      speed: (12 + Math.random() * 70) * depth,
+      depth,
+    });
+  }
+  return planets;
 };
 
 const MagicGame = () => {
@@ -116,7 +123,7 @@ const MagicGame = () => {
   const enemyBulletsRef = useRef([]);
   const explosionsRef = useRef([]);
   const starsRef = useRef([]);
-  const activePlanetsRef = useRef([]);
+  const activePlanetsRef = useRef(initializePlanets(containerSize.width, containerSize.height));
   const meteorsRef = useRef([]);
   const heartsRef = useRef([]);
   
@@ -197,7 +204,7 @@ const MagicGame = () => {
     };
   }, []);
 
-  // iosFullScreenStyle – מתחשב ב-env(safe-area-inset-bottom) כך שהתוכן לא ייחתך
+  // iosFullScreenStyle – מתחשב ב-env(safe-area-inset-bottom)
   const iosFullScreenStyle = iosFullScreen
     ? {
         position: 'fixed',
@@ -238,13 +245,14 @@ const MagicGame = () => {
     starsRef.current = stars;
   }, [containerSize]);
 
-  // אתחול כוכבי לכת
+  // עדכון כוכבי לכת – כאשר כוכב נעלם, מחליפים אותו בחדש ייחודי
   useEffect(() => {
-    activePlanetsRef.current = [
-      getRandomPlanet(containerSize.width, containerSize.height),
-      getRandomPlanet(containerSize.width, containerSize.height),
-      getRandomPlanet(containerSize.width, containerSize.height)
-    ];
+    activePlanetsRef.current = activePlanetsRef.current.map(planet => {
+      if (planet.y > containerSize.height + 100) {
+        return getUniqueRandomPlanet(activePlanetsRef.current, containerSize.width, containerSize.height);
+      }
+      return planet;
+    });
   }, [containerSize]);
 
   useEffect(() => {
@@ -319,7 +327,7 @@ const MagicGame = () => {
   }, []);
 
   const lastMouseMoveRef = useRef(Date.now());
-  // שימוש באירוע pointer (מגע/לחיצה) למיקום מדויק יותר
+  // טיפול באירועי לחיצה/מגע מדויקים
   useEffect(() => {
     const handlePointer = (e) => {
       if (!gameStarted || paused || gameOver) return;
@@ -359,7 +367,7 @@ const MagicGame = () => {
     };
   }, [gameStarted, paused, gameOver, isMobile, containerSize]);
 
-  // Auto Pause
+  // Auto Pause אם אין תנועת מגע במשך 60 שניות
   useEffect(() => {
     const interval = setInterval(() => {
       if (gameStarted && !paused && Date.now() - lastMouseMoveRef.current >= 60000) {
@@ -412,11 +420,11 @@ const MagicGame = () => {
       }
     });
 
-    // עדכון כוכבי לכת
+    // עדכון כוכבי לכת – מחליפים כוכב שנעלם בכוכב חדש ייחודי
     activePlanetsRef.current = activePlanetsRef.current.map(planet => {
       planet.y += planet.speed * deltaTime;
       if (planet.y > containerSize.height + 100) {
-        return getRandomPlanet(containerSize.width, containerSize.height);
+        return getUniqueRandomPlanet(activePlanetsRef.current, containerSize.width, containerSize.height);
       }
       return planet;
     });
@@ -763,7 +771,12 @@ const MagicGame = () => {
     }, 1000);
   };
 
-  // restartGame – מאתחל את המשחק מחדש (בשימוש רק כאשר נבחר "Restart")
+  // startGame – בשימוש במצב שהמשחק מתחיל, כאן נשמר מקרה ההתחלה (הספירה מופעלת)
+  const startGame = () => {
+    startCountdown();
+  };
+
+  // restartGame – מאתחל את המשחק מחדש (בשימוש רק בעת לחיצה על Restart)
   const restartGame = () => {
     setScore(0);
     setLives(5);
@@ -780,12 +793,11 @@ const MagicGame = () => {
     startCountdown();
   };
 
-  // handleMinimize – יוצא ממצב מסך מלא, עוצר את המשחק (paused)
-  // ועושה גלילה אוטומטית לתחתית העמוד כך שהמשחק יהיה גלוי
+  // handleMinimize – יוצא ממצב מסך מלא, עוצר (pauses) את המשחק, ומבצע גלילה אוטומטית לתחתית העמוד (למובייל)
   const handleMinimize = () => {
     exitFullScreen();
     setPaused(true);
-    // גלילה אוטומטית לתחתית העמוד (במובייל בלבד)
+    // עבור מובייל – גלילה לתחתית כך שהמשחק יהיה גלוי בתוך המסך
     if (isMobile) {
       window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
     }
@@ -905,6 +917,7 @@ const MagicGame = () => {
               <button
                 className="w-48 h-12 flex flex-row items-center justify-between px-4 rounded bg-blue-400 hover:bg-blue-500 text-white text-xl"
                 onClick={() => {
+                  // Resume – מסירים את מצב הפאוז ומחזירים את מסך מלא במידה הנדרשת
                   setPaused(false);
                   if (isMobile && !fullScreenMode && !iosFullScreen) {
                     enterFullScreen();
@@ -916,13 +929,7 @@ const MagicGame = () => {
               </button>
               <button
                 className="w-48 h-12 flex flex-row items-center justify-between px-4 rounded bg-blue-400 hover:bg-blue-500 text-white text-xl"
-                onClick={() => {
-                  restartGame();
-                  setPaused(false);
-                  if (isMobile && !fullScreenMode && !iosFullScreen) {
-                    enterFullScreen();
-                  }
-                }}
+                onClick={() => { restartGame(); setPaused(false); }}
               >
                 <img src={restartIcon} alt="Restart" className="w-6 h-6" />
                 <span>Restart</span>
