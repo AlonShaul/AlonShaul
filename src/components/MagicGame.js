@@ -49,7 +49,48 @@ const planetData = [
   { name: 'Neptune', src: require('../planets/neptune.png') },
 ];
 
-// פונקציה לבחירת כוכב לכת ייחודי מתוך planetData
+const getRandomPlanet = (containerWidth, containerHeight) => {
+  const randomPlanet = planetData[Math.floor(Math.random() * planetData.length)];
+  const size = 40;
+  const img = new Image();
+  img.src = randomPlanet.src;
+  const depth = 0.5 + Math.random() * 0.5;
+  return {
+    name: randomPlanet.name,
+    img: img,
+    x: Math.random() * (containerWidth - size),
+    y: -Math.random() * (containerHeight / 2),
+    size: size,
+    speed: (12 + Math.random() * 70) * depth,
+    depth: depth,
+  };
+};
+
+const getRandomMeteor = (containerWidth, containerHeight) => {
+  const size = 40;
+  return {
+    id: Date.now() + Math.random(),
+    x: Math.random() * (containerWidth - size),
+    y: -Math.random() * (containerHeight / 2),
+    size: size,
+    speed: 80 + Math.random() * 40,
+    dx: -20 + Math.random() * 40,
+    rotation: 0,
+    rotationSpeed: 0,
+  };
+};
+
+const getRandomHeart = (containerWidth, containerHeight) => {
+  const size = 20;
+  return {
+    id: Date.now() + Math.random(),
+    x: Math.random() * (containerWidth - size),
+    y: -Math.random() * (containerHeight / 2),
+    size: size,
+    speed: 60 + Math.random() * 20,
+  };
+};
+
 const getUniqueRandomPlanet = (currentPlanets, containerWidth, containerHeight) => {
   const currentNames = currentPlanets.map(p => p.name);
   const available = planetData.filter(p => !currentNames.includes(p.name));
@@ -65,16 +106,15 @@ const getUniqueRandomPlanet = (currentPlanets, containerWidth, containerHeight) 
   const depth = 0.5 + Math.random() * 0.5;
   return {
     name: chosen.name,
-    img,
+    img: img,
     x: Math.random() * (containerWidth - size),
     y: -Math.random() * (containerHeight / 2),
-    size,
+    size: size,
     speed: (12 + Math.random() * 70) * depth,
-    depth,
+    depth: depth,
   };
 };
 
-// בשלב ההתחלתי, נבחר 3 כוכבי לכת ייחודיים
 const initializePlanets = (containerWidth, containerHeight) => {
   const available = [...planetData];
   const planets = [];
@@ -87,12 +127,12 @@ const initializePlanets = (containerWidth, containerHeight) => {
     const depth = 0.5 + Math.random() * 0.5;
     planets.push({
       name: chosen.name,
-      img,
+      img: img,
       x: Math.random() * (containerWidth - size),
       y: -Math.random() * (containerHeight / 2),
-      size,
+      size: size,
       speed: (12 + Math.random() * 70) * depth,
-      depth,
+      depth: depth,
     });
   }
   return planets;
@@ -114,7 +154,7 @@ const MagicGame = () => {
     height: window.innerWidth <= 768 ? window.innerHeight * 0.9 : window.innerHeight * 0.9,
   });
 
-  // מצב מסך מלא – אמיתי או מדומה (ל-iOS)
+  // מצב מסך מלא – נוגע רק במובייל
   const [fullScreenMode, setFullScreenMode] = useState(false);
   const [iosFullScreen, setIosFullScreen] = useState(false);
 
@@ -140,7 +180,7 @@ const MagicGame = () => {
   const canvasRef = useRef(null);
   const containerRef = useRef(null);
 
-  // פונקציות למסך מלא
+  // שמירה על התנהגות מסך מלא במובייל
   const enterFullScreen = () => {
     if (!containerRef.current) return;
     if (isIOS()) {
@@ -184,7 +224,7 @@ const MagicGame = () => {
     }
   };
 
-  // מאזין לשינוי מצב מסך מלא
+  // מאזין לשינוי מצב מסך מלא (למובייל)
   useEffect(() => {
     const handleFullScreenChange = () => {
       const fsElement = document.fullscreenElement || document.webkitFullscreenElement || document.msFullscreenElement;
@@ -245,15 +285,29 @@ const MagicGame = () => {
     starsRef.current = stars;
   }, [containerSize]);
 
-  // עדכון כוכבי לכת – כאשר כוכב נעלם, מחליפים אותו בחדש ייחודי
+  // אתחול כוכבי לכת – עבור מחשב, כפי שהיה
   useEffect(() => {
-    activePlanetsRef.current = activePlanetsRef.current.map(planet => {
-      if (planet.y > containerSize.height + 100) {
-        return getUniqueRandomPlanet(activePlanetsRef.current, containerSize.width, containerSize.height);
-      }
-      return planet;
-    });
-  }, [containerSize]);
+    if (!isMobile) {
+      activePlanetsRef.current = [
+        getRandomPlanet(containerSize.width, containerSize.height),
+        getRandomPlanet(containerSize.width, containerSize.height),
+        getRandomPlanet(containerSize.width, containerSize.height)
+      ];
+    }
+  }, [containerSize, isMobile]);
+
+  // במצב מובייל: עדכון כוכבי לכת – כאשר כוכב עובר מהמסך, מחליפים אותו בכוכב חדש ייחודי
+  useEffect(() => {
+    if (isMobile) {
+      activePlanetsRef.current = activePlanetsRef.current.map(planet => {
+        planet.y += planet.speed * 0.016; // עדכון בסיסי לכל פריים
+        if (planet.y > containerSize.height + 100) {
+          return getUniqueRandomPlanet(activePlanetsRef.current, containerSize.width, containerSize.height);
+        }
+        return planet;
+      });
+    }
+  }, [containerSize, isMobile]);
 
   useEffect(() => {
     if (gameOver || !gameStarted || paused) return;
@@ -327,47 +381,66 @@ const MagicGame = () => {
   }, []);
 
   const lastMouseMoveRef = useRef(Date.now());
-  // טיפול באירועי לחיצה/מגע מדויקים
+  // Computer: טיפול בתנועת העכבר (למחשב בלבד)
   useEffect(() => {
-    const handlePointer = (e) => {
-      if (!gameStarted || paused || gameOver) return;
-      let clientX, clientY;
-      if (e.touches && e.touches.length > 0) {
-        clientX = e.touches[0].clientX;
-        clientY = e.touches[0].clientY;
-      } else {
-        clientX = e.clientX;
-        clientY = e.clientY;
-      }
-      if (isMobile && containerRef.current) {
+    if (!isMobile) {
+      const handleMouseMove = (e) => {
+        lastMouseMoveRef.current = Date.now();
+        if (paused) return;
         const rect = containerRef.current.getBoundingClientRect();
-        const x = Math.max(40, Math.min(clientX - rect.left, containerSize.width - 40));
-        const y = Math.max(40, Math.min(clientY - rect.top, containerSize.height - 40));
+        const x = Math.max(40, Math.min(e.clientX - rect.left, containerSize.width - 40));
+        const y = Math.max(40, Math.min(e.clientY - rect.top, containerSize.height - 40));
         playerPosRef.current = { x, y };
-      }
-      // הוספת ירייה
-      spellsRef.current.push({
-        id: Date.now(),
-        x: playerPosRef.current.x,
-        y: playerPosRef.current.y - 40,
-      });
-      if (!isMobile) {
+      };
+      window.addEventListener('mousemove', handleMouseMove);
+      return () => window.removeEventListener('mousemove', handleMouseMove);
+    }
+  }, [containerSize, paused, isMobile]);
+
+  // Mobile: טיפול במגע – שימוש ב-touchend לעדכון מיקום מדויק
+  useEffect(() => {
+    if (isMobile) {
+      const handleTouchEnd = (e) => {
+        if (!gameStarted || paused || gameOver) return;
+        const touch = e.changedTouches[0];
+        const rect = containerRef.current.getBoundingClientRect();
+        const x = Math.max(40, Math.min(touch.clientX - rect.left, containerSize.width - 40));
+        const y = Math.max(40, Math.min(touch.clientY - rect.top, containerSize.height - 40));
+        playerPosRef.current = { x, y };
+        // הוספת ירייה
+        spellsRef.current.push({
+          id: Date.now(),
+          x: playerPosRef.current.x,
+          y: playerPosRef.current.y - 40,
+        });
+        e.preventDefault();
+        lastMouseMoveRef.current = Date.now();
+      };
+      window.addEventListener('touchend', handleTouchEnd, { passive: false });
+      return () => window.removeEventListener('touchend', handleTouchEnd);
+    }
+  }, [gameStarted, paused, gameOver, isMobile, containerSize]);
+
+  // Computer: טיפול בלחיצות (click) – כאשר לא במובייל
+  useEffect(() => {
+    if (!isMobile) {
+      const handleClick = (e) => {
+        if (!gameStarted || paused || gameOver) return;
+        spellsRef.current.push({
+          id: Date.now(),
+          x: playerPosRef.current.x,
+          y: playerPosRef.current.y - 40,
+        });
         const fireAudio = new Audio(fireSound);
         fireAudio.volume = 0.05;
         fireAudio.play();
-      }
-      lastMouseMoveRef.current = Date.now();
-    };
+      };
+      window.addEventListener('click', handleClick);
+      return () => window.removeEventListener('click', handleClick);
+    }
+  }, [gameStarted, paused, gameOver, isMobile]);
 
-    window.addEventListener('click', handlePointer);
-    window.addEventListener('touchend', handlePointer, { passive: false });
-    return () => {
-      window.removeEventListener('click', handlePointer);
-      window.removeEventListener('touchend', handlePointer);
-    };
-  }, [gameStarted, paused, gameOver, isMobile, containerSize]);
-
-  // Auto Pause אם אין תנועת מגע במשך 60 שניות
+  // Auto Pause: אם אין תנועת מגע/עכבר במשך 60 שניות
   useEffect(() => {
     const interval = setInterval(() => {
       if (gameStarted && !paused && Date.now() - lastMouseMoveRef.current >= 60000) {
@@ -402,8 +475,9 @@ const MagicGame = () => {
 
   const lastTimeRefAnim = useRef(null);
   const animationFrameIdRef = useRef(null);
+  // הסרת isMobile מהתלויות, כיוון שלא נעשה בו שימוש ישיר בפונקציה
   const gameLoop = useCallback((time) => {
-    if (((!gameStarted && countdown === null) || gameOver) || paused) {
+    if (((!gameStarted && countdown !== null) || gameOver) || paused) {
       lastTimeRefAnim.current = null;
       return;
     }
@@ -420,11 +494,11 @@ const MagicGame = () => {
       }
     });
 
-    // עדכון כוכבי לכת – מחליפים כוכב שנעלם בכוכב חדש ייחודי
+    // עדכון כוכבי לכת
     activePlanetsRef.current = activePlanetsRef.current.map(planet => {
       planet.y += planet.speed * deltaTime;
       if (planet.y > containerSize.height + 100) {
-        return getUniqueRandomPlanet(activePlanetsRef.current, containerSize.width, containerSize.height);
+        return getRandomPlanet(containerSize.width, containerSize.height);
       }
       return planet;
     });
@@ -598,7 +672,7 @@ const MagicGame = () => {
 
     // התנגשות בין אויב לחללית
     enemiesRef.current = enemiesRef.current.filter(enemy => {
-      if (distance(enemy, playerPosRef.current) < 30) {
+      if (distance(enemy, playerPosRef.current) < COLLISION_DISTANCE) {
         explosionsRef.current.push({
           id: Date.now() + Math.random(),
           x: enemy.x,
@@ -771,12 +845,7 @@ const MagicGame = () => {
     }, 1000);
   };
 
-  // startGame – בשימוש במצב שהמשחק מתחיל, כאן נשמר מקרה ההתחלה (הספירה מופעלת)
-  const startGame = () => {
-    startCountdown();
-  };
-
-  // restartGame – מאתחל את המשחק מחדש (בשימוש רק בעת לחיצה על Restart)
+  // restartGame – מאתחל את המשחק מחדש (לשימוש ב- Restart)
   const restartGame = () => {
     setScore(0);
     setLives(5);
@@ -793,11 +862,10 @@ const MagicGame = () => {
     startCountdown();
   };
 
-  // handleMinimize – יוצא ממצב מסך מלא, עוצר (pauses) את המשחק, ומבצע גלילה אוטומטית לתחתית העמוד (למובייל)
+  // Mobile: handleMinimize – יוצא ממצב מסך מלא, עוצר (pauses) את המשחק, ומבצע גלילה לתחתית העמוד
   const handleMinimize = () => {
     exitFullScreen();
     setPaused(true);
-    // עבור מובייל – גלילה לתחתית כך שהמשחק יהיה גלוי בתוך המסך
     if (isMobile) {
       window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
     }
@@ -819,7 +887,7 @@ const MagicGame = () => {
         height={containerSize.height}
         className="w-full h-full"
       />
-      {/* כפתור full screen/minimize – מוצג רק במובייל */}
+      {/* במובייל: כפתור full screen/minimize – לא נוגע במחשב */}
       {isMobile && gameStarted && !gameOver && (
         <div className="absolute bottom-12 right-4 z-50">
           {fullScreenMode || iosFullScreen ? (
@@ -839,7 +907,7 @@ const MagicGame = () => {
           )}
         </div>
       )}
-      {/* כפתור Pause */}
+      {/* כפתור Pause (לשני המצבים) */}
       <div className="absolute top-4 right-4 z-50">
         <button
           className="w-12 h-12 flex items-center justify-center rounded-full bg-blue-400 hover:bg-blue-500"
@@ -848,7 +916,7 @@ const MagicGame = () => {
           <img src={pauseIcon} alt="Pause" className="w-8 h-8" />
         </button>
       </div>
-      {/* מסך התחלה – יוצג רק אם המשחק לא התחיל כלל */}
+      {/* מסך התחלה – מופיע רק אם המשחק לא התחיל כלל */}
       {(!gameStarted && countdown === null && !gameOver) && (
         <div className={`absolute inset-0 z-50 flex flex-col items-center justify-center ${isMobile ? "text-center" : ""}`}>
           <h1 className="text-6xl text-white font-extrabold mb-6">
@@ -917,7 +985,6 @@ const MagicGame = () => {
               <button
                 className="w-48 h-12 flex flex-row items-center justify-between px-4 rounded bg-blue-400 hover:bg-blue-500 text-white text-xl"
                 onClick={() => {
-                  // Resume – מסירים את מצב הפאוז ומחזירים את מסך מלא במידה הנדרשת
                   setPaused(false);
                   if (isMobile && !fullScreenMode && !iosFullScreen) {
                     enterFullScreen();
