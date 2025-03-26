@@ -125,39 +125,54 @@ const MagicGame = () => {
   const canvasRef = useRef(null);
   const containerRef = useRef(null);
 
-  // פונקציות למסך מלא
+  // פונקציות למסך מלא – כולל vendor prefixes לתמיכה בכל הדפדפנים
   const enterFullScreen = () => {
-    if (containerRef.current && containerRef.current.requestFullscreen) {
+    if (!containerRef.current) return;
+    if (containerRef.current.requestFullscreen) {
       containerRef.current.requestFullscreen().then(() => {
         setFullScreenMode(true);
       }).catch(err => {
         console.error("Failed to enter full screen:", err);
       });
+    } else if (containerRef.current.webkitRequestFullscreen) { // Safari
+      containerRef.current.webkitRequestFullscreen();
+      setFullScreenMode(true);
+    } else if (containerRef.current.msRequestFullscreen) { // IE11
+      containerRef.current.msRequestFullscreen();
+      setFullScreenMode(true);
     }
   };
 
   const exitFullScreen = () => {
-    if (document.fullscreenElement) {
+    if (document.exitFullscreen) {
       document.exitFullscreen().then(() => {
         setFullScreenMode(false);
       }).catch(err => {
         console.error("Failed to exit full screen:", err);
       });
+    } else if (document.webkitExitFullscreen) { // Safari
+      document.webkitExitFullscreen();
+      setFullScreenMode(false);
+    } else if (document.msExitFullscreen) { // IE11
+      document.msExitFullscreen();
+      setFullScreenMode(false);
     }
   };
 
-  // עדכון סטטוס מסך מלא במידה והמשתמש עוזב/נכנס למסך מלא ידנית
+  // מאזין לשינוי מצב מסך מלא (אם המשתמש נכנס/יוצא באופן ידני)
   useEffect(() => {
     const handleFullScreenChange = () => {
-      if (document.fullscreenElement === containerRef.current) {
+      if (document.fullscreenElement === containerRef.current || document.webkitFullscreenElement === containerRef.current) {
         setFullScreenMode(true);
       } else {
         setFullScreenMode(false);
       }
     };
     document.addEventListener('fullscreenchange', handleFullScreenChange);
+    document.addEventListener('webkitfullscreenchange', handleFullScreenChange);
     return () => {
       document.removeEventListener('fullscreenchange', handleFullScreenChange);
+      document.removeEventListener('webkitfullscreenchange', handleFullScreenChange);
     };
   }, []);
 
@@ -270,7 +285,7 @@ const MagicGame = () => {
     return () => window.removeEventListener('mousemove', handleMouseMove);
   }, [containerSize, paused]);
 
-  // במצב טלפון – עדכון מיקום החללית לפי לחיצה, וירי קסם (סאונד fire מופעל רק במחשב)
+  // במצב טלפון – עדכון מיקום החללית לפי לחיצה, וירי קסם
   useEffect(() => {
     const handleClick = (e) => {
       if (!gameStarted || paused || gameOver) return;
@@ -305,7 +320,7 @@ const MagicGame = () => {
     return () => clearInterval(interval);
   }, [gameStarted, paused]);
 
-  // עצירת המשחק כאשר המשתמש עובר ללשונית אחרת (פועל רק אם המשחק התחיל)
+  // עצירת המשחק כאשר המשתמש עובר ללשונית אחרת
   useEffect(() => {
     if (!gameStarted) return;
     const handleVisibilityChange = () => {
@@ -621,7 +636,6 @@ const MagicGame = () => {
       ctx.save();
       ctx.translate(enemy.x, enemy.y);
       ctx.rotate(Math.PI);
-      // ציור אש מאחור לחללית היריבה
       const flameGradientEnemy = ctx.createLinearGradient(0, 30, 0, 50);
       flameGradientEnemy.addColorStop(0, "rgba(255,200,0,1)");
       flameGradientEnemy.addColorStop(1, "rgba(255,0,0,0)");
@@ -660,7 +674,6 @@ const MagicGame = () => {
     if (userSpaceshipImgRef.current) {
       ctx.save();
       ctx.translate(playerPosRef.current.x, playerPosRef.current.y);
-      // ציור אש מאחור לחללית המשתמש
       const flameGradientUser = ctx.createLinearGradient(0, 20, 0, 60);
       flameGradientUser.addColorStop(0, "rgba(255,200,0,1)");
       flameGradientUser.addColorStop(1, "rgba(255,0,0,0)");
@@ -703,8 +716,8 @@ const MagicGame = () => {
   };
 
   const startGame = () => {
-    // אם במובייל – הכנס למסך מלא בעת התחלת המשחק
-    if(isMobile) {
+    // עבור מובייל – כניסה למסך מלא בעת לחיצה על "התחל"
+    if (isMobile) {
       enterFullScreen();
     }
     startCountdown();
@@ -747,9 +760,9 @@ const MagicGame = () => {
         height={containerSize.height}
         className="w-full h-full"
       />
-      {/* כפתורי מסך מלא – רק במובייל */}
+      {/* כפתור מסך מלא – רק במובייל, מוצב במיקום x זהה לכפתור הפאוז (right-4) אך בתחתית העמוד */}
       {isMobile && gameStarted && !gameOver && (
-        <div className="absolute top-4 right-16 z-50">
+        <div className="absolute bottom-4 right-4 z-50">
           {fullScreenMode ? (
             <button
               className="w-12 h-12 flex items-center justify-center rounded-full bg-blue-400 hover:bg-blue-500"
@@ -770,7 +783,7 @@ const MagicGame = () => {
           )}
         </div>
       )}
-      {/* כפתור Pause (לכל הדפדפנים) */}
+      {/* כפתור Pause */}
       <div className="absolute top-4 right-4 z-50">
         <button
           className="w-12 h-12 flex items-center justify-center rounded-full bg-blue-400 hover:bg-blue-500"
