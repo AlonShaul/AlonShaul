@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 import React, { useEffect, useRef, useState, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import pauseIcon from '../planets/pause.png';
@@ -95,14 +96,14 @@ const MagicGame = () => {
   const [paused, setPaused] = useState(false);
   const [countdown, setCountdown] = useState(null);
   
-  // הפיצ'ר יופיע רק במצב מובייל
+  // הפיצ'ר מופיע רק במצב מובייל
   const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
   const [containerSize, setContainerSize] = useState({
     width: window.innerWidth,
     height: window.innerWidth <= 768 ? window.innerHeight * 0.9 : window.innerHeight * 0.9,
   });
   
-  // מצב סימולציה למסך מלא – במכשירים שאין להם תמיכה אמיתית (כמו iOS)
+  // במכשירי מובייל, אם אין תמיכה אמיתית במסך מלא (כמו ב-iOS), נעבור למצב סימולציה
   const [simulatedFullscreen, setSimulatedFullscreen] = useState(false);
   const isiOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
 
@@ -131,7 +132,7 @@ const MagicGame = () => {
   const canvasRef = useRef(null);
   const containerRef = useRef(null);
 
-  // פונקציה לבקשת כניסה למסך מלא – תומכת בכל הדפדפנים
+  // פונקציות ל-Fullscreen
   const requestFullScreen = () => {
     if (containerRef.current) {
       if (containerRef.current.requestFullscreen) {
@@ -145,7 +146,6 @@ const MagicGame = () => {
     return Promise.reject('Fullscreen API not supported');
   };
 
-  // פונקציה ליציאה ממסך מלא
   const exitFullScreen = () => {
     if (document.exitFullscreen) {
       return document.exitFullscreen();
@@ -157,24 +157,22 @@ const MagicGame = () => {
     return Promise.reject('Fullscreen API not supported');
   };
 
-  // כאשר המשתמש לוחץ על "התחל" או "הגדלה" – אם במובייל, נבקש fullscreen
+  // בעת לחיצה על "התחל" במובייל – הפעלת Fullscreen
   const activateFullScreen = () => {
     if (isMobile) {
       if (!isiOS) {
         requestFullScreen().catch(err => console.error(err));
       } else {
-        // עבור iOS – נעדכן את מצב הסימולציה למסך מלא
         setSimulatedFullscreen(true);
       }
     }
   };
 
-  // מאזין לאירועי Fullscreen (למכשירים שתומכים)
+  // מאזין לאירועי Fullscreen (עבור מכשירים שתומכים בו)
   useEffect(() => {
     const handleFullscreenChange = () => {
       const fsElement = document.fullscreenElement || document.webkitFullscreenElement || document.msFullscreenElement;
       if (!fsElement && !isiOS) {
-        // אם יצאנו ממסך מלא – נעצור את המשחק (Pause)
         setPaused(true);
       }
     };
@@ -205,7 +203,6 @@ const MagicGame = () => {
     return () => window.removeEventListener('resize', handleResize);
   }, []);
 
-  // אתחול תמונות החלליות
   const userSpaceshipImgRef = useRef(null);
   useEffect(() => {
     const img = new Image();
@@ -219,7 +216,7 @@ const MagicGame = () => {
     enemySpaceshipImgRef.current = img;
   }, []);
 
-  // במחשבים – מאזין ל-mousemove
+  // עבור מחשבים – מאזין ל-mousemove
   useEffect(() => {
     if (isMobile) return;
     const handleMouseMove = (e) => {
@@ -235,7 +232,7 @@ const MagicGame = () => {
     return () => window.removeEventListener('mousemove', handleMouseMove);
   }, [containerSize, paused, isMobile]);
 
-  // עבור מכשירי מגע – מאזין לאירועי מגע על הקונטיינר בלבד
+  // עבור מכשירי מגע – מאזין לאירועי מגע על הקונטיינר
   useEffect(() => {
     if (!isMobile) return;
     const container = containerRef.current;
@@ -684,7 +681,6 @@ const MagicGame = () => {
     startCountdown();
   };
 
-  // לחצני Resume ו-Restart – אם במובייל, לפני המשך נדרשת כניסה למסך מלא
   const handleResume = () => {
     if (isMobile) {
       if (!document.fullscreenElement && !isiOS && containerRef.current) {
@@ -708,7 +704,6 @@ const MagicGame = () => {
     setPaused(false);
   };
 
-  // לחצן Fullscreen/Minimize – מופעל רק במובייל
   const toggleFullscreen = () => {
     if (!isMobile) return;
     if (!isiOS) {
@@ -731,7 +726,6 @@ const MagicGame = () => {
     }
   };
 
-  // במצב סימולציה למסך מלא (ל-iOS), נגדיר סגנון שיקבע שהקונטיינר יתפוס את כל המסך – כך ייראה כמו אפליקציה נפרדת
   const containerStyle = simulatedFullscreen
     ? { position: 'fixed', top: 0, left: 0, width: '100vw', height: '100vh', zIndex: 9999 }
     : {};
@@ -752,7 +746,6 @@ const MagicGame = () => {
         height={containerSize.height}
         className="w-full h-full"
       />
-      {/* מסך התחלה – מוצג רק במובייל */}
       {!gameStarted && countdown === null && !gameOver && (
         <div className={`absolute inset-0 z-50 flex flex-col items-center justify-center ${isMobile ? "text-center" : ""}`}>
           <h1 className="text-6xl text-white font-extrabold mb-6">
