@@ -197,7 +197,7 @@ const MagicGame = () => {
     };
   }, []);
 
-  // iosFullScreenStyle – מתחשב ב-env(safe-area-inset-bottom) כדי למנוע החלקה על ידי הסרגל התחתון
+  // iosFullScreenStyle – מתחשב ב-env(safe-area-inset-bottom) כך שהתוכן לא ייחתך
   const iosFullScreenStyle = iosFullScreen
     ? {
         position: 'fixed',
@@ -211,7 +211,7 @@ const MagicGame = () => {
       }
     : {};
 
-  // השבתת גלילה במצב מסך מלא בלבד (מובייל)
+  // השבתת גלילה במצב מסך מלא (למובייל בלבד)
   useEffect(() => {
     if (isMobile && fullScreenMode) {
       document.body.style.overflow = "hidden";
@@ -319,30 +319,25 @@ const MagicGame = () => {
   }, []);
 
   const lastMouseMoveRef = useRef(Date.now());
+  // שימוש באירוע pointer (מגע/לחיצה) למיקום מדויק יותר
   useEffect(() => {
-    const handleMouseMove = (e) => {
-      lastMouseMoveRef.current = Date.now();
-      if (paused) return;
-      if (!containerRef.current) return;
-      const rect = containerRef.current.getBoundingClientRect();
-      const x = Math.max(40, Math.min(e.clientX - rect.left, containerSize.width - 40));
-      const y = Math.max(40, Math.min(e.clientY - rect.top, containerSize.height - 40));
-      playerPosRef.current = { x, y };
-    };
-    window.addEventListener('mousemove', handleMouseMove);
-    return () => window.removeEventListener('mousemove', handleMouseMove);
-  }, [containerSize, paused]);
-
-  // טיפול בלחיצות במסך (טלפון)
-  useEffect(() => {
-    const handleClick = (e) => {
+    const handlePointer = (e) => {
       if (!gameStarted || paused || gameOver) return;
+      let clientX, clientY;
+      if (e.touches && e.touches.length > 0) {
+        clientX = e.touches[0].clientX;
+        clientY = e.touches[0].clientY;
+      } else {
+        clientX = e.clientX;
+        clientY = e.clientY;
+      }
       if (isMobile && containerRef.current) {
         const rect = containerRef.current.getBoundingClientRect();
-        const x = Math.max(40, Math.min(e.clientX - rect.left, containerSize.width - 40));
-        const y = Math.max(40, Math.min(e.clientY - rect.top, containerSize.height - 40));
+        const x = Math.max(40, Math.min(clientX - rect.left, containerSize.width - 40));
+        const y = Math.max(40, Math.min(clientY - rect.top, containerSize.height - 40));
         playerPosRef.current = { x, y };
       }
+      // הוספת ירייה
       spellsRef.current.push({
         id: Date.now(),
         x: playerPosRef.current.x,
@@ -353,9 +348,15 @@ const MagicGame = () => {
         fireAudio.volume = 0.05;
         fireAudio.play();
       }
+      lastMouseMoveRef.current = Date.now();
     };
-    window.addEventListener('click', handleClick);
-    return () => window.removeEventListener('click', handleClick);
+
+    window.addEventListener('click', handlePointer);
+    window.addEventListener('touchend', handlePointer, { passive: false });
+    return () => {
+      window.removeEventListener('click', handlePointer);
+      window.removeEventListener('touchend', handlePointer);
+    };
   }, [gameStarted, paused, gameOver, isMobile, containerSize]);
 
   // Auto Pause
@@ -762,7 +763,7 @@ const MagicGame = () => {
     }, 1000);
   };
 
-  // restartGame – מאתחל את המשחק מחדש (בשימוש רק ב- Restart)
+  // restartGame – מאתחל את המשחק מחדש (בשימוש רק כאשר נבחר "Restart")
   const restartGame = () => {
     setScore(0);
     setLives(5);
@@ -779,14 +780,15 @@ const MagicGame = () => {
     startCountdown();
   };
 
-  // handleMinimize – יוצא ממצב מסך מלא, מעביר למצב Pause, ומבצע גלילה אוטומטית לתחתית העמוד (רק במובייל)
+  // handleMinimize – יוצא ממצב מסך מלא, עוצר את המשחק (paused)
+  // ועושה גלילה אוטומטית לתחתית העמוד כך שהמשחק יהיה גלוי
   const handleMinimize = () => {
     exitFullScreen();
     setPaused(true);
-    // מאפשר גלילה חזרה
-    document.body.style.overflow = "";
-    // גלילה אוטומטית לתחתית העמוד כך שהמשחק יהיה גלוי
-    window.scrollTo(0, document.body.scrollHeight);
+    // גלילה אוטומטית לתחתית העמוד (במובייל בלבד)
+    if (isMobile) {
+      window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
+    }
   };
 
   return (
@@ -834,7 +836,7 @@ const MagicGame = () => {
           <img src={pauseIcon} alt="Pause" className="w-8 h-8" />
         </button>
       </div>
-      {/* מסך התחלה – יוצג רק אם המשחק לא התחיל בכלל */}
+      {/* מסך התחלה – יוצג רק אם המשחק לא התחיל כלל */}
       {(!gameStarted && countdown === null && !gameOver) && (
         <div className={`absolute inset-0 z-50 flex flex-col items-center justify-center ${isMobile ? "text-center" : ""}`}>
           <h1 className="text-6xl text-white font-extrabold mb-6">
@@ -903,7 +905,6 @@ const MagicGame = () => {
               <button
                 className="w-48 h-12 flex flex-row items-center justify-between px-4 rounded bg-blue-400 hover:bg-blue-500 text-white text-xl"
                 onClick={() => {
-                  // Resume: מסירים את מצב הפאוז ומפעילים מחדש את מסך מלא (למובייל)
                   setPaused(false);
                   if (isMobile && !fullScreenMode && !iosFullScreen) {
                     enterFullScreen();
