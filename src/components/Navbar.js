@@ -63,7 +63,7 @@ const Navbar = () => {
               >
                 <Link
                   to="/"
-                  className="text-white text-2xl font-orbitron uppercase tracking-widest"
+                  className="text-white hover:text-black text-2xl font-orbitron uppercase tracking-widest"
                 >
                   Alon Shaul
                 </Link>
