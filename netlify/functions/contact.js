@@ -6,12 +6,12 @@ const nodemailer = require('nodemailer');
 const validator = require('validator');
 const crypto = require('crypto');
 
-// כותרות CORS – מאפשרות גישה מכל מקור, ומגדירות את השיטות המותרים
-const headers = {
-  "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Headers": "Content-Type",
-  "Access-Control-Allow-Methods": "POST, OPTIONS"
-};
+// רשימת הדומיינים המורשים לקרוא לפונקציה הזו
+const ALLOWED_ORIGINS = [
+  'https://alon-shaul-dev.com',
+  'https://www.alon-shaul-dev.com',
+  'https://alon-shaul-dev.netlify.app'
+];
 
 // משתנים לשמירת נתוני הבקשה האחרונה (איידמפוטנסי)
 // זכרו: בתהליכי Lambda יתכן והקונטיינר ייאתחל, אבל לרוב הם משתמשים באותה מופע במשך מספר קריאות עוקבות
@@ -30,6 +30,17 @@ const transporter = nodemailer.createTransport({
 });
 
 exports.handler = async (event, context) => {
+  // בדיקת הדומיין שממנו הגיעה הבקשה – מותר רק לדומיינים של האתר שלנו
+  const origin = event.headers.origin || event.headers.Origin;
+  const isAllowedOrigin = ALLOWED_ORIGINS.includes(origin);
+
+  // כותרות CORS – מאפשרות גישה רק מהדומיינים המורשים, ומגדירות את השיטות המותרות
+  const headers = {
+    "Access-Control-Allow-Origin": isAllowedOrigin ? origin : ALLOWED_ORIGINS[0],
+    "Access-Control-Allow-Headers": "Content-Type",
+    "Access-Control-Allow-Methods": "POST, OPTIONS"
+  };
+
   // טיפול בבקשות OPTIONS לצורך CORS – במידה וקורה זאת, מחזירים תשובה ללא עיבוד
   if (event.httpMethod === 'OPTIONS') {
     return {
@@ -45,6 +56,15 @@ exports.handler = async (event, context) => {
       statusCode: 405,
       headers,
       body: JSON.stringify({ error: 'Method Not Allowed' })
+    };
+  }
+
+  // חסימת בקשות שמגיעות מדומיין שאינו מורשה (לא רק דפדפן - גם קריאות ישירות עם כותרת Origin מזויפת)
+  if (!isAllowedOrigin) {
+    return {
+      statusCode: 403,
+      headers,
+      body: JSON.stringify({ error: 'Origin not allowed' })
     };
   }
 
