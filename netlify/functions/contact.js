@@ -26,8 +26,7 @@ const transporter = nodemailer.createTransport({
   auth: {
     user: process.env.MAILJET_API_KEY,
     pass: process.env.MAILJET_SECRET_KEY
-  },
-  tls: { rejectUnauthorized: false }
+  }
 });
 
 exports.handler = async (event, context) => {
