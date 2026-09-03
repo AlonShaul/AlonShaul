@@ -118,10 +118,10 @@ export default async (request, context) => {
 
 // Rate Limiting מובנה של Netlify - נאכף ברמת הפלטפורמה, לפני שהקוד שלנו בכלל רץ
 export const config = {
+  path: '/.netlify/functions/contact',
   rateLimit: {
     windowLimit: 5,
     windowSize: 180, // 3 דקות - המקסימום המותר על ידי Netlify (windowSize <= 180)
-    aggregateBy: ['ip'],
-    action: 'block' // מחזיר 429 אוטומטית כשחורגים מהסף
+    aggregateBy: ['ip']
   }
 };
