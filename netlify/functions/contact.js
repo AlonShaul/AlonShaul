@@ -5,6 +5,7 @@ require('dotenv').config(); // טעינת משתני סביבה מהקובץ .en
 const nodemailer = require('nodemailer');
 const validator = require('validator');
 const crypto = require('crypto');
+const { connectLambda, getStore } = require('@netlify/blobs');
 
 // רשימת הדומיינים המורשים לקרוא לפונקציה הזו
 const ALLOWED_ORIGINS = [
@@ -12,6 +13,44 @@ const ALLOWED_ORIGINS = [
   'https://www.alon-shaul-dev.com',
   'https://alon-shaul-dev.netlify.app'
 ];
+
+// הגדרות Rate Limiting: מקסימום בקשות מותרות לכל כתובת IP, בתוך חלון הזמן שהוגדר
+const RATE_LIMIT_MAX_REQUESTS = 5;
+const RATE_LIMIT_WINDOW_MS = 10 * 60 * 1000; // 10 דקות
+
+// שליפת כתובת ה-IP של השולח מתוך כותרות הבקשה שנטליפיי מוסיפה
+function getClientIp(event) {
+  const forwardedFor = event.headers['x-forwarded-for'] || '';
+  return (
+    event.headers['x-nf-client-connection-ip'] ||
+    event.headers['client-ip'] ||
+    forwardedFor.split(',')[0].trim() ||
+    'unknown'
+  );
+}
+
+// בדיקת Rate Limiting מול Netlify Blobs – מחזיר אם הבקשה מותרת, ואם לא, כעבור כמה שניות אפשר לנסות שוב
+async function checkRateLimit(ip) {
+  const store = getStore('contact-rate-limit');
+  const key = `ip:${ip}`;
+  const now = Date.now();
+
+  let record = await store.get(key, { type: 'json' });
+
+  if (!record || (now - record.windowStart) >= RATE_LIMIT_WINDOW_MS) {
+    // אין רשומה קודמת, או שחלון הזמן הקודם כבר הסתיים – פותחים חלון חדש
+    await store.setJSON(key, { count: 1, windowStart: now });
+    return { allowed: true };
+  }
+
+  if (record.count >= RATE_LIMIT_MAX_REQUESTS) {
+    const retryAfterSeconds = Math.ceil((record.windowStart + RATE_LIMIT_WINDOW_MS - now) / 1000);
+    return { allowed: false, retryAfterSeconds };
+  }
+
+  await store.setJSON(key, { count: record.count + 1, windowStart: record.windowStart });
+  return { allowed: true };
+}
 
 // משתנים לשמירת נתוני הבקשה האחרונה (איידמפוטנסי)
 // זכרו: בתהליכי Lambda יתכן והקונטיינר ייאתחל, אבל לרוב הם משתמשים באותה מופע במשך מספר קריאות עוקבות
@@ -65,6 +104,26 @@ exports.handler = async (event, context) => {
       statusCode: 403,
       headers,
       body: JSON.stringify({ error: 'Origin not allowed' })
+    };
+  }
+
+  // הגבלת קצב בקשות: מקסימום RATE_LIMIT_MAX_REQUESTS בקשות לכל IP בתוך RATE_LIMIT_WINDOW_MS
+  // ברירת מחדל: אם הבדיקה נכשלת מסיבה כלשהי (Blobs לא זמין וכו') - לא לחסום את הבקשה
+  let rateLimitResult = { allowed: true };
+  try {
+    connectLambda(event); // חובה לפני שימוש ב-getStore במצב Lambda compatibility
+    const clientIp = getClientIp(event);
+    rateLimitResult = await checkRateLimit(clientIp);
+  } catch (err) {
+    console.error('Rate limit check failed, allowing request through:', err);
+  }
+  if (!rateLimitResult.allowed) {
+    return {
+      statusCode: 429,
+      headers: { ...headers, 'Retry-After': String(rateLimitResult.retryAfterSeconds) },
+      body: JSON.stringify({
+        error: `יותר מדי בקשות. נסה שוב בעוד כ-${Math.ceil(rateLimitResult.retryAfterSeconds / 60)} דקות.`
+      })
     };
   }
 
