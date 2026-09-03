@@ -36,19 +36,24 @@ async function checkRateLimit(ip) {
   const now = Date.now();
 
   let record = await store.get(key, { type: 'json' });
+  console.log(`[RATE_LIMIT_DEBUG] key=${key} now=${now} record=${JSON.stringify(record)}`);
 
   if (!record || (now - record.windowStart) >= RATE_LIMIT_WINDOW_MS) {
     // אין רשומה קודמת, או שחלון הזמן הקודם כבר הסתיים – פותחים חלון חדש
     await store.setJSON(key, { count: 1, windowStart: now });
+    console.log(`[RATE_LIMIT_DEBUG] new window -> count=1, allowed=true`);
     return { allowed: true };
   }
 
   if (record.count >= RATE_LIMIT_MAX_REQUESTS) {
     const retryAfterSeconds = Math.ceil((record.windowStart + RATE_LIMIT_WINDOW_MS - now) / 1000);
+    console.log(`[RATE_LIMIT_DEBUG] BLOCKED -> count=${record.count}, retryAfterSeconds=${retryAfterSeconds}`);
     return { allowed: false, retryAfterSeconds };
   }
 
-  await store.setJSON(key, { count: record.count + 1, windowStart: record.windowStart });
+  const newCount = record.count + 1;
+  await store.setJSON(key, { count: newCount, windowStart: record.windowStart });
+  console.log(`[RATE_LIMIT_DEBUG] incremented -> count=${newCount}, allowed=true`);
   return { allowed: true };
 }
 
