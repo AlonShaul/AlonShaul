@@ -8,7 +8,7 @@ const Contact = () => {
   const { t, i18n } = useTranslation();
   const isRTL = i18n.dir() === 'rtl';
 
-  const [formData, setFormData] = useState({ name: '', email: '', message: '' });
+  const [formData, setFormData] = useState({ name: '', email: '', message: '', website: '' });
   const [responseMsg, setResponseMsg] = useState('');
   const [errors, setErrors] = useState({ name: '', email: '' });
 
@@ -55,7 +55,7 @@ const Contact = () => {
           setResponseMsg(t('contact_error_generic') + data.error);
         } else {
           setResponseMsg(t('contact_success'));
-          setFormData({ name: '', email: '', message: '' });
+          setFormData({ name: '', email: '', message: '', website: '' });
         }
       })
       .catch((err) => {
@@ -97,6 +97,23 @@ const Contact = () => {
               transition={{ duration: 1 }}
               className="max-w-xl mx-auto bg-gray-100 dark:bg-gray-800 p-8 rounded-lg shadow-2xl border border-gray-200 dark:border-gray-700 mt-8"
             >
+              {/* שדה honeypot - מוסתר מעין אנושית, נועד ללכוד בוטים שממלאים את כל שדות הטופס */}
+              <div
+                aria-hidden="true"
+                style={{ position: 'absolute', left: '-9999px', width: '1px', height: '1px', overflow: 'hidden' }}
+              >
+                <label htmlFor="website">Leave this field blank</label>
+                <input
+                  type="text"
+                  id="website"
+                  name="website"
+                  value={formData.website}
+                  onChange={handleChange}
+                  tabIndex="-1"
+                  autoComplete="off"
+                />
+              </div>
+
               {/* שדה שם מלא */}
               <div className="mb-4">
                 <label

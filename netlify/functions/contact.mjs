@@ -64,7 +64,14 @@ export default async (request, context) => {
     return new Response(JSON.stringify({ error: 'Invalid JSON' }), { status: 400, headers });
   }
 
-  const { name, email, message } = data;
+  const { name, email, message, website } = data;
+
+  // בדיקת honeypot: שדה שאמור להישאר ריק תמיד עבור משתמשים אנושיים.
+  // אם הוא מלא - כנראה בוט - מחזירים "הצלחה" מזויפת בלי לשלוח מייל, כדי לא לחשוף לבוט שהוא נתפס.
+  if (website) {
+    console.log('Honeypot field filled - treating as bot submission, skipping email send.');
+    return new Response(JSON.stringify({ message: 'ההודעה התקבלה והמייל נשלח!' }), { status: 200, headers });
+  }
 
   // בדיקה בסיסית: אימייל חייב להיות תקין והודעה לא ריקה
   if (!email || !validator.isEmail(email)) {

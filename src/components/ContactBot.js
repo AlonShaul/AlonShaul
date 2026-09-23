@@ -26,7 +26,8 @@ const ContactBot = () => {
   const [userData, setUserData] = useState({
     name: '',
     email: '',
-    message: ''
+    message: '',
+    website: '' // שדה honeypot - נשאר ריק תמיד בזרימה הלגיטימית של הבוט
   });
   // האם השיחה הסתיימה
   const [conversationEnded, setConversationEnded] = useState(false);
@@ -124,7 +125,7 @@ const ContactBot = () => {
 
   const sendContactMessage = async (data, currentMessages) => {
     try {
-      const res = await fetch(`${process.env.REACT_APP_API_URL}/contact`, {
+      const res = await fetch(`/.netlify/functions/contact`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(data)
