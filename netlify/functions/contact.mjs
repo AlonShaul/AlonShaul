@@ -112,7 +112,7 @@ export default async (request, context) => {
       html: htmlContent
     };
 
-    console.log('Attempting to send mail with options:', mailOptions);
+    console.log('Attempting to send contact email');
     await transporter.sendMail(mailOptions);
     console.log('Mail sent successfully');
 
