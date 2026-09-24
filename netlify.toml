@@ -1,2 +1,15 @@
 [build]
   functions = "netlify/functions"
+
+# Security headers ברמת הפלטפורמה - חלים על כל הנתיבים באתר.
+# CSP לא נוסף כרגע בכוונה: האתר טוען משאבים חיצוניים משני origins שונים
+# (Google Fonts, Font Awesome מ-cdnjs) וללא תשתית nonce/hash קיימת, אז נדרשת
+# בדיקה נפרדת ויסודית לפני שמוסיפים Content-Security-Policy - ראו הסבר בהודעת ה-commit / בסיכום.
+[[headers]]
+  for = "/*"
+  [headers.values]
+    X-Content-Type-Options = "nosniff"
+    Referrer-Policy = "strict-origin-when-cross-origin"
+    X-Frame-Options = "DENY"
+    Permissions-Policy = "camera=(), microphone=(), geolocation=(), payment=()"
+    Strict-Transport-Security = "max-age=15552000"
