@@ -6,6 +6,16 @@ import nodemailer from 'nodemailer';
 import validator from 'validator';
 import crypto from 'crypto';
 
+// escaping בסיסי למניעת הזרקת HTML כאשר מכניסים קלט משתמש לתוך תוכן ה-HTML של המייל
+function escapeHtml(str) {
+  return String(str)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
+}
+
 // רשימת הדומיינים המורשים לקרוא לפונקציה הזו
 const ALLOWED_ORIGINS = [
   'https://alon-shaul-dev.com',
@@ -99,9 +109,9 @@ export default async (request, context) => {
     const textAlign = isHebrew ? 'right' : 'left';
     const htmlContent = `
       <div style="direction: ${direction}; text-align: ${textAlign};">
-        <p><strong>שם:</strong> ${name}</p>
-        <p><strong>אימייל:</strong> ${email}</p>
-        <p><strong>הודעה:</strong> ${message}</p>
+        <p><strong>שם:</strong> ${escapeHtml(name)}</p>
+        <p><strong>אימייל:</strong> ${escapeHtml(email)}</p>
+        <p><strong>הודעה:</strong> ${escapeHtml(message)}</p>
       </div>
     `;
 
