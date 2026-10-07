@@ -134,7 +134,12 @@ const HeroSection = () => {
           </div>
           <div className="md:w-1/4 flex justify-center items-center mb-6 md:mb-0">
             <motion.img
-              src="/AlonShaul.png"
+              src="/alon-shaul-1280.webp"
+              srcSet="/alon-shaul-640.webp 640w, /alon-shaul-960.webp 960w, /alon-shaul-1280.webp 1280w"
+              sizes="(min-width: 768px) 25vw, 100vw"
+              width="1280"
+              height="801"
+              fetchPriority="high"
               alt="Alon Shaul"
               className="rounded-full border-4 border-white shadow-xl"
               initial={{ opacity: 0, scale: 0 }}
@@ -174,7 +179,12 @@ const HeroSection = () => {
           </div>
           <div className="md:w-1/4 flex justify-center items-center mb-6 md:mb-0">
             <motion.img
-              src="/AlonShaul.png"
+              src="/alon-shaul-1280.webp"
+              srcSet="/alon-shaul-640.webp 640w, /alon-shaul-960.webp 960w, /alon-shaul-1280.webp 1280w"
+              sizes="(min-width: 768px) 25vw, 100vw"
+              width="1280"
+              height="801"
+              fetchPriority="high"
               alt="Alon Shaul"
               className="rounded-full border-4 border-white shadow-xl"
               initial={{ opacity: 0, scale: 0 }}

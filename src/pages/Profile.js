@@ -47,7 +47,11 @@ const Profile = () => {
                 transition={{ duration: 1, delay: 0.3 }}
               >
                 <img 
-                  src="/AlonShaul.png" 
+                  src="/alon-shaul-1280.webp"
+                  srcSet="/alon-shaul-640.webp 640w, /alon-shaul-960.webp 960w, /alon-shaul-1280.webp 1280w"
+                  sizes="(min-width: 768px) 33vw, 100vw"
+                  width="1280"
+                  height="801"
                   alt="Alon Shaul"
                   className="w-full h-full object-cover"
                 />
