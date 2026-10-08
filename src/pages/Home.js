@@ -236,7 +236,7 @@ const SkillsSection = () => {
             transition={{ duration: 1, delay: 0.4 }}
           >
             <div className="flex flex-col items-center">
-              <img src="/icons/Nodejs.PNG" alt="Node.js" className="w-12 h-12 mb-3" />
+              <img src="/icons/Nodejs.png" alt="Node.js" className="w-12 h-12 mb-3" />
               <h3 className="text-xl font-semibold mb-2 text-blue-700 dark:text-white">Node.js</h3>
               <p className="text-gray-600 dark:text-gray-300 text-center text-sm">
                 {t('home_skills_node_text')}

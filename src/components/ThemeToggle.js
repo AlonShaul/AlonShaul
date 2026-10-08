@@ -43,10 +43,10 @@ const ThemeToggle = () => {
         >
           {isDark ? (
             // במצב חושך, הראה אייקון ירח (מעיד לעבור למצב אור)
-            <img src="/icons/moon.png" alt="מצב חושך" className="w-4 h-4" />
+            <img src="/icons/Moon.png" alt="מצב חושך" className="w-4 h-4" />
           ) : (
             // במצב אור, הראה אייקון שמש (מעיד לעבור למצב חושך)
-            <img src="/icons/sun.png" alt="מצב אור" className="w-4 h-4" />
+            <img src="/icons/Sun.png" alt="מצב אור" className="w-4 h-4" />
           )}
         </div>
       </div>

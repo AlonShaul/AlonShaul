@@ -3,7 +3,7 @@
   "name": "Create React App Sample",
   "icons": [
     {
-      "src": "Alon Shaul Logo.png",
+      "src": "logo192.png",
       "sizes": "192x192",
       "type": "image/png"
     },
