@@ -17,7 +17,7 @@ const resources = {
 
       // Home.js
       home_header_titleName: "Alon Shaul",
-      home_header_subtitle: "מפתח Frontend",
+      home_header_subtitle: "מפתח Full-Stack",
       home_header_quote: "\"אני משלב גישה חדשנית עם התמחות טכנולוגית מתקדמת, ומקפיד על כל פרט מתוך מחויבות לעיצוב חוויית משתמש מעצימה.\nבכל פרויקט שאני מוביל, אני מתכנן פתרונות יעילים ואסתטיים שמעניקים ערך אמיתי ומדגישים את כישוריי כמפתח מקצועי\".",
 
       home_skills_title: "המיומנויות שלי",
@@ -52,7 +52,7 @@ const resources = {
 
       // Profile.js
       profile_title: "אודותי",
-      profile_text: "שמי אלון שאול, בוגר תואר במדעי המחשב עם הכשרה מקצועית בפיתוח אתרים, ומפתח Frontend המתמחה ביצירת ממשקים דינאמיים ומודרניים. במהלך לימודיי והניסיון שצברתי, פיתחתי יכולת לשלב ידע תיאורטי עמוק עם יישום מעשי של טכנולוגיות עדכניות, תוך הקפדה על סטנדרטים גבוהים ליצירת חוויות משתמש חלקות ואינטואיטיביות. אני מחויב להביא את הידע והניסיון שצברתי לכל פרויקט, תוך יצירת פתרונות דיגיטליים חדשניים המשלבים מקצוענות, איכות ומצוינות.",
+      profile_text: "שמי אלון שאול, בוגר תואר במדעי המחשב עם הכשרה מקצועית בפיתוח אתרים, ומפתח Full-Stack המתמחה ביצירת ממשקים דינאמיים ומודרניים. במהלך לימודיי והניסיון שצברתי, פיתחתי יכולת לשלב ידע תיאורטי עמוק עם יישום מעשי של טכנולוגיות עדכניות, תוך הקפדה על סטנדרטים גבוהים ליצירת חוויות משתמש חלקות ואינטואיטיביות. אני מחויב להביא את הידע והניסיון שצברתי לכל פרויקט, תוך יצירת פתרונות דיגיטליים חדשניים המשלבים מקצוענות, איכות ומצוינות.",
       
       // Projects.js
       projects_title: "הפרויקטים שלי",
@@ -76,14 +76,14 @@ const resources = {
       projects_image_alt: "תמונת הפרויקט {{title}}",
 
       // Seo.js – כותרת ותיאור לכל עמוד (מטא-דאטה למנועי חיפוש)
-      seo_home_title: "Alon Shaul | מפתח Frontend – תיק עבודות",
-      seo_home_description: "תיק העבודות של אלון שאול, מפתח Frontend: ממשקי ווב מודרניים ב-React, פרויקטים נבחרים וטופס ליצירת קשר.",
-      seo_profile_title: "אודות | Alon Shaul – מפתח Frontend",
-      seo_profile_description: "אלון שאול, מפתח Frontend ובוגר תואר במדעי המחשב עם הכשרה מקצועית בפיתוח אתרים. רקע מקצועי וקישורים ל-GitHub ול-LinkedIn.",
-      seo_projects_title: "פרויקטים | Alon Shaul – מפתח Frontend",
+      seo_home_title: "Alon Shaul | Full-Stack Developer",
+      seo_home_description: "תיק העבודות של אלון שאול, מפתח Full-Stack הבונה אפליקציות ווב מודרניות ב-React וב-Node.js. פרויקטים נבחרים, כישורים וטופס ליצירת קשר.",
+      seo_profile_title: "אודות | Alon Shaul – מפתח Full-Stack",
+      seo_profile_description: "אלון שאול, מפתח Full-Stack ובוגר תואר במדעי המחשב עם הכשרה מקצועית בפיתוח אתרים. רקע מקצועי וקישורים ל-GitHub ול-LinkedIn.",
+      seo_projects_title: "פרויקטים | Alon Shaul – מפתח Full-Stack",
       seo_projects_description: "הפרויקטים של אלון שאול: MoveMentor, מערכת שיקום מותאמת אישית, ו-To Do List, אפליקציה לניהול משימות. כולל הטכנולוגיות וקישורים לקוד ב-GitHub.",
-      seo_contact_title: "צור קשר | Alon Shaul – מפתח Frontend",
-      seo_contact_description: "יצירת קשר עם אלון שאול, מפתח Frontend, באמצעות שליחת הודעה בטופס יצירת הקשר שבאתר.",
+      seo_contact_title: "צור קשר | Alon Shaul – מפתח Full-Stack",
+      seo_contact_description: "יצירת קשר עם אלון שאול, מפתח Full-Stack, באמצעות שליחת הודעה בטופס יצירת הקשר שבאתר.",
 
       // NotFound.js – עמוד "לא נמצא"
       notFound_title: "הדף לא נמצא",
@@ -128,7 +128,7 @@ const resources = {
 
       // Home.js
       home_header_titleName: "Alon Shaul",
-      home_header_subtitle: "Frontend Developer",
+      home_header_subtitle: "Full-Stack Developer",
       home_header_quote: "\"I combine an innovative approach with advanced technological expertise, and I pay attention to every detail with a commitment to designing an empowering user experience.\nIn every project I lead, I plan efficient and aesthetic solutions that deliver true value and highlight my skills as a professional developer\"",
 
       home_skills_title: "My Skills",
@@ -163,7 +163,7 @@ const resources = {
 
       // Profile.js
       profile_title: "About Me",
-      profile_text: "I am Alon Shaul, a Frontend Developer with a degree in Computer Science and professional training in web development, specializing in creating dynamic and modern interfaces. Throughout my studies and professional experience, I have honed my ability to blend deep theoretical knowledge with the practical application of cutting-edge technologies, all while upholding high standards to craft seamless and intuitive user experiences. I am committed to bringing my expertise to every project by developing innovative digital solutions that embody professionalism, quality, and excellence.",
+      profile_text: "I am Alon Shaul, a Full-Stack Developer with a degree in Computer Science and professional training in web development, specializing in creating dynamic and modern interfaces. Throughout my studies and professional experience, I have honed my ability to blend deep theoretical knowledge with the practical application of cutting-edge technologies, all while upholding high standards to craft seamless and intuitive user experiences. I am committed to bringing my expertise to every project by developing innovative digital solutions that embody professionalism, quality, and excellence.",
       
       // Projects.js
       projects_title: "My Projects",
@@ -187,14 +187,14 @@ const resources = {
       projects_image_alt: "Preview image of {{title}}",
 
       // Seo.js – per-page title and description (search engine metadata)
-      seo_home_title: "Alon Shaul | Frontend Developer Portfolio",
-      seo_home_description: "Portfolio of Alon Shaul, a Frontend Developer building modern web interfaces with React. Selected projects, skills and a contact form.",
-      seo_profile_title: "About | Alon Shaul – Frontend Developer",
-      seo_profile_description: "Alon Shaul is a Frontend Developer with a degree in Computer Science and professional training in web development. Background and links to GitHub and LinkedIn.",
-      seo_projects_title: "Projects | Alon Shaul – Frontend Developer",
+      seo_home_title: "Alon Shaul | Full-Stack Developer",
+      seo_home_description: "Portfolio of Alon Shaul, a Full-Stack Developer building modern web applications with React and Node.js. Selected projects, skills and a contact form.",
+      seo_profile_title: "About | Alon Shaul – Full-Stack Developer",
+      seo_profile_description: "Alon Shaul is a Full-Stack Developer with a degree in Computer Science and professional training in web development. Background and links to GitHub and LinkedIn.",
+      seo_projects_title: "Projects | Alon Shaul – Full-Stack Developer",
       seo_projects_description: "Projects by Alon Shaul: MoveMentor, a personalized rehabilitation system, and To Do List, a task management app, with links to the code on GitHub.",
-      seo_contact_title: "Contact | Alon Shaul – Frontend Developer",
-      seo_contact_description: "Get in touch with Alon Shaul, Frontend Developer, by sending a message through the contact form on the site.",
+      seo_contact_title: "Contact | Alon Shaul – Full-Stack Developer",
+      seo_contact_description: "Get in touch with Alon Shaul, Full-Stack Developer, by sending a message through the contact form on the site.",
 
       // NotFound.js – "not found" page
       notFound_title: "Page not found",
@@ -239,7 +239,7 @@ const resources = {
 
       // Home.js
       home_header_titleName: "Алон Шауль",
-      home_header_subtitle: "Frontend Разработчик",
+      home_header_subtitle: "Full-Stack разработчик",
       home_header_quote: "\"Я сочетаю инновационный подход с передовыми технологическими знаниями и уделяю внимание каждой детали, исходя из стремления создавать вдохновляющий пользовательский опыт.\nВ каждом проекте, которым я руководствуюсь, я разрабатываю эффективные и эстетичные решения, приносящие реальную ценность и подчеркивающие мои навыки как профессионального разработчика\"",
 
       home_skills_title: "Мои навыки",
@@ -274,7 +274,7 @@ const resources = {
 
       // Profile.js
       profile_title: "Обо мне",
-      profile_text: "Я Алон Шауль, Frontend-разработчик с дипломом по информатике и профессиональной подготовкой в веб-разработке, специализирующийся на создании динамичных и современных интерфейсов. В процессе обучения и профессиональной деятельности я развил способность сочетать глубокие теоретические знания с практическим применением передовых технологий, соблюдая высокие стандарты для создания безупречного и интуитивного пользовательского опыта. Я стремлюсь применять свой опыт и знания в каждом проекте, разрабатывая инновационные цифровые решения, воплощающие профессионализм, качество и совершенство.",
+      profile_text: "Я Алон Шауль, Full-Stack разработчик с дипломом по информатике и профессиональной подготовкой в веб-разработке, специализирующийся на создании динамичных и современных интерфейсов. В процессе обучения и профессиональной деятельности я развил способность сочетать глубокие теоретические знания с практическим применением передовых технологий, соблюдая высокие стандарты для создания безупречного и интуитивного пользовательского опыта. Я стремлюсь применять свой опыт и знания в каждом проекте, разрабатывая инновационные цифровые решения, воплощающие профессионализм, качество и совершенство.",
       
       // Projects.js
       projects_title: "Мои проекты",
@@ -298,14 +298,14 @@ const resources = {
       projects_image_alt: "Изображение проекта {{title}}",
 
       // Seo.js – per-page title and description (search engine metadata)
-      seo_home_title: "Alon Shaul | Портфолио Frontend-разработчика",
-      seo_home_description: "Портфолио Алона Шауля, Frontend-разработчика: современные веб-интерфейсы на React, избранные проекты и форма для связи.",
-      seo_profile_title: "Обо мне | Alon Shaul – Frontend-разработчик",
-      seo_profile_description: "Алон Шауль — Frontend-разработчик с дипломом по информатике и профессиональной подготовкой в веб-разработке. Опыт и ссылки на GitHub и LinkedIn.",
-      seo_projects_title: "Проекты | Alon Shaul – Frontend-разработчик",
+      seo_home_title: "Alon Shaul | Full-Stack Developer",
+      seo_home_description: "Портфолио Алона Шауля, Full-Stack разработчика, создающего современные веб-приложения на React и Node.js. Избранные проекты, навыки и форма для связи.",
+      seo_profile_title: "Обо мне | Alon Shaul – Full-Stack разработчик",
+      seo_profile_description: "Алон Шауль — Full-Stack разработчик с дипломом по информатике и профессиональной подготовкой в веб-разработке. Опыт и ссылки на GitHub и LinkedIn.",
+      seo_projects_title: "Проекты | Alon Shaul – Full-Stack разработчик",
       seo_projects_description: "Проекты Алона Шауля: MoveMentor — персонализированная система реабилитации и To Do List — приложение для управления задачами. Ссылки на код на GitHub.",
-      seo_contact_title: "Контакты | Alon Shaul – Frontend-разработчик",
-      seo_contact_description: "Свяжитесь с Алоном Шаулем, Frontend-разработчиком, отправив сообщение через форму обратной связи на сайте.",
+      seo_contact_title: "Контакты | Alon Shaul – Full-Stack разработчик",
+      seo_contact_description: "Свяжитесь с Алоном Шаулем, Full-Stack разработчиком, отправив сообщение через форму обратной связи на сайте.",
 
       // NotFound.js – "not found" page
       notFound_title: "Страница не найдена",
