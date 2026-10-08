@@ -1,20 +1,3 @@
-# קנוני הוא ללא לוכסן בסוף; מפנים את גרסת ה-slash לגרסה הקנונית עם 301 קבוע,
-# לפני כללי ה-200, כדי למנוע כפילות כתובות (duplicate URL). נוגע רק בנתיבים
-# התקינים הידועים - לא משפיע על 404 אמיתי, על /unknown, על assets או על functions.
-/profile/       /profile       301!
-/projects/      /projects      301!
-/contact/       /contact       301!
-
-/en/            /en            301!
-/en/profile/    /en/profile    301!
-/en/projects/   /en/projects   301!
-/en/contact/    /en/contact    301!
-
-/ru/            /ru            301!
-/ru/profile/    /ru/profile    301!
-/ru/projects/   /ru/projects   301!
-/ru/contact/    /ru/contact    301!
-
 /profile       /index.html   200
 /projects      /index.html   200
 /contact       /index.html   200
