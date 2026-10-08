@@ -75,6 +75,16 @@ const resources = {
       projects_show_all_tech: "הצגת כל הטכנולוגיות",
       projects_image_alt: "תמונת הפרויקט {{title}}",
 
+      // Seo.js – כותרת ותיאור לכל עמוד (מטא-דאטה למנועי חיפוש)
+      seo_home_title: "Alon Shaul | מפתח Frontend – תיק עבודות",
+      seo_home_description: "תיק העבודות של אלון שאול, מפתח Frontend: ממשקי ווב מודרניים ב-React, פרויקטים נבחרים וטופס ליצירת קשר.",
+      seo_profile_title: "אודות | Alon Shaul – מפתח Frontend",
+      seo_profile_description: "אלון שאול, מפתח Frontend ובוגר תואר במדעי המחשב עם הכשרה מקצועית בפיתוח אתרים. רקע מקצועי וקישורים ל-GitHub ול-LinkedIn.",
+      seo_projects_title: "פרויקטים | Alon Shaul – מפתח Frontend",
+      seo_projects_description: "הפרויקטים של אלון שאול: MoveMentor, מערכת שיקום מותאמת אישית, ו-To Do List, אפליקציה לניהול משימות. כולל הטכנולוגיות וקישורים לקוד ב-GitHub.",
+      seo_contact_title: "צור קשר | Alon Shaul – מפתח Frontend",
+      seo_contact_description: "יצירת קשר עם אלון שאול, מפתח Frontend, באמצעות שליחת הודעה בטופס יצירת הקשר שבאתר.",
+
       // MagicGame.js – מפתחות למסך הפתיחה של המשחק
       magicGame_startPrompt_title: "האם אתה מוכן לגלות קסם?",
       magicGame_startPrompt_text: "לחץ על \"התחל\" ותצטרף למסע מרהיב בחלל...",
@@ -169,6 +179,16 @@ const resources = {
       projects_show_all_tech: "Show all technologies",
       projects_image_alt: "Preview image of {{title}}",
 
+      // Seo.js – per-page title and description (search engine metadata)
+      seo_home_title: "Alon Shaul | Frontend Developer Portfolio",
+      seo_home_description: "Portfolio of Alon Shaul, a Frontend Developer building modern web interfaces with React. Selected projects, skills and a contact form.",
+      seo_profile_title: "About | Alon Shaul – Frontend Developer",
+      seo_profile_description: "Alon Shaul is a Frontend Developer with a degree in Computer Science and professional training in web development. Background and links to GitHub and LinkedIn.",
+      seo_projects_title: "Projects | Alon Shaul – Frontend Developer",
+      seo_projects_description: "Projects by Alon Shaul: MoveMentor, a personalized rehabilitation system, and To Do List, a task management app, with links to the code on GitHub.",
+      seo_contact_title: "Contact | Alon Shaul – Frontend Developer",
+      seo_contact_description: "Get in touch with Alon Shaul, Frontend Developer, by sending a message through the contact form on the site.",
+
       // MagicGame.js – Translation keys for the game start prompt
       magicGame_startPrompt_title: "Are you ready to discover magic?",
       magicGame_startPrompt_text: "Click 'Start' and join an amazing journey through space...",
@@ -262,6 +282,16 @@ const resources = {
       projects_tech_label: "Технологии",
       projects_show_all_tech: "Показать все технологии",
       projects_image_alt: "Изображение проекта {{title}}",
+
+      // Seo.js – per-page title and description (search engine metadata)
+      seo_home_title: "Alon Shaul | Портфолио Frontend-разработчика",
+      seo_home_description: "Портфолио Алона Шауля, Frontend-разработчика: современные веб-интерфейсы на React, избранные проекты и форма для связи.",
+      seo_profile_title: "Обо мне | Alon Shaul – Frontend-разработчик",
+      seo_profile_description: "Алон Шауль — Frontend-разработчик с дипломом по информатике и профессиональной подготовкой в веб-разработке. Опыт и ссылки на GitHub и LinkedIn.",
+      seo_projects_title: "Проекты | Alon Shaul – Frontend-разработчик",
+      seo_projects_description: "Проекты Алона Шауля: MoveMentor — персонализированная система реабилитации и To Do List — приложение для управления задачами. Ссылки на код на GitHub.",
+      seo_contact_title: "Контакты | Alon Shaul – Frontend-разработчик",
+      seo_contact_description: "Свяжитесь с Алоном Шаулем, Frontend-разработчиком, отправив сообщение через форму обратной связи на сайте.",
 
       // MagicGame.js – Translation keys for the game start prompt
       magicGame_startPrompt_title: "Вы готовы открыть магию?",

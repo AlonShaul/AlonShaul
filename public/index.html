@@ -2,14 +2,70 @@
 <html lang="he">
   <head>
     <meta charset="utf-8" />
-    <link rel="icon" href="%PUBLIC_URL%/Alon Shaul Logo.png" />
+    <link rel="icon" type="image/png" sizes="192x192" href="%PUBLIC_URL%/logo192.png" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="theme-color" content="#000000" />
-    <meta name="description" content="Alon Shaul - אתר אישי למפתח Frontend" />
     <link rel="apple-touch-icon" href="%PUBLIC_URL%/logo192.png" />
     <link rel="manifest" href="%PUBLIC_URL%/manifest.json" />
 
-    <title>Alon Shaul</title>
+    <!-- כותרת ותיאור ברירת מחדל, לסורקים שאינם מריצים JavaScript.
+         רכיב Seo מחליף אותם בכותרת ובתיאור של העמוד והשפה הנוכחיים. -->
+    <title data-seo-default>Alon Shaul | מפתח Frontend – תיק עבודות</title>
+    <meta
+      data-seo-default
+      name="description"
+      content="תיק העבודות של אלון שאול, מפתח Frontend: ממשקי ווב מודרניים ב-React, פרויקטים נבחרים וטופס ליצירת קשר."
+    />
+
+    <!-- Open Graph / Twitter – תצוגה מקדימה של הקישור כשכתובת האתר משותפת -->
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="Alon Shaul" />
+    <meta property="og:locale" content="he_IL" />
+    <meta property="og:url" content="https://alon-shaul-dev.com/" />
+    <meta property="og:title" content="Alon Shaul | מפתח Frontend – תיק עבודות" />
+    <meta
+      property="og:description"
+      content="תיק העבודות של אלון שאול, מפתח Frontend: ממשקי ווב מודרניים ב-React, פרויקטים נבחרים וטופס ליצירת קשר."
+    />
+    <meta property="og:image" content="https://alon-shaul-dev.com/og-image.jpg" />
+    <meta property="og:image:type" content="image/jpeg" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content="Alon Shaul – Frontend Developer – Portfolio" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Alon Shaul | מפתח Frontend – תיק עבודות" />
+    <meta
+      name="twitter:description"
+      content="תיק העבודות של אלון שאול, מפתח Frontend: ממשקי ווב מודרניים ב-React, פרויקטים נבחרים וטופס ליצירת קשר."
+    />
+    <meta name="twitter:image" content="https://alon-shaul-dev.com/og-image.jpg" />
+
+    <!-- נתונים מובנים (JSON-LD): בלוק נתונים בלבד, אינו קוד שמורץ -->
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@graph": [
+          {
+            "@type": "WebSite",
+            "@id": "https://alon-shaul-dev.com/#website",
+            "url": "https://alon-shaul-dev.com/",
+            "name": "Alon Shaul",
+            "inLanguage": ["he", "en", "ru"],
+            "publisher": { "@id": "https://alon-shaul-dev.com/#person" }
+          },
+          {
+            "@type": "Person",
+            "@id": "https://alon-shaul-dev.com/#person",
+            "name": "Alon Shaul",
+            "alternateName": "אלון שאול",
+            "jobTitle": "Frontend Developer",
+            "url": "https://alon-shaul-dev.com/",
+            "image": "https://alon-shaul-dev.com/alon-shaul-1280.webp",
+            "sameAs": ["https://www.linkedin.com/in/alonshaul/", "https://github.com/AlonShaul"]
+          }
+        ]
+      }
+    </script>
 
     <!-- טעינת גופן Anton + Orbitron מ־Google Fonts -->
     <!-- אם תרצה להוסיף משקלים שונים, אפשר להרחיב את הכתובת בהתאם -->

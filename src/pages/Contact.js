@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
 import DynamicSquares from '../components/DynamicSquares';
+import Seo from '../components/Seo';
 import { FaUser, FaEnvelope, FaCommentAlt } from 'react-icons/fa';
 
 const Contact = () => {
@@ -69,6 +70,7 @@ const Contact = () => {
 
   return (
     <>
+      <Seo page="contact" path="/contact" />
       {/* רקע דינמי עם ריבועים – מוצג תמיד מאחורי התוכן */}
       <DynamicSquares />
       <motion.div
@@ -79,9 +81,9 @@ const Contact = () => {
       >
         <section className="py-16 bg-white dark:bg-gray-900 relative z-10">
           <div className="container mx-auto px-4">
-            <h2 className="text-4xl font-bold text-center text-blue-700 dark:text-white mb-4">
+            <h1 className="text-4xl font-bold text-center text-blue-700 dark:text-white mb-4">
               {t('contact_title')}
-            </h2>
+            </h1>
             {/* קו תחתון אנימטיבי מתחת לכותרת בלבד */}
             <motion.div
               className="mt-2 w-24 h-1 bg-blue-700 mx-auto"

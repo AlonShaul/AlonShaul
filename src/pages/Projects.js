@@ -3,6 +3,7 @@ import { motion } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
 import DynamicTriangles from '../components/DynamicTriangles';
 import ProjectShowcase from '../components/ProjectShowcase';
+import Seo from '../components/Seo';
 import projects from '../data/projects';
 
 const Projects = () => {
@@ -10,6 +11,7 @@ const Projects = () => {
 
   return (
     <div className="relative overflow-hidden">
+      <Seo page="projects" path="/projects" />
       {/* רקע דינמי עם משולשים */}
       <DynamicTriangles />
 
@@ -29,9 +31,9 @@ const Projects = () => {
               transition={{ duration: 1 }}
               className="text-center mb-4"
             >
-              <h2 className="text-5xl font-extrabold font-serif text-blue-700 dark:text-white">
+              <h1 className="text-5xl font-extrabold font-serif text-blue-700 dark:text-white">
                 {t('projects_title', 'הפרויקטים שלי')}
-              </h2>
+              </h1>
               <motion.div
                 className="mt-4 w-24 h-1 bg-blue-700 mx-auto"
                 initial={{ width: 0 }}

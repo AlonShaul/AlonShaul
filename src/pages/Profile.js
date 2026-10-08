@@ -2,6 +2,7 @@ import React from 'react';
 import { motion } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
 import DynamicBackground from '../components/DynamicBackground';
+import Seo from '../components/Seo';
 import { FaLinkedin, FaGithub } from 'react-icons/fa';
 
 const Profile = () => {
@@ -10,6 +11,7 @@ const Profile = () => {
 
   return (
     <div className="relative overflow-hidden">
+      <Seo page="profile" path="/profile" />
       {/* רקע דינמי עם עיגולים */}
       <DynamicBackground />
       {/* הזחה מלמעלה כדי שלא תהיה חפיפה עם ה-navbar */}
@@ -29,9 +31,9 @@ const Profile = () => {
               transition={{ duration: 1 }}
               className={isHebrew ? "text-center mb-8" : "text-center mb-8"}
             >
-              <h2 className="text-5xl font-extrabold text-blue-700 dark:text-white">
+              <h1 className="text-5xl font-extrabold text-blue-700 dark:text-white">
                 {t('profile_title')}
-              </h2>
+              </h1>
               <motion.div
                 className="mt-2 w-24 h-1 bg-blue-700 mx-auto"
                 initial={{ width: 0 }}

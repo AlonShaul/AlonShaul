@@ -3,6 +3,7 @@ import { motion, useMotionValue, useTransform } from 'framer-motion';
 
 import { useTranslation } from 'react-i18next';
 import MagicGame from '../components/MagicGame';
+import Seo from '../components/Seo';
 
 // import MonsterSideRunnerGame from '../components/MonsterSideRunnerGame';
 
@@ -510,6 +511,7 @@ const ScrollIndicator = () => {
 const Home = () => {
   return (
     <div className="relative font-sans overflow-hidden">
+      <Seo page="home" path="/" />
       <ScrollIndicator />
       <CursorTrail />
       <Dynamic3DBackground />
