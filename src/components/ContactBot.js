@@ -1,18 +1,34 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useLocation } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import botImage from '../bot.jpg'; // עדכן את הנתיב לתמונה הנכונה
 
-// מערך "questions" מועבר מחוץ לרכיב – הוא קבוע ולא משתנה
-const questions = [
-  'שלום, אני הבוט של האתר. האם תרצה ליצור קשר עם אלון שאול?',
-  'איך קוראים לך?',
-  'מה כתובת המייל שלך?',
-  'מה ההודעה שברצונך לשלוח?'
-];
+// מערך "questions" מועבר מחוץ לרכיב – הוא קבוע ולא משתנה.
+// הודעות הבוט נשמרות כמפתחות תרגום, כך שהשיחה מוצגת בשפה הנוכחית גם לאחר החלפת שפה.
+const questions = ['bot_q_intro', 'bot_q_name', 'bot_q_email', 'bot_q_message'];
+
+// זיהוי תשובת "כן" / "לא" לשאלת הפתיחה, לפי שפת האתר
+const answerPatterns = {
+  he: { yes: /כן|בטח|אשמח/, no: /לא|לא רוצה|תודה/ },
+  en: { yes: /\b(yes|yeah|yep|sure|ok|okay)\b/, no: /\b(no|nope)\b|thanks/ },
+  ru: { yes: /да|конечно|хочу|ок/, no: /нет|не хочу|спасибо/ }
+};
+
+// מיפוי קודי שגיאה שהשרת מחזיר להודעות מתורגמות; קוד לא מוכר נופל חזרה להתנהגות הקיימת (טקסט גולמי מהשרת)
+const BOT_ERROR_KEYS = {
+  INVALID_NAME: 'bot_invalid_name',
+  INVALID_EMAIL: 'bot_invalid_email',
+  EMAIL_TOO_LONG: 'bot_email_too_long',
+  MESSAGE_TOO_LONG: 'bot_message_too_long',
+  SEND_FAILED: 'bot_send_error_later'
+};
 
 const ContactBot = () => {
   const location = useLocation();
+  const { t, i18n } = useTranslation();
+  const direction = i18n.dir();
+  const patterns = answerPatterns[i18n.language] || answerPatterns.he;
 
   // מצב פתיחת חלון הצ'אט
   const [isOpen, setIsOpen] = useState(false);
@@ -37,7 +53,7 @@ const ContactBot = () => {
   // אתחול הודעת הפתיחה אם אין הודעות
   useEffect(() => {
     if (messages.length === 0) {
-      setMessages([{ text: questions[0], user: 'bot' }]);
+      setMessages([{ key: questions[0], user: 'bot' }]);
     }
     scrollToBottom();
   }, [messages]);
@@ -51,8 +67,10 @@ const ContactBot = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   };
 
+  // validateName uses Unicode letter matching so legitimate names in any script
+  // (Hebrew, Latin, Cyrillic, etc.) pass, without hand-maintaining per-alphabet ranges.
   const validateName = (value) => {
-    const regex = /^[A-Za-z\u0590-\u05FF\s]+$/;
+    const regex = /^[\p{L}\s]+$/u;
     return regex.test(value);
   };
 
@@ -62,21 +80,21 @@ const ContactBot = () => {
     if (input.trim() === '' || conversationEnded) return;
 
     const newMessages = [...messages, { text: input, user: 'me' }];
-    let reply = '';
+    let reply = ''; // מפתח תרגום של תשובת הבוט
     let updatedData = { ...userData };
     let validResponse = false;
 
     switch (currentQuestion) {
       case 0:
-        if (/כן|בטח|אשמח/.test(input.toLowerCase())) {
+        if (patterns.yes.test(input.toLowerCase())) {
           validResponse = true;
           reply = questions[1];
-        } else if (/לא|לא רוצה|תודה/.test(input.toLowerCase())) {
+        } else if (patterns.no.test(input.toLowerCase())) {
           validResponse = true;
-          reply = 'תודה, שיהיה לך יום טוב!';
+          reply = 'bot_bye';
           setConversationEnded(true);
         } else {
-          reply = 'סליחה, אנא השב ב"כן" או "לא".';
+          reply = 'bot_yes_no';
         }
         break;
       case 1:
@@ -85,7 +103,7 @@ const ContactBot = () => {
           updatedData.name = input;
           reply = questions[2];
         } else {
-          reply = 'שם לא תקין, אנא הזן שם בעברית או באנגלית בלבד.';
+          reply = 'bot_invalid_name';
         }
         break;
       case 2:
@@ -94,7 +112,7 @@ const ContactBot = () => {
           updatedData.email = input;
           reply = questions[3];
         } else {
-          reply = 'כתובת מייל לא תקינה, אנא נסה שוב.';
+          reply = 'bot_invalid_email';
         }
         break;
       case 3:
@@ -104,7 +122,7 @@ const ContactBot = () => {
           await sendContactMessage(updatedData, newMessages);
           return;
         } else {
-          reply = 'נא להזין הודעה.';
+          reply = 'bot_empty_message';
         }
         break;
       default:
@@ -113,12 +131,12 @@ const ContactBot = () => {
 
     if (!validResponse) {
       setInput('');
-      setMessages([...newMessages, { text: reply, user: 'bot' }]);
+      setMessages([...newMessages, { key: reply, user: 'bot' }]);
       return;
     }
 
     setUserData(updatedData);
-    setMessages([...newMessages, { text: reply, user: 'bot' }]);
+    setMessages([...newMessages, { key: reply, user: 'bot' }]);
     setCurrentQuestion(currentQuestion + 1);
     setInput('');
   };
@@ -131,15 +149,19 @@ const ContactBot = () => {
         body: JSON.stringify(data)
       });
       const result = await res.json();
-      const botReply = result.error
-        ? 'תקלה בשליחת ההודעה: ' + result.error
-        : result.message;
-      setMessages([...currentMessages, { text: botReply, user: 'bot' }]);
+      // אם השרת החזיר errorCode מוכר - מציגים הודעה מתורגמת; אחרת נופלים חזרה לטקסט הגולמי מהשרת
+      const mappedKey = result.error ? BOT_ERROR_KEYS[result.errorCode] : null;
+      const botReply = !result.error
+        ? { key: 'bot_sent', user: 'bot' }
+        : mappedKey
+          ? { key: mappedKey, user: 'bot' }
+          : { key: 'bot_send_error_prefix', suffix: result.error, user: 'bot' };
+      setMessages([...currentMessages, botReply]);
     } catch (error) {
       console.error(error);
       setMessages([
         ...currentMessages,
-        { text: 'תקלה בשליחת ההודעה, נסה שוב מאוחר יותר.', user: 'bot' }
+        { key: 'bot_send_error_later', user: 'bot' }
       ]);
     }
     setConversationEnded(true);
@@ -171,9 +193,9 @@ const ContactBot = () => {
             animate={{ scale: 1 }}
             exit={{ scale: 0 }}
             onClick={() => setIsOpen(false)}
-            className="w-12 h-12 rounded-full bg-blue-500 dark:bg-blue-600 text-white flex items-center justify-center shadow-lg absolute left-0 -top-14"
+            className={`w-12 h-12 rounded-full bg-blue-500 dark:bg-blue-600 text-white flex items-center justify-center shadow-lg absolute left-0 -top-14 ${direction === 'rtl' ? '' : 'text-xs'}`}
           >
-            סגור
+            {t('bot_close')}
           </motion.button>
         )}
       </AnimatePresence>
@@ -187,12 +209,12 @@ const ContactBot = () => {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: 50 }}
             className="relative w-80 h-96 border border-gray-300 dark:border-gray-700 rounded-lg shadow-lg flex flex-col bg-gradient-to-r from-blue-500 to-blue-700 text-white"
-            style={{ direction: 'rtl' }}
+            style={{ direction }}
           >
             {/* אזור ההודעות – קבוע בגובה עם גלילה */}
             {/* כדי שהסרגל יהיה בצד ימין, הקונטיינר החיצוני מוגדר כ־LTR */}
             <div className="flex-1 px-3 pb-3 overflow-y-auto custom-scrollbar" style={{ direction: 'ltr' }}>
-              <div style={{ direction: 'rtl' }}>
+              <div style={{ direction }}>
                 {messages.map((msg, idx) => {
                   if (msg.user === 'bot') {
                     // הודעת בוט: מוצגת משמאל, תמונה מימין לטקסט
@@ -204,7 +226,7 @@ const ContactBot = () => {
                           className="w-10 h-10 rounded-full mr-3"
                         />
                         <div className="bg-white/20 dark:bg-black/30 p-2 rounded-md">
-                          {msg.text}
+                          {msg.key ? `${t(msg.key)}${msg.suffix || ''}` : msg.text}
                         </div>
                       </div>
                     );
@@ -213,7 +235,7 @@ const ContactBot = () => {
                     return (
                       <div key={idx} className="flex justify-end mb-3">
                         <div className="bg-white/20 dark:bg-black/30 p-2 rounded-md">
-                          {msg.text}
+                          {msg.key ? `${t(msg.key)}${msg.suffix || ''}` : msg.text}
                         </div>
                       </div>
                     );
@@ -232,14 +254,14 @@ const ContactBot = () => {
                   onChange={(e) => setInput(e.target.value)}
                   onKeyPress={(e) => { if (e.key === 'Enter') handleSend(); }}
                   className="w-full p-2 bg-white dark:bg-gray-900 text-black dark:text-white"
-                  placeholder="רשום את תשובתך..."
-                  style={{ direction: 'rtl' }}
+                  placeholder={t('bot_placeholder')}
+                  style={{ direction }}
                 />
                 <button
                   onClick={handleSend}
                   className="bg-blue-500 dark:bg-blue-600 text-white p-2"
                 >
-                  שלח
+                  {t('bot_send')}
                 </button>
               </div>
             )}

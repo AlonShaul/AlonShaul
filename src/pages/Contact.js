@@ -13,10 +13,23 @@ const Contact = () => {
   const [responseMsg, setResponseMsg] = useState('');
   const [errors, setErrors] = useState({ name: '', email: '' });
 
-  // בדיקת שם מלא – מאפשר רק אותיות בעברית או באנגלית ורווחים
+  // validateName uses Unicode letter matching so legitimate names in any script
+  // (Hebrew, Latin, Cyrillic, etc.) pass, without hand-maintaining per-alphabet ranges.
   const validateName = (value) => {
-    const regex = /^[A-Za-z\u0590-\u05FF\s]+$/;
+    const regex = /^[\p{L}\s]+$/u;
     return regex.test(value);
+  };
+
+  // Maps server-returned error codes to translated i18n keys. An unrecognized/missing
+  // code falls back to the existing behavior (raw error text from the server).
+  const SERVER_ERROR_KEYS = {
+    INVALID_INPUT: 'contact_error_invalidInput',
+    INVALID_NAME: 'contact_error_name',
+    EMAIL_TOO_LONG: 'contact_error_emailTooLong',
+    MESSAGE_TOO_LONG: 'contact_error_messageTooLong',
+    INVALID_EMAIL: 'contact_error_email',
+    MESSAGE_REQUIRED: 'contact_error_messageRequired',
+    SEND_FAILED: 'contact_error_tryLater'
   };
 
   const handleChange = (e) => {
@@ -53,7 +66,9 @@ const Contact = () => {
       .then((res) => res.json())
       .then((data) => {
         if (data.error) {
-          setResponseMsg(t('contact_error_generic') + data.error);
+          // אם השרת החזיר errorCode מוכר - מציגים הודעה מתורגמת; אחרת נופלים חזרה לטקסט הגולמי מהשרת
+          const translatedKey = SERVER_ERROR_KEYS[data.errorCode];
+          setResponseMsg(translatedKey ? t(translatedKey) : t('contact_error_generic') + data.error);
         } else {
           setResponseMsg(t('contact_success'));
           setFormData({ name: '', email: '', message: '', website: '' });

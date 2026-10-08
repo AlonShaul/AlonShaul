@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 
 const ThemeToggle = () => {
+  const { t } = useTranslation();
   const [isDark, setIsDark] = useState(false);
 
   // בעת טעינת הקומפוננטה, בדוק את localStorage ועדכן את מצב הנושא
@@ -43,10 +45,10 @@ const ThemeToggle = () => {
         >
           {isDark ? (
             // במצב חושך, הראה אייקון ירח (מעיד לעבור למצב אור)
-            <img src="/icons/Moon.png" alt="מצב חושך" className="w-4 h-4" />
+            <img src="/icons/Moon.png" alt={t('theme_dark_alt')} className="w-4 h-4" />
           ) : (
             // במצב אור, הראה אייקון שמש (מעיד לעבור למצב חושך)
-            <img src="/icons/Sun.png" alt="מצב אור" className="w-4 h-4" />
+            <img src="/icons/Sun.png" alt={t('theme_light_alt')} className="w-4 h-4" />
           )}
         </div>
       </div>

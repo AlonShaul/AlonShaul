@@ -1,21 +1,20 @@
-import React, { useState, useEffect } from 'react';
-import i18n from '../i18n';
+import React from 'react';
+import { useLocation, useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
+import { getLanguageFromPath, stripLanguage, localizePath } from '../languageRoutes';
 
 const LanguageSwitcher = () => {
-  // שפות זמינות: he, en, ru; ברירת מחדל: עברית
-  const [language, setLanguage] = useState(() => localStorage.getItem('appLanguage') || 'he');
-
-  useEffect(() => {
-    // שינוי שפת המערכת והגדרת כיוון המסמך בהתאם
-    i18n.changeLanguage(language);
-    document.documentElement.lang = language;
-    document.documentElement.dir = language === 'he' ? 'rtl' : 'ltr';
-    localStorage.setItem('appLanguage', language);
-  }, [language]);
+  const { t } = useTranslation();
+  const location = useLocation();
+  const navigate = useNavigate();
+  // שפות זמינות: he, en, ru. השפה הנוכחית נקבעת לפי הכתובת.
+  const language = getLanguageFromPath(location.pathname);
 
   const handleLanguageChange = (e) => {
-    setLanguage(e.target.value);
-    // אין צורך לרענן את הדף – i18next יעודכן ויעביר את המפתחות
+    // מעבר לאותו עמוד בשפה שנבחרה, למשל /en/projects -> /ru/projects.
+    // אין צורך לרענן את הדף – App מסנכרן את i18next לפי הכתובת החדשה.
+    const target = localizePath(stripLanguage(location.pathname), e.target.value);
+    navigate(`${target}${location.search}${location.hash}`);
   };
 
   return (
@@ -24,7 +23,7 @@ const LanguageSwitcher = () => {
         value={language}
         onChange={handleLanguageChange}
         className="appearance-none bg-blue-600 text-white p-3 rounded-full shadow-lg focus:outline-none focus:ring-2 focus:ring-blue-300 pr-10 text-center"
-        aria-label="בחירת שפה"
+        aria-label={t('language_select_label')}
       >
         <option value="he" className="text-center">עברית</option>
         <option value="en" className="text-center">English</option>

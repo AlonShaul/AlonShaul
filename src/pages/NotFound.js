@@ -1,13 +1,16 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
 import Seo from '../components/Seo';
+import { getLanguageFromPath, localizePath } from '../languageRoutes';
 
 // עמוד "לא נמצא" – מוצג עבור כל כתובת שאינה אחד מעמודי האתר
 const NotFound = () => {
   const { t, i18n } = useTranslation();
   const isRTL = i18n.dir() === 'rtl';
+  // כפתור החזרה מוביל לדף הבית של השפה הנוכחית
+  const language = getLanguageFromPath(useLocation().pathname);
 
   return (
     <motion.div
@@ -36,7 +39,7 @@ const NotFound = () => {
             {t('notFound_text')}
           </p>
           <Link
-            to="/"
+            to={localizePath('/', language)}
             className="mt-8 inline-flex items-center justify-center rounded-full bg-blue-700 px-6 py-3 font-semibold text-white shadow-md transition-colors duration-200 hover:bg-blue-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 dark:focus-visible:ring-offset-gray-900"
           >
             {t('notFound_home')}

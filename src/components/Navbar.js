@@ -1,12 +1,15 @@
 import React, { useState, useEffect } from 'react';
-import { Link, NavLink } from 'react-router-dom';
+import { Link, NavLink, useLocation } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import ThemeToggle from './ThemeToggle';
 import LanguageSwitcher from './LanguageSwitcher';
 import { useTranslation } from 'react-i18next';
+import { getLanguageFromPath, localizePath } from '../languageRoutes';
 
 const Navbar = () => {
   const { t } = useTranslation();
+  // הקישורים נשארים בתוך השפה של הכתובת הנוכחית, למשל /en/projects
+  const language = getLanguageFromPath(useLocation().pathname);
   const [menuOpen, setMenuOpen] = useState(false);
   const [showNavbar, setShowNavbar] = useState(true);
   const [lastScrollY, setLastScrollY] = useState(0);
@@ -62,7 +65,7 @@ const Navbar = () => {
                 whileHover="hover"
               >
                 <Link
-                  to="/"
+                  to={localizePath('/', language)}
                   className="text-white hover:text-black text-2xl font-orbitron uppercase tracking-widest"
                 >
                   Alon Shaul
@@ -83,7 +86,7 @@ const Navbar = () => {
                   className="relative"
                 >
                   <NavLink
-                    to={item === "home" ? "/" : `/${item}`}
+                    to={localizePath(item === "home" ? "/" : `/${item}`, language)}
                     end={item === "home"}
                     className={({ isActive }) =>
                       `${baseClass} ${isActive ? activeClass : ""}`
@@ -128,7 +131,7 @@ const Navbar = () => {
                   {["home", "profile", "projects", "contact"].map((item) => (
                     <NavLink
                       key={item}
-                      to={item === "home" ? "/" : `/${item}`}
+                      to={localizePath(item === "home" ? "/" : `/${item}`, language)}
                       end={item === "home"}
                       className={({ isActive }) =>
                         `${baseClass} ${isActive ? activeClass : ""}`

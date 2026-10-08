@@ -87,7 +87,7 @@ export default async (request, context) => {
   // אין maxlength מוגדר בטפסים הקיימים (Contact.js / ContactBot.js), לכן נבחרו ערכים נדיבים
   // שלא חוסמים שימוש תקין בעברית/אנגלית/רוסית - רק מונעים קלט קיצוני או מטיפוס שגוי.
   if (typeof name !== 'string' || typeof email !== 'string' || typeof message !== 'string') {
-    return new Response(JSON.stringify({ error: 'קלט לא תקין' }), { status: 400, headers });
+    return new Response(JSON.stringify({ error: 'קלט לא תקין', errorCode: 'INVALID_INPUT' }), { status: 400, headers });
   }
 
   const NAME_MAX_LENGTH = 100;
@@ -95,21 +95,21 @@ export default async (request, context) => {
   const MESSAGE_MAX_LENGTH = 5000;
 
   if (!name.trim() || name.length > NAME_MAX_LENGTH) {
-    return new Response(JSON.stringify({ error: 'שם לא תקין' }), { status: 400, headers });
+    return new Response(JSON.stringify({ error: 'שם לא תקין', errorCode: 'INVALID_NAME' }), { status: 400, headers });
   }
   if (email.length > EMAIL_MAX_LENGTH) {
-    return new Response(JSON.stringify({ error: 'כתובת אימייל ארוכה מדי' }), { status: 400, headers });
+    return new Response(JSON.stringify({ error: 'כתובת אימייל ארוכה מדי', errorCode: 'EMAIL_TOO_LONG' }), { status: 400, headers });
   }
   if (message.length > MESSAGE_MAX_LENGTH) {
-    return new Response(JSON.stringify({ error: 'ההודעה ארוכה מדי' }), { status: 400, headers });
+    return new Response(JSON.stringify({ error: 'ההודעה ארוכה מדי', errorCode: 'MESSAGE_TOO_LONG' }), { status: 400, headers });
   }
 
   // בדיקה בסיסית: אימייל חייב להיות תקין והודעה לא ריקה
   if (!email || !validator.isEmail(email)) {
-    return new Response(JSON.stringify({ error: 'כתובת אימייל לא תקינה' }), { status: 400, headers });
+    return new Response(JSON.stringify({ error: 'כתובת אימייל לא תקינה', errorCode: 'INVALID_EMAIL' }), { status: 400, headers });
   }
   if (!message) {
-    return new Response(JSON.stringify({ error: 'יש לספק הודעה' }), { status: 400, headers });
+    return new Response(JSON.stringify({ error: 'יש לספק הודעה', errorCode: 'MESSAGE_REQUIRED' }), { status: 400, headers });
   }
 
   // מנגנון איידמפוטנסי: חשב hash של תוכן הבקשה ובדוק אם זו בקשה כפולה בתוך חלון זמן קצר (5 שניות)
@@ -150,7 +150,7 @@ export default async (request, context) => {
     return new Response(JSON.stringify({ message: 'ההודעה התקבלה והמייל נשלח!' }), { status: 200, headers });
   } catch (error) {
     console.error('Error in contact function:', error);
-    return new Response(JSON.stringify({ error: 'תקלה בעת שליחת ההודעה' }), { status: 500, headers });
+    return new Response(JSON.stringify({ error: 'תקלה בעת שליחת ההודעה', errorCode: 'SEND_FAILED' }), { status: 500, headers });
   }
 };
 

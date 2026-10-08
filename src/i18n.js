@@ -1,7 +1,7 @@
 // frontend/src/i18n.js
 import i18n from 'i18next';
 import { initReactI18next } from 'react-i18next';
-import LanguageDetector from 'i18next-browser-languagedetector';
+import { getLanguageFromPath, getDirection } from './languageRoutes';
 
 const resources = {
   he: {
@@ -92,6 +92,40 @@ const resources = {
       seo_notFound_title: "הדף לא נמצא | Alon Shaul",
       seo_notFound_description: "הדף שחיפשת אינו קיים, או שהכתובת שלו השתנתה.",
 
+      // טקסטים כלליים של הממשק: בורר שפה, מצב תצוגה, תפריט נגישות והבוט
+      language_select_label: "בחירת שפה",
+      theme_dark_alt: "מצב חושך",
+      theme_light_alt: "מצב אור",
+      a11y_open: "אפשרויות נגישות",
+      a11y_title: "תפריט נגישות",
+      a11y_contrast_heading: "התאמת ניגודיות:",
+      a11y_invert: "ניגודיות הפוכה",
+      a11y_grayscale: "גווני אפור",
+      a11y_content_heading: "התאמת תוכן:",
+      a11y_text_increase: "הגדלת טקסט",
+      a11y_text_decrease: "הקטנת טקסט",
+      a11y_highlight_links: "הדגשת קישורים",
+      a11y_highlight_headings: "הדגשת כותרות",
+      a11y_stop_animations: "עצירת אנימציות",
+      a11y_reset: "איפוס",
+      bot_q_intro: "שלום, אני הבוט של האתר. האם תרצה ליצור קשר עם אלון שאול?",
+      bot_q_name: "איך קוראים לך?",
+      bot_q_email: "מה כתובת המייל שלך?",
+      bot_q_message: "מה ההודעה שברצונך לשלוח?",
+      bot_bye: "תודה, שיהיה לך יום טוב!",
+      bot_yes_no: "סליחה, אנא השב ב\"כן\" או \"לא\".",
+      bot_invalid_name: "שם לא תקין, אנא הזן שם המכיל אותיות בלבד.",
+      bot_invalid_email: "כתובת מייל לא תקינה, אנא נסה שוב.",
+      bot_empty_message: "נא להזין הודעה.",
+      bot_email_too_long: "כתובת המייל ארוכה מדי, נסה כתובת קצרה יותר.",
+      bot_message_too_long: "ההודעה ארוכה מדי, נסה לקצר אותה.",
+      bot_send_error_prefix: "תקלה בשליחת ההודעה: ",
+      bot_send_error_later: "תקלה בשליחת ההודעה, נסה שוב מאוחר יותר.",
+      bot_sent: "ההודעה התקבלה והמייל נשלח!",
+      bot_placeholder: "רשום את תשובתך...",
+      bot_send: "שלח",
+      bot_close: "סגור",
+
       // MagicGame.js – מפתחות למסך הפתיחה של המשחק
       magicGame_startPrompt_title: "האם אתה מוכן לגלות קסם?",
       magicGame_startPrompt_text: "לחץ על \"התחל\" ותצטרף למסע מרהיב בחלל...",
@@ -107,11 +141,15 @@ const resources = {
       contact_placeholder_message: "כתוב את הודעתך כאן...",
       contact_submit: "שלח",
 
-      contact_error_name: "יש להזין שם מלא המכיל רק אותיות בעברית או באנגלית ורווחים",
+      contact_error_name: "יש להזין שם מלא המכיל אותיות ורווחים בלבד",
       contact_error_email: "אימייל שגוי",
       contact_error_fixFields: "תקלה: אנא תקן את השדות עם השגיאה",
       contact_error_generic: "שגיאה: ",
       contact_error_tryLater: "תקלה בשליחת ההודעה, נסה שוב מאוחר יותר.",
+      contact_error_invalidInput: "קלט לא תקין",
+      contact_error_emailTooLong: "כתובת האימייל ארוכה מדי",
+      contact_error_messageTooLong: "ההודעה ארוכה מדי",
+      contact_error_messageRequired: "יש לספק הודעה",
 
       // הודעת הצלחה בעברית:
       contact_success: "ההודעה התקבלה והמייל נשלח בהצלחה!"
@@ -203,6 +241,40 @@ const resources = {
       seo_notFound_title: "Page not found | Alon Shaul",
       seo_notFound_description: "The page you are looking for does not exist, or its address has changed.",
 
+      // General UI strings: language selector, theme toggle, accessibility menu and chat bot
+      language_select_label: "Select language",
+      theme_dark_alt: "Dark mode",
+      theme_light_alt: "Light mode",
+      a11y_open: "Accessibility options",
+      a11y_title: "Accessibility menu",
+      a11y_contrast_heading: "Contrast adjustment:",
+      a11y_invert: "Inverted contrast",
+      a11y_grayscale: "Grayscale",
+      a11y_content_heading: "Content adjustment:",
+      a11y_text_increase: "Increase text",
+      a11y_text_decrease: "Decrease text",
+      a11y_highlight_links: "Highlight links",
+      a11y_highlight_headings: "Highlight headings",
+      a11y_stop_animations: "Stop animations",
+      a11y_reset: "Reset",
+      bot_q_intro: "Hi, I'm the site's bot. Would you like to contact Alon Shaul?",
+      bot_q_name: "What is your name?",
+      bot_q_email: "What is your email address?",
+      bot_q_message: "What message would you like to send?",
+      bot_bye: "Thank you, have a nice day!",
+      bot_yes_no: "Sorry, please answer \"yes\" or \"no\".",
+      bot_invalid_name: "Invalid name, please use letters only.",
+      bot_invalid_email: "Invalid email address, please try again.",
+      bot_empty_message: "Please enter a message.",
+      bot_email_too_long: "That email address is too long, please try a shorter one.",
+      bot_message_too_long: "That message is too long, please shorten it.",
+      bot_send_error_prefix: "There was a problem sending the message: ",
+      bot_send_error_later: "There was a problem sending the message, please try again later.",
+      bot_sent: "Your message was received and the email was sent!",
+      bot_placeholder: "Type your answer...",
+      bot_send: "Send",
+      bot_close: "Close",
+
       // MagicGame.js – Translation keys for the game start prompt
       magicGame_startPrompt_title: "Are you ready to discover magic?",
       magicGame_startPrompt_text: "Click 'Start' and join an amazing journey through space...",
@@ -223,6 +295,10 @@ const resources = {
       contact_error_fixFields: "Error: Please fix the highlighted fields",
       contact_error_generic: "Error: ",
       contact_error_tryLater: "There was a problem sending your message, please try again later.",
+      contact_error_invalidInput: "Invalid input",
+      contact_error_emailTooLong: "Email address is too long",
+      contact_error_messageTooLong: "Message is too long",
+      contact_error_messageRequired: "Please provide a message",
 
       // הודעת הצלחה באנגלית:
       contact_success: "Your message has been sent successfully!"
@@ -314,6 +390,40 @@ const resources = {
       seo_notFound_title: "Страница не найдена | Alon Shaul",
       seo_notFound_description: "Страница, которую вы ищете, не существует, или её адрес изменился.",
 
+      // General UI strings: language selector, theme toggle, accessibility menu and chat bot
+      language_select_label: "Выбор языка",
+      theme_dark_alt: "Тёмный режим",
+      theme_light_alt: "Светлый режим",
+      a11y_open: "Параметры доступности",
+      a11y_title: "Меню доступности",
+      a11y_contrast_heading: "Настройка контраста:",
+      a11y_invert: "Инверсия контраста",
+      a11y_grayscale: "Оттенки серого",
+      a11y_content_heading: "Настройка контента:",
+      a11y_text_increase: "Увеличить текст",
+      a11y_text_decrease: "Уменьшить текст",
+      a11y_highlight_links: "Выделить ссылки",
+      a11y_highlight_headings: "Выделить заголовки",
+      a11y_stop_animations: "Остановить анимацию",
+      a11y_reset: "Сброс",
+      bot_q_intro: "Здравствуйте, я бот сайта. Хотите связаться с Алоном Шаулем?",
+      bot_q_name: "Как вас зовут?",
+      bot_q_email: "Какой у вас адрес электронной почты?",
+      bot_q_message: "Какое сообщение вы хотите отправить?",
+      bot_bye: "Спасибо, хорошего дня!",
+      bot_yes_no: "Извините, ответьте «да» или «нет».",
+      bot_invalid_name: "Некорректное имя, используйте только буквы.",
+      bot_invalid_email: "Некорректный адрес электронной почты, попробуйте ещё раз.",
+      bot_empty_message: "Пожалуйста, введите сообщение.",
+      bot_email_too_long: "Этот адрес электронной почты слишком длинный, попробуйте короче.",
+      bot_message_too_long: "Это сообщение слишком длинное, попробуйте сократить его.",
+      bot_send_error_prefix: "Не удалось отправить сообщение: ",
+      bot_send_error_later: "Не удалось отправить сообщение, попробуйте позже.",
+      bot_sent: "Сообщение получено, письмо отправлено!",
+      bot_placeholder: "Введите ваш ответ...",
+      bot_send: "Отправить",
+      bot_close: "Скрыть",
+
       // MagicGame.js – Translation keys for the game start prompt
       magicGame_startPrompt_title: "Вы готовы открыть магию?",
       magicGame_startPrompt_text: "Нажмите 'Начать' и присоединитесь к удивительному путешествию по космосу...",
@@ -334,6 +444,10 @@ const resources = {
       contact_error_fixFields: "Ошибка: Пожалуйста, исправьте выделенные поля",
       contact_error_generic: "Ошибка: ",
       contact_error_tryLater: "Произошла ошибка при отправке сообщения, попробуйте позже.",
+      contact_error_invalidInput: "Некорректные данные",
+      contact_error_emailTooLong: "Адрес электронной почты слишком длинный",
+      contact_error_messageTooLong: "Сообщение слишком длинное",
+      contact_error_messageRequired: "Пожалуйста, введите сообщение",
 
       // הודעת הצלחה на русском:
       contact_success: "Ваше сообщение успешно отправлено!"
@@ -341,16 +455,18 @@ const resources = {
   }
 };
 
+// השפה נקבעת לפי כתובת ה-URL (ללא קידומת = עברית, /en = אנגלית, /ru = רוסית),
+// ולא לפי שפת הדפדפן או localStorage – כך השפה נכונה כבר בציור הראשון.
+const initialLanguage = getLanguageFromPath(window.location.pathname);
+document.documentElement.lang = initialLanguage;
+document.documentElement.dir = getDirection(initialLanguage);
+
 i18n
-  .use(LanguageDetector)
   .use(initReactI18next)
   .init({
     resources,
+    lng: initialLanguage,
     fallbackLng: 'he',
-    detection: {
-      order: ['localStorage', 'navigator', 'htmlTag'],
-      caches: ['localStorage']
-    },
     interpolation: {
       escapeValue: false
     }
