@@ -58,10 +58,22 @@ const resources = {
       projects_title: "הפרויקטים שלי",
       // מפתחות תרגום לפרויקט MoveMentor:
       project_title_moveMentor: "MoveMentor: מערכת שיקום מותאמת אישית",
-      project_description_moveMentor: "מערכת שיקום מותאמת אישית לשיקום פיזי, הכוללת תוכניות אימון אישיות, צ'אטבוט אינטואיטיבי, מערכת אימייל מתקדמת ומעקב סטטיסטי. הפרויקט בנוי בטכנולוגיות React, Node.js, MongoDB, TailwindCSS, HTML, CSS, JavaScript, Chart.js, SendGrid ו-Render.",
+      project_description_moveMentor: "מערכת שיקום פיזי מותאמת אישית, עם תוכניות אימון אישיות, צ'אטבוט אינטואיטיבי, מערכת אימייל מתקדמת ומעקב סטטיסטי.",
       // מפתחות תרגום לפרויקט To Do List:
       project_title_toDoList: "To Do List: אפליקציה לניהול משימות",
-      project_description_toDoList: "אפליקציה שנוצרה על מנת לעזור בניהול המשימות היומיות, הכוללת אפשרות להוספת משימה ומחיקת משימה. האפליקציה עובדת בשיתוף עם MongoDB לאחסון נתונים, כך שניתן להמשיך לבצע פעולות גם לאחר סגירת האפליקציה.",
+      project_description_toDoList: "אפליקציה לניהול משימות יומיות: הוספה ומחיקה של משימות, עם שמירת הנתונים ב-MongoDB כך שהמשימות נשארות זמינות גם לאחר סגירת האפליקציה.",
+
+      // ProjectShowcase.js – טקסטים של תצוגת הפרויקטים
+      projects_carousel_label: "תצוגת פרויקטים",
+      projects_prev: "הפרויקט הקודם",
+      projects_next: "הפרויקט הבא",
+      projects_status: "פרויקט {{current}} מתוך {{total}}",
+      projects_go_to: "מעבר לפרויקט {{current}}",
+      projects_view_github: "צפייה ב-GitHub",
+      projects_new_tab: "נפתח בלשונית חדשה",
+      projects_tech_label: "טכנולוגיות",
+      projects_show_all_tech: "הצגת כל הטכנולוגיות",
+      projects_image_alt: "תמונת הפרויקט {{title}}",
 
       // MagicGame.js – מפתחות למסך הפתיחה של המשחק
       magicGame_startPrompt_title: "האם אתה מוכן לגלות קסם?",
@@ -140,10 +152,22 @@ const resources = {
       projects_title: "My Projects",
       // Translation keys for project MoveMentor:
       project_title_moveMentor: "MoveMentor: Personalized Rehabilitation System",
-      project_description_moveMentor: "A personalized rehabilitation system for physical recovery, featuring custom workout plans, an intuitive chatbot, advanced email system, and statistical tracking. Built with React, Node.js, MongoDB, TailwindCSS, HTML, CSS, JavaScript, Chart.js, SendGrid, and Render.",
+      project_description_moveMentor: "A personalized physical rehabilitation system with custom workout plans, an intuitive chatbot, an advanced email system and statistical tracking.",
       // Translation keys for project To Do List:
       project_title_toDoList: "To Do List Project",
-      project_description_toDoList: "We created an app called 'To Do List Project'. Its purpose is to help manage our daily tasks. The application allows you to add and delete tasks, and it works with MongoDB to store data so that tasks remain available even after exiting the app.",
+      project_description_toDoList: "A daily task manager for adding and deleting tasks, with data stored in MongoDB so tasks remain available after the app is closed.",
+
+      // ProjectShowcase.js – project showcase UI strings
+      projects_carousel_label: "Project showcase",
+      projects_prev: "Previous project",
+      projects_next: "Next project",
+      projects_status: "Project {{current}} of {{total}}",
+      projects_go_to: "Go to project {{current}}",
+      projects_view_github: "View on GitHub",
+      projects_new_tab: "opens in a new tab",
+      projects_tech_label: "Technologies",
+      projects_show_all_tech: "Show all technologies",
+      projects_image_alt: "Preview image of {{title}}",
 
       // MagicGame.js – Translation keys for the game start prompt
       magicGame_startPrompt_title: "Are you ready to discover magic?",
@@ -222,10 +246,22 @@ const resources = {
       projects_title: "Мои проекты",
       // Translation keys for project MoveMentor:
       project_title_moveMentor: "Ментор Движения: Персонализированная система реабилитации",
-      project_description_moveMentor: "Персонализированная система реабилитации для физического восстановления, включающая индивидуальные планы тренировок, интуитивно понятного чат-бота, продвинутую систему электронной почты и статистический трекинг. Проект построен с использованием React, Node.js, MongoDB, TailwindCSS, HTML, CSS, JavaScript, Chart.js, SendGrid и Render.",
+      project_description_moveMentor: "Персонализированная система физической реабилитации с индивидуальными планами тренировок, интуитивным чат-ботом, продвинутой системой электронной почты и статистическим трекингом.",
       // Translation keys for project To Do List:
       project_title_toDoList: "Проект To Do List",
-      project_description_toDoList: "Мы создали приложение 'To Do List Project'. Его цель – помочь в управлении ежедневными задачами. Приложение позволяет добавлять и удалять задачи, и оно работает совместно с MongoDB для хранения данных, чтобы задачи сохранялись даже после выхода из приложения.",
+      project_description_toDoList: "Приложение для управления ежедневными задачами: добавление и удаление задач с хранением данных в MongoDB, чтобы задачи сохранялись и после закрытия приложения.",
+
+      // ProjectShowcase.js – project showcase UI strings
+      projects_carousel_label: "Витрина проектов",
+      projects_prev: "Предыдущий проект",
+      projects_next: "Следующий проект",
+      projects_status: "Проект {{current}} из {{total}}",
+      projects_go_to: "Перейти к проекту {{current}}",
+      projects_view_github: "Смотреть на GitHub",
+      projects_new_tab: "откроется в новой вкладке",
+      projects_tech_label: "Технологии",
+      projects_show_all_tech: "Показать все технологии",
+      projects_image_alt: "Изображение проекта {{title}}",
 
       // MagicGame.js – Translation keys for the game start prompt
       magicGame_startPrompt_title: "Вы готовы открыть магию?",
