@@ -85,6 +85,13 @@ const resources = {
       seo_contact_title: "צור קשר | Alon Shaul – מפתח Frontend",
       seo_contact_description: "יצירת קשר עם אלון שאול, מפתח Frontend, באמצעות שליחת הודעה בטופס יצירת הקשר שבאתר.",
 
+      // NotFound.js – עמוד "לא נמצא"
+      notFound_title: "הדף לא נמצא",
+      notFound_text: "הדף שחיפשת אינו קיים, או שהכתובת שלו השתנתה.",
+      notFound_home: "חזרה לדף הבית",
+      seo_notFound_title: "הדף לא נמצא | Alon Shaul",
+      seo_notFound_description: "הדף שחיפשת אינו קיים, או שהכתובת שלו השתנתה.",
+
       // MagicGame.js – מפתחות למסך הפתיחה של המשחק
       magicGame_startPrompt_title: "האם אתה מוכן לגלות קסם?",
       magicGame_startPrompt_text: "לחץ על \"התחל\" ותצטרף למסע מרהיב בחלל...",
@@ -189,6 +196,13 @@ const resources = {
       seo_contact_title: "Contact | Alon Shaul – Frontend Developer",
       seo_contact_description: "Get in touch with Alon Shaul, Frontend Developer, by sending a message through the contact form on the site.",
 
+      // NotFound.js – "not found" page
+      notFound_title: "Page not found",
+      notFound_text: "The page you are looking for does not exist, or its address has changed.",
+      notFound_home: "Back to home",
+      seo_notFound_title: "Page not found | Alon Shaul",
+      seo_notFound_description: "The page you are looking for does not exist, or its address has changed.",
+
       // MagicGame.js – Translation keys for the game start prompt
       magicGame_startPrompt_title: "Are you ready to discover magic?",
       magicGame_startPrompt_text: "Click 'Start' and join an amazing journey through space...",
@@ -292,6 +306,13 @@ const resources = {
       seo_projects_description: "Проекты Алона Шауля: MoveMentor — персонализированная система реабилитации и To Do List — приложение для управления задачами. Ссылки на код на GitHub.",
       seo_contact_title: "Контакты | Alon Shaul – Frontend-разработчик",
       seo_contact_description: "Свяжитесь с Алоном Шаулем, Frontend-разработчиком, отправив сообщение через форму обратной связи на сайте.",
+
+      // NotFound.js – "not found" page
+      notFound_title: "Страница не найдена",
+      notFound_text: "Страница, которую вы ищете, не существует, или её адрес изменился.",
+      notFound_home: "Вернуться на главную",
+      seo_notFound_title: "Страница не найдена | Alon Shaul",
+      seo_notFound_description: "Страница, которую вы ищете, не существует, или её адрес изменился.",
 
       // MagicGame.js – Translation keys for the game start prompt
       magicGame_startPrompt_title: "Вы готовы открыть магию?",

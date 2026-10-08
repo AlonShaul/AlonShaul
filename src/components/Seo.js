@@ -7,7 +7,8 @@ const SITE_URL = 'https://alon-shaul-dev.com';
 // React 19 מעביר את התגיות <title>, <meta> ו-<link> ל-<head> באופן מובנה, ללא ספרייה חיצונית.
 // page – שם העמוד במפתחות התרגום (seo_<page>_title / seo_<page>_description)
 // path – הנתיב הקנוני של העמוד, ללא לוכסן בסוף (מלבד דף הבית)
-const Seo = ({ page, path }) => {
+// noindex – לעמוד "לא נמצא": מבקש ממנועי חיפוש לא לאנדקס אותו, ואין לו כתובת קנונית
+const Seo = ({ page, path, noindex = false }) => {
   const { t } = useTranslation();
 
   // ברירות המחדל הסטטיות ב-index.html מיועדות לסורקים שאינם מריצים JavaScript.
@@ -20,7 +21,11 @@ const Seo = ({ page, path }) => {
     <>
       <title>{t(`seo_${page}_title`)}</title>
       <meta name="description" content={t(`seo_${page}_description`)} />
-      <link rel="canonical" href={`${SITE_URL}${path}`} />
+      {noindex ? (
+        <meta name="robots" content="noindex" />
+      ) : (
+        <link rel="canonical" href={`${SITE_URL}${path}`} />
+      )}
     </>
   );
 };

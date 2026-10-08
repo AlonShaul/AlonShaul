@@ -7,6 +7,7 @@ import Home from './pages/Home';
 import Profile from './pages/Profile';
 import Projects from './pages/Projects';
 import Contact from './pages/Contact';
+import NotFound from './pages/NotFound';
 import AccessibilityWidget from './components/AccessibilityWidget';
 import ContactBot from './components/ContactBot'; // הוספת ייבוא של הבוט
 
@@ -21,6 +22,8 @@ function App() {
           <Route path="/profile" element={<Profile />} />
           <Route path="/projects" element={<Projects />} />
           <Route path="/contact" element={<Contact />} />
+          {/* כל כתובת אחרת – עמוד "לא נמצא". כל עמוד חדש צריך גם שורה ב-public/_redirects */}
+          <Route path="*" element={<NotFound />} />
         </Routes>
       </main>
       <Footer />
