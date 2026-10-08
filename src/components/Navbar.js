@@ -4,12 +4,21 @@ import { motion, AnimatePresence } from 'framer-motion';
 import ThemeToggle from './ThemeToggle';
 import LanguageSwitcher from './LanguageSwitcher';
 import { useTranslation } from 'react-i18next';
-import { getLanguageFromPath, localizePath } from '../languageRoutes';
+import { getLanguageFromPath, localizePath, stripLanguage } from '../languageRoutes';
 
 const Navbar = () => {
   const { t } = useTranslation();
+  const location = useLocation();
   // הקישורים נשארים בתוך השפה של הכתובת הנוכחית, למשל /en/projects
-  const language = getLanguageFromPath(useLocation().pathname);
+  const language = getLanguageFromPath(location.pathname);
+  // האם אנחנו כבר בדף הבית של קבוצת השפה הנוכחית - אם כן, קליק על "Alon Shaul" לא ינווט
+  // (אותו path), אז מגלגלים ידנית לראש העמוד כדי שההתנהגות עדיין תרגיש כמו קישור "בית" רגיל.
+  const isHomePage = stripLanguage(location.pathname) === '/';
+  const handleLogoClick = () => {
+    if (isHomePage) {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+  };
   // ה-nav כולו קבוע כ-dir="ltr" (למטה) בעברית, ולכן אין הפיכת כיוון אוטומטית מה-<html dir>;
   // המראה הנוכחי בעברית הוא נקודת הייחוס, ומבנה זה הופך ידנית עבור אנגלית/רוסית.
   const isHebrew = language === 'he';
@@ -63,8 +72,10 @@ const Navbar = () => {
               isHebrew ? '' : 'flex-row-reverse'
             }`}
           >
-            {/* קבוצת הלוגו: עברית - נשאר בצד הקיים. אנגלית/רוסית - עובר לצד הנגדי יחד עם כל הקבוצה (flex-row-reverse למעלה) */}
-            <div className="flex items-center gap-6">
+            {/* קבוצת הלוגו: עברית - נשאר בדיוק כפי שהיה (סדר וצד). אנגלית/רוסית - הקבוצה עוברת לצד הנגדי
+                (flex-row-reverse על הקונטיינר החיצוני למעלה), וגם הסדר הפנימי מתהפך כך שהתצוגה
+                משמאל לימין בתוך הקבוצה היא: שפה -> מצב כהה/בהיר -> Alon Shaul (הקרוב ביותר לקצה הימני) */}
+            <div className={`flex items-center gap-6 ${isHebrew ? '' : 'flex-row-reverse'}`}>
               <motion.div
                 variants={linkVariants}
                 initial="initial"
@@ -73,7 +84,9 @@ const Navbar = () => {
               >
                 <Link
                   to={localizePath('/', language)}
-                  className="text-white hover:text-black text-2xl font-orbitron uppercase tracking-widest"
+                  onClick={handleLogoClick}
+                  aria-label={`Alon Shaul – ${t('home')}`}
+                  className="text-white hover:text-black text-2xl font-orbitron uppercase tracking-widest focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-blue-600 rounded"
                 >
                   Alon Shaul
                 </Link>
