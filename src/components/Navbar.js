@@ -10,6 +10,9 @@ const Navbar = () => {
   const { t } = useTranslation();
   // הקישורים נשארים בתוך השפה של הכתובת הנוכחית, למשל /en/projects
   const language = getLanguageFromPath(useLocation().pathname);
+  // ה-nav כולו קבוע כ-dir="ltr" (למטה) בעברית, ולכן אין הפיכת כיוון אוטומטית מה-<html dir>;
+  // המראה הנוכחי בעברית הוא נקודת הייחוס, ומבנה זה הופך ידנית עבור אנגלית/רוסית.
+  const isHebrew = language === 'he';
   const [menuOpen, setMenuOpen] = useState(false);
   const [showNavbar, setShowNavbar] = useState(true);
   const [lastScrollY, setLastScrollY] = useState(0);
@@ -55,8 +58,12 @@ const Navbar = () => {
           dir="ltr"
           style={{ userSelect: "none" }}  // <-- ביטול אפשרות הבחירה
         >
-          <div className="container mx-auto flex items-center justify-between px-6 py-4">
-            {/* קבוצת שמאל: לוגו, ThemeToggle, LanguageSwitcher */}
+          <div
+            className={`container mx-auto flex items-center justify-between px-6 py-4 ${
+              isHebrew ? '' : 'flex-row-reverse'
+            }`}
+          >
+            {/* קבוצת הלוגו: עברית - נשאר בצד הקיים. אנגלית/רוסית - עובר לצד הנגדי יחד עם כל הקבוצה (flex-row-reverse למעלה) */}
             <div className="flex items-center gap-6">
               <motion.div
                 variants={linkVariants}
@@ -74,8 +81,13 @@ const Navbar = () => {
               <ThemeToggle />
               <LanguageSwitcher />
             </div>
-            {/* קבוצת ניווט – גרסת דסקטופ */}
-            <div className="hidden md:flex flex-row-reverse space-x-6 space-x-reverse">
+            {/* קבוצת ניווט – גרסת דסקטופ. עברית: הסדר ההפוך הקיים (לא משתנה).
+                אנגלית/רוסית: סדר קריאה טבעי משמאל לימין, בצד הנגדי (בזכות flex-row-reverse על הקונטיינר החיצוני) */}
+            <div
+              className={`hidden md:flex space-x-6 ${
+                isHebrew ? 'flex-row-reverse space-x-reverse' : ''
+              }`}
+            >
               {["home", "profile", "projects", "contact"].map((item) => (
                 <motion.div
                   key={item}

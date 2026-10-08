@@ -72,8 +72,9 @@ const AccessibilityWidget = () => {
   }, [stopAnimations]);
 
   return (
-    // ממקמים בצד שמאל ובאמצע הגובה; כיוון הטקסט לפי השפה
-    <div className="fixed left-4 top-1/2 transform -translate-y-1/2 z-50" dir={i18n.dir()}>
+    // ממקמים באמצע הגובה, בצד "end" הלוגי: ב-RTL (עברית) end=שמאל - כפי שהיה עד כה ללא שינוי;
+    // ב-LTR (אנגלית/רוסית) end=ימין - מראה של המיקום בעברית. כיוון הטקסט לפי השפה
+    <div className="fixed end-4 top-1/2 transform -translate-y-1/2 z-50" dir={i18n.dir()}>
       <button
         onClick={toggleWidget}
         className="bg-blue-600 text-white p-3 rounded-full shadow-lg focus:outline-none focus:ring-2 focus:ring-blue-300"

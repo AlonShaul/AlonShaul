@@ -168,7 +168,9 @@ const ContactBot = () => {
   };
 
   return (
-    <div className="fixed bottom-4 right-4 z-50">
+    // מיקום בצד "start" הלוגי: ב-RTL (עברית) start=ימין - כפי שהיה עד כה ללא שינוי;
+    // ב-LTR (אנגלית/רוסית) start=שמאל - מראה של המיקום בעברית.
+    <div className="fixed bottom-4 start-4 z-50">
       {/* כפתור עגול "בוט" כאשר החלון סגור */}
       <AnimatePresence>
         {!isOpen && (
@@ -193,7 +195,8 @@ const ContactBot = () => {
             animate={{ scale: 1 }}
             exit={{ scale: 0 }}
             onClick={() => setIsOpen(false)}
-            className={`w-12 h-12 rounded-full bg-blue-500 dark:bg-blue-600 text-white flex items-center justify-center shadow-lg absolute left-0 -top-14 ${direction === 'rtl' ? '' : 'text-xs'}`}
+            // מיקום בצד "end" הלוגי: ב-RTL (עברית) end=שמאל - כפי שהיה עד כה; ב-LTR end=ימין - מראה
+            className={`w-12 h-12 rounded-full bg-blue-500 dark:bg-blue-600 text-white flex items-center justify-center shadow-lg absolute end-0 -top-14 ${direction === 'rtl' ? '' : 'text-xs'}`}
           >
             {t('bot_close')}
           </motion.button>
