@@ -370,94 +370,6 @@ const ParallaxSection = () => {
   );
 };
 
-// const BeyondHorizonSection = () => {
-//   const mvX = useMotionValue(0);
-//   const [gaugeValue, setGaugeValue] = useState(50);
-//   const needleRotation = useTransform(mvX, [-200, 200], [-45, 45]);
-
-//   const handleMouseMove = (e) => {
-//     const centerX = window.innerWidth / 2;
-//     const offsetX = e.clientX - centerX;
-//     const clampedX = Math.max(-200, Math.min(200, offsetX));
-//     mvX.set(clampedX);
-//     const gaugeVal = (e.clientX / window.innerWidth) * 100;
-//     setGaugeValue(gaugeVal.toFixed(0));
-//   };
-
-//   const bubbles = useMemo(
-//     () =>
-//       Array.from({ length: 10 }).map((_, index) => ({
-//         id: index,
-//         size: 30 + Math.random() * 50,
-//         top: Math.random() * 100 + "%",
-//         left: Math.random() * 100 + "%",
-//         amplitudeX: 10 + Math.random() * 20,
-//         amplitudeY: 10 + Math.random() * 20,
-//         duration: 4 + Math.random() * 3,
-//       })),
-//     []
-//   );
-
-//   return (
-//     <section
-//       className="relative flex flex-col items-center justify-center min-h-screen bg-gradient-to-br from-blue-800 to-blue-900 text-white overflow-hidden"
-//       onMouseMove={handleMouseMove}
-//     >
-//       {bubbles.map((bubble) => (
-//         <motion.div
-//           key={bubble.id}
-//           className="absolute rounded-full bg-white opacity-10"
-//           style={{
-//             width: bubble.size,
-//             height: bubble.size,
-//             top: bubble.top,
-//             left: bubble.left,
-//           }}
-//           animate={{ x: [0, bubble.amplitudeX, 0], y: [0, bubble.amplitudeY, 0] }}
-//           transition={{ duration: bubble.duration, repeat: Infinity, ease: "easeInOut" }}
-//         />
-//       ))}
-//       <svg className="absolute" width="300" height="300" viewBox="0 0 300 300">
-//         <path
-//           d="M50,250 A100,100 0 0,1 250,250"
-//           stroke="#ffffff33"
-//           strokeWidth="20"
-//           fill="none"
-//           strokeLinecap="round"
-//         />
-//       </svg>
-//       <motion.svg className="absolute" width="300" height="300" viewBox="0 0 300 300">
-//         <motion.line
-//           x1="150"
-//           y1="250"
-//           x2="150"
-//           y2="100"
-//           stroke="white"
-//           strokeWidth="8"
-//           strokeLinecap="round"
-//           style={{ originX: "50%", originY: "100%", rotate: needleRotation }}
-//         />
-//       </motion.svg>
-//       <motion.div
-//         className="relative z-10 text-center p-4"
-//         initial={{ opacity: 0, y: 20 }}
-//         animate={{ opacity: 1, y: 0 }}
-//         transition={{ duration: 1 }}
-//       >
-//         <h2 className="text-4xl font-bold mb-2">Energy Level</h2>
-//         <p className="text-2xl">{gaugeValue}%</p>
-//         <p className="mt-2 italic">Beyond the Horizon</p>
-//       </motion.div>
-//       <motion.div
-//         className="absolute bg-white rounded-full opacity-20"
-//         style={{ width: 50, height: 50, top: "10%", left: "10%" }}
-//         animate={{ x: [0, 20, 0], y: [0, 20, 0] }}
-//         transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
-//       />
-//     </section>
-//   );
-// };
-
 const CursorTrail = () => {
   const [trails, setTrails] = useState([]);
   useEffect(() => {
@@ -489,36 +401,15 @@ const CursorTrail = () => {
   );
 };
 
-const ScrollIndicator = () => {
-  const [progress, setProgress] = useState(0);
-  useEffect(() => {
-    const onScroll = () => {
-      const scrollTop = window.scrollY;
-      const docHeight = document.documentElement.scrollHeight - window.innerHeight;
-      setProgress((scrollTop / docHeight) * 100);
-    };
-    window.addEventListener("scroll", onScroll);
-    return () => window.removeEventListener("scroll", onScroll);
-  }, []);
-  return (
-    <motion.div
-      className="fixed top-0 left-0 h-1 bg-blue-700 dark:bg-blue-400 z-50"
-      style={{ width: `${progress}%` }}
-    />
-  );
-};
-
 const Home = () => {
   return (
     <div className="relative font-sans overflow-hidden">
       <Seo page="home" path="/" />
-      <ScrollIndicator />
       <CursorTrail />
       <Dynamic3DBackground />
       <HeroSection />
       <SkillsSection />
       <ParallaxSection />
-      {/* <BeyondHorizonSection /> */}
       {/* כאן נוסף משחק הקסם */}
       <MagicGame />
       {/* כאן נוסף המשחק החדש */}

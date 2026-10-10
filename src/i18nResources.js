@@ -14,7 +14,6 @@ export const resources = {
       profile: "פרופיל",
       projects: "פרויקטים",
       contact: "צור קשר",
-      welcome: "ברוכים הבאים לאתר שלי",
 
       // Home.js
       home_header_titleName: "Alon Shaul",
@@ -22,7 +21,6 @@ export const resources = {
       home_header_quote: "\"אני משלב גישה חדשנית עם התמחות טכנולוגית מתקדמת, ומקפיד על כל פרט מתוך מחויבות לעיצוב חוויית משתמש מעצימה.\nבכל פרויקט שאני מוביל, אני מתכנן פתרונות יעילים ואסתטיים שמעניקים ערך אמיתי ומדגישים את כישוריי כמפתח מקצועי\".",
 
       home_skills_title: "המיומנויות שלי",
-      home_skills_subtext: "כל כישור מתואר בקצרה, עם דגש על היכולות וההתמחות שלי.",
 
       home_skills_react_title: "React",
       home_skills_react_text: "בניית ממשקים דינמיים ומתקדמים.",
@@ -36,20 +34,6 @@ export const resources = {
       home_skills_mongo_text: "ניהול מסדי נתונים NoSQL.",
       home_skills_python_title: "Python",
       home_skills_python_text: "פיתוח backend, סקריפטים ואוטומציה.",
-
-      home_articles_title: "כתבות ומאמרים",
-
-      home_article1_title: "פיתוח אתרים מודרני",
-      home_article1_text: "כתבה על שימוש בטכנולוגיות מתקדמות ליצירת אתרים איכותיים.",
-      home_article1_link: "קראו עוד",
-
-      home_article2_title: "עולם ה-JavaScript",
-      home_article2_text: "מגמות ופיתוחים עכשוויים בתחום JavaScript.",
-      home_article2_link: "קראו עוד",
-
-      home_article3_title: "עיצוב חוויית משתמש",
-      home_article3_text: "מאמר על חדשנות ויצירתיות בעיצוב חוויית המשתמש.",
-      home_article3_link: "קראו עוד",
 
       // Profile.js
       profile_title: "אודותי",
@@ -167,7 +151,6 @@ export const resources = {
       profile: "Profile",
       projects: "Projects",
       contact: "Contact",
-      welcome: "Welcome to my website",
 
       // Home.js
       home_header_titleName: "Alon Shaul",
@@ -175,7 +158,6 @@ export const resources = {
       home_header_quote: "\"I combine an innovative approach with advanced technological expertise, and I pay attention to every detail with a commitment to designing an empowering user experience.\nIn every project I lead, I plan efficient and aesthetic solutions that deliver true value and highlight my skills as a professional developer\"",
 
       home_skills_title: "My Skills",
-      home_skills_subtext: "Each skill is briefly described, highlighting my strengths and specialties.",
 
       home_skills_react_title: "React",
       home_skills_react_text: "Building dynamic and advanced interfaces.",
@@ -189,20 +171,6 @@ export const resources = {
       home_skills_mongo_text: "Managing NoSQL databases.",
       home_skills_python_title: "Python",
       home_skills_python_text: "Backend development, scripting, and automation.",
-
-      home_articles_title: "Articles and Posts",
-
-      home_article1_title: "Modern Web Development",
-      home_article1_text: "An article about using cutting-edge technologies to build high-quality websites.",
-      home_article1_link: "Read More",
-
-      home_article2_title: "The JavaScript World",
-      home_article2_text: "Trends and current developments in the JavaScript ecosystem.",
-      home_article2_link: "Read More",
-
-      home_article3_title: "User Experience Design",
-      home_article3_text: "An article about innovation and creativity in user experience design.",
-      home_article3_link: "Read More",
 
       // Profile.js
       profile_title: "About Me",
@@ -320,7 +288,6 @@ export const resources = {
       profile: "Профиль",
       projects: "Проекты",
       contact: "Контакт",
-      welcome: "Добро пожаловать на мой сайт",
 
       // Home.js
       home_header_titleName: "Алон Шауль",
@@ -328,7 +295,6 @@ export const resources = {
       home_header_quote: "\"Я сочетаю инновационный подход с передовыми технологическими знаниями и уделяю внимание каждой детали, исходя из стремления создавать вдохновляющий пользовательский опыт.\nВ каждом проекте, которым я руководствуюсь, я разрабатываю эффективные и эстетичные решения, приносящие реальную ценность и подчеркивающие мои навыки как профессионального разработчика\"",
 
       home_skills_title: "Мои навыки",
-      home_skills_subtext: "Каждый навык описан кратко, с акцентом на мои сильные стороны и специализации.",
 
       home_skills_react_title: "React",
       home_skills_react_text: "Creating dynamic and modern interfaces.",
@@ -342,20 +308,6 @@ export const resources = {
       home_skills_mongo_text: "Managing NoSQL databases.",
       home_skills_python_title: "Python",
       home_skills_python_text: "Backend development, scripting, and automation.",
-
-      home_articles_title: "Статьи и публикации",
-
-      home_article1_title: "Modern Web Development",
-      home_article1_text: "An article about using advanced technologies to create high-quality websites.",
-      home_article1_link: "Read More",
-
-      home_article2_title: "The JavaScript World",
-      home_article2_text: "Trends and current developments in the JavaScript ecosystem.",
-      home_article2_link: "Read More",
-
-      home_article3_title: "User Experience Design",
-      home_article3_text: "An article about innovation and creativity in user experience design.",
-      home_article3_link: "Read More",
 
       // Profile.js
       profile_title: "Обо мне",

@@ -4,11 +4,8 @@
   "private": true,
   "dependencies": {
     "@prisma/client": "^6.4.1",
-    "cra-template": "1.2.0",
     "framer-motion": "^12.4.2",
     "i18next": "^24.2.2",
-    "i18next-browser-languagedetector": "^8.0.4",
-    "lucide-react": "^0.475.0",
     "nodemailer": "^10.0.13",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",

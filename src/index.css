@@ -35,10 +35,6 @@ html[dir="rtl"] {
 }
 
 /* הגדרות נוספות */
-.high-contrast {
-  filter: contrast(150%);
-}
-
 .invert-contrast {
   filter: invert(100%);
 }
@@ -65,11 +61,6 @@ html[dir="rtl"] {
 .stop-animations * {
   animation: none !important;
   transition: none !important;
-}
-
-.accessibility-widget {
-  direction: rtl;
-  text-align: center;
 }
 
 /* --- Custom Scrollbar Styles --- */
