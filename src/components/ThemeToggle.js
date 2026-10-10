@@ -30,7 +30,14 @@ const ThemeToggle = () => {
   };
 
   return (
-    <div onClick={toggleTheme} className="cursor-pointer flex items-center">
+    <button
+      type="button"
+      onClick={toggleTheme}
+      role="switch"
+      aria-checked={isDark}
+      aria-label={t('theme_toggle_label')}
+      className="cursor-pointer flex items-center bg-transparent border-0 p-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-300 rounded-full"
+    >
       {/* סליידר עם גודל מוקטן */}
       <div
         className={`w-12 h-6 rounded-full relative transition-colors duration-300 ${
@@ -52,7 +59,7 @@ const ThemeToggle = () => {
           )}
         </div>
       </div>
-    </div>
+    </button>
   );
 };
 

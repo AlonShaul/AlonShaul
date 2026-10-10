@@ -94,7 +94,11 @@ export const resources = {
       seo_notFound_description: "הדף שחיפשת אינו קיים, או שהכתובת שלו השתנתה.",
 
       // טקסטים כלליים של הממשק: בורר שפה, מצב תצוגה, תפריט נגישות והבוט
+      skip_to_content: "דלג לתוכן הראשי",
+      navbar_menu_open: "פתיחת תפריט ניווט",
+      navbar_menu_close: "סגירת תפריט ניווט",
       language_select_label: "בחירת שפה",
+      theme_toggle_label: "החלפת מצב תצוגה בהיר/כהה",
       theme_dark_alt: "מצב חושך",
       theme_light_alt: "מצב אור",
       a11y_open: "אפשרויות נגישות",
@@ -243,7 +247,11 @@ export const resources = {
       seo_notFound_description: "The page you are looking for does not exist, or its address has changed.",
 
       // General UI strings: language selector, theme toggle, accessibility menu and chat bot
+      skip_to_content: "Skip to main content",
+      navbar_menu_open: "Open navigation menu",
+      navbar_menu_close: "Close navigation menu",
       language_select_label: "Select language",
+      theme_toggle_label: "Toggle light/dark mode",
       theme_dark_alt: "Dark mode",
       theme_light_alt: "Light mode",
       a11y_open: "Accessibility options",
@@ -392,7 +400,11 @@ export const resources = {
       seo_notFound_description: "Страница, которую вы ищете, не существует, или её адрес изменился.",
 
       // General UI strings: language selector, theme toggle, accessibility menu and chat bot
+      skip_to_content: "Перейти к основному содержимому",
+      navbar_menu_open: "Открыть меню навигации",
+      navbar_menu_close: "Закрыть меню навигации",
       language_select_label: "Выбор языка",
+      theme_toggle_label: "Переключить светлый/тёмный режим",
       theme_dark_alt: "Тёмный режим",
       theme_light_alt: "Светлый режим",
       a11y_open: "Параметры доступности",

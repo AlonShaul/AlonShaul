@@ -217,7 +217,7 @@ const ContactBot = () => {
             {/* אזור ההודעות – קבוע בגובה עם גלילה */}
             {/* כדי שהסרגל יהיה בצד ימין, הקונטיינר החיצוני מוגדר כ־LTR */}
             <div className="flex-1 px-3 pb-3 overflow-y-auto custom-scrollbar" style={{ direction: 'ltr' }}>
-              <div style={{ direction }}>
+              <div role="log" aria-live="polite" aria-atomic="false" style={{ direction }}>
                 {messages.map((msg, idx) => {
                   if (msg.user === 'bot') {
                     // הודעת בוט: מוצגת משמאל, תמונה מימין לטקסט

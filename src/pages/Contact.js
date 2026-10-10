@@ -149,13 +149,15 @@ const Contact = () => {
                     placeholder={t('contact_placeholder_name')}
                     className={`w-full ${paddingClass} h-12 leading-tight border border-gray-300 dark:border-gray-600 rounded focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white`}
                     required
+                    aria-invalid={!!errors.name}
+                    aria-describedby={errors.name ? 'name-error' : undefined}
                   />
                   <FaUser
                     className={`absolute ${iconPosition} top-1/2 transform -translate-y-1/2 text-gray-400 text-lg`}
                   />
                 </div>
                 {errors.name && (
-                  <p className="text-red-500 mt-1 text-sm">{errors.name}</p>
+                  <p id="name-error" role="alert" className="text-red-500 mt-1 text-sm">{errors.name}</p>
                 )}
               </div>
 
@@ -177,13 +179,15 @@ const Contact = () => {
                     placeholder={t('contact_placeholder_email')}
                     className={`w-full ${paddingClass} h-12 leading-tight border border-gray-300 dark:border-gray-600 rounded focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white`}
                     required
+                    aria-invalid={!!errors.email}
+                    aria-describedby={errors.email ? 'email-error' : undefined}
                   />
                   <FaEnvelope
                     className={`absolute ${iconPosition} top-1/2 transform -translate-y-1/2 text-gray-400 text-lg`}
                   />
                 </div>
                 {errors.email && (
-                  <p className="text-red-500 mt-1 text-sm">{errors.email}</p>
+                  <p id="email-error" role="alert" className="text-red-500 mt-1 text-sm">{errors.email}</p>
                 )}
               </div>
 
@@ -221,7 +225,7 @@ const Contact = () => {
               </motion.button>
 
               {responseMsg && (
-                <p className="text-center mt-4 text-green-600 dark:text-green-400 font-semibold">
+                <p role="status" aria-live="polite" className="text-center mt-4 text-green-600 dark:text-green-400 font-semibold">
                   {responseMsg}
                 </p>
               )}

@@ -238,9 +238,9 @@ const ProjectShowcase = ({ projects }) => {
                   </div>
 
                   <div className="flex min-w-0 flex-1 flex-col gap-4 p-6 text-start md:p-8 xl:justify-center">
-                    <h3 className="break-words font-serif text-2xl font-bold leading-tight text-gray-900 dark:text-white md:text-3xl xl:text-2xl 2xl:text-3xl">
+                    <h2 className="break-words font-serif text-2xl font-bold leading-tight text-gray-900 dark:text-white md:text-3xl xl:text-2xl 2xl:text-3xl">
                       {title}
-                    </h3>
+                    </h2>
                     <p className="text-sm leading-relaxed text-gray-600 dark:text-gray-300 md:text-base xl:text-sm 2xl:text-base">
                       {t(project.descriptionKey)}
                     </p>

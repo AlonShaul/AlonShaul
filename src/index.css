@@ -18,6 +18,22 @@ html[dir="rtl"] {
   text-align: right;
 }
 
+/* רשת ביטחון גלובלית: כאשר המערכת/הדפדפן מוגדרים ל"הפחתת תנועה", מקצרים
+   אנימציות/מעברים מבוססי-CSS לכמעט-מיידי. זה לא מכבה אנימציות המונפשות
+   ב-JS (framer-motion) - עבורן יש בקרה ייעודית בתפריט הנגישות ובקרוסלת
+   הפרויקטים (useReducedMotion) - אבל זה מכסה את כל מעברי/אנימציות ה-CSS
+   הרגילים (transition-*, hover, וכו') בכל רחבי האתר. */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
 /* הגדרות נוספות */
 .high-contrast {
   filter: contrast(150%);
