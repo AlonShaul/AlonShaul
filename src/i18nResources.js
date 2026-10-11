@@ -31,7 +31,14 @@ export const resources = {
 
       // Profile.js
       profile_title: "אודותי",
-      profile_text: "שמי אלון שאול, בוגר תואר במדעי המחשב עם הכשרה מקצועית בפיתוח אתרים, ומפתח Full-Stack המתמחה ביצירת ממשקים דינאמיים ומודרניים. במהלך לימודיי והניסיון שצברתי, פיתחתי יכולת לשלב ידע תיאורטי עמוק עם יישום מעשי של טכנולוגיות עדכניות, תוך הקפדה על סטנדרטים גבוהים ליצירת חוויות משתמש חלקות ואינטואיטיביות. אני מחויב להביא את הידע והניסיון שצברתי לכל פרויקט, תוך יצירת פתרונות דיגיטליים חדשניים המשלבים מקצוענות, איכות ומצוינות.",
+      profile_text: "אני אלון שאול, מפתח Full-Stack עם תואר B.Sc. במדעי המחשב. אני בונה אפליקציות ווב מקצה לקצה - ממשקי React, שרתי Node.js, ומסדי הנתונים המחברים ביניהם - ונוח לי לעבוד על כל שכבות המערכת, מהממשק דרך ה-API ועד לשכבת הנתונים.",
+      profile_skills_title: "כישורים טכניים",
+      profile_skills_frontend_label: "פרונטאנד",
+      profile_skills_backend_label: "בקאנד",
+      profile_skills_databases_label: "מסדי נתונים",
+      profile_skills_tools_label: "כלים",
+      profile_education_title: "השכלה",
+      profile_education_degree: "תואר ראשון (B.Sc.) במדעי המחשב",
       
       // Projects.js
       projects_title: "הפרויקטים שלי",
@@ -166,7 +173,14 @@ export const resources = {
 
       // Profile.js
       profile_title: "About Me",
-      profile_text: "I am Alon Shaul, a Full-Stack Developer with a degree in Computer Science and professional training in web development, specializing in creating dynamic and modern interfaces. Throughout my studies and professional experience, I have honed my ability to blend deep theoretical knowledge with the practical application of cutting-edge technologies, all while upholding high standards to craft seamless and intuitive user experiences. I am committed to bringing my expertise to every project by developing innovative digital solutions that embody professionalism, quality, and excellence.",
+      profile_text: "I'm Alon Shaul, a Full-Stack Developer with a B.Sc. in Computer Science. I build full-stack web applications end-to-end - React front ends, Node.js back ends, and the databases that connect them - and I'm comfortable working across the entire stack, from UI to API to data.",
+      profile_skills_title: "Technical Skills",
+      profile_skills_frontend_label: "Frontend",
+      profile_skills_backend_label: "Backend",
+      profile_skills_databases_label: "Databases",
+      profile_skills_tools_label: "Tools",
+      profile_education_title: "Education",
+      profile_education_degree: "B.Sc. in Computer Science",
       
       // Projects.js
       projects_title: "My Projects",
@@ -301,7 +315,14 @@ export const resources = {
 
       // Profile.js
       profile_title: "Обо мне",
-      profile_text: "Я Алон Шауль, Фулстек-разработчик с дипломом по информатике и профессиональной подготовкой в веб-разработке, специализирующийся на создании динамичных и современных интерфейсов. В процессе обучения и профессиональной деятельности я развил способность сочетать глубокие теоретические знания с практическим применением передовых технологий, соблюдая высокие стандарты для создания безупречного и интуитивного пользовательского опыта. Я стремлюсь применять свой опыт и знания в каждом проекте, разрабатывая инновационные цифровые решения, воплощающие профессионализм, качество и совершенство.",
+      profile_text: "Я Алон Шауль, Фулстек-разработчик со степенью бакалавра (B.Sc.) в информатике. Я разрабатываю full-stack веб-приложения от начала до конца - интерфейсы на React, серверную часть на Node.js и базы данных, которые их связывают - и уверенно работаю со всем стеком, от интерфейса до API и хранения данных.",
+      profile_skills_title: "Технические навыки",
+      profile_skills_frontend_label: "Фронтенд",
+      profile_skills_backend_label: "Бэкенд",
+      profile_skills_databases_label: "Базы данных",
+      profile_skills_tools_label: "Инструменты",
+      profile_education_title: "Образование",
+      profile_education_degree: "Степень бакалавра (B.Sc.) в информатике",
       
       // Projects.js
       projects_title: "Мои проекты",

@@ -5,6 +5,19 @@ import DynamicBackground from '../components/DynamicBackground';
 import Seo from '../components/Seo';
 import { FaLinkedin, FaGithub } from 'react-icons/fa';
 
+// שמות הטכנולוגיות נשארים זהים בכל שפה (שמות קניינים), ולכן אינם עוברים דרך i18n -
+// בדיוק כמו מערך ה-tech בכל פרויקט ב-data/projects.js.
+const SKILL_GROUPS = [
+  { labelKey: 'profile_skills_frontend_label', items: ['React', 'JavaScript', 'HTML', 'CSS', 'Tailwind CSS'] },
+  { labelKey: 'profile_skills_backend_label', items: ['Node.js', 'Express', 'Python'] },
+  { labelKey: 'profile_skills_databases_label', items: ['MongoDB', 'SQL'] },
+  { labelKey: 'profile_skills_tools_label', items: ['Git'] },
+];
+
+const skillChipClass =
+  'rounded-full border border-blue-100 bg-blue-50 px-3 py-1 text-xs font-medium text-blue-700 ' +
+  'dark:border-blue-400/20 dark:bg-blue-500/10 dark:text-blue-200';
+
 const Profile = () => {
   const { t, i18n } = useTranslation();
   const isHebrew = i18n.language === 'he';
@@ -29,7 +42,7 @@ const Profile = () => {
               initial={{ opacity: 0, scale: 0.8 }}
               animate={{ opacity: 1, scale: 1 }}
               transition={{ duration: 1 }}
-              className={isHebrew ? "text-center mb-8" : "text-center mb-8"}
+              className="text-center mb-8"
             >
               <h1 className="text-5xl font-extrabold text-blue-700 dark:text-white">
                 {t('profile_title')}
@@ -67,9 +80,53 @@ const Profile = () => {
                 >
                   {t('profile_text')}
                 </motion.p>
+
+                {/* כישורים טכניים - מקובצים לפי תחום, שמות הטכנולוגיות עצמם לא מתורגמים */}
+                <motion.div
+                  className="mb-6"
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 1, delay: 0.55 }}
+                >
+                  <h2 className="text-xl font-bold text-blue-700 dark:text-white mb-3">
+                    {t('profile_skills_title')}
+                  </h2>
+                  <div className="space-y-3">
+                    {SKILL_GROUPS.map((group) => (
+                      <div key={group.labelKey}>
+                        <h3 className="text-xs font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400 mb-1.5">
+                          {t(group.labelKey)}
+                        </h3>
+                        <ul className="flex flex-wrap gap-2">
+                          {group.items.map((item) => (
+                            <li key={item} className={skillChipClass}>
+                              {item}
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+                    ))}
+                  </div>
+                </motion.div>
+
+                {/* השכלה */}
+                <motion.div
+                  className="mb-6"
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 1, delay: 0.6 }}
+                >
+                  <h2 className="text-xl font-bold text-blue-700 dark:text-white mb-2">
+                    {t('profile_education_title')}
+                  </h2>
+                  <p className="text-gray-700 dark:text-gray-300">
+                    {t('profile_education_degree')}
+                  </p>
+                </motion.div>
+
                 {/* קישורי רשתות – מוצגים אחד מתחת לשני */}
-                <motion.div 
-                  className={`flex flex-col space-y-4 mt-4 ${isHebrew ? "items-start" : "items-start"}`}
+                <motion.div
+                  className="flex flex-col space-y-4 mt-4 items-start"
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
                   transition={{ duration: 1, delay: 0.7 }}
