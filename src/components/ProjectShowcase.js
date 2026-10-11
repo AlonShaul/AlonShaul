@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { motion, useReducedMotion } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
-import { FaGithub, FaChevronLeft, FaChevronRight, FaArrowRight } from 'react-icons/fa';
+import { FaGithub, FaChevronLeft, FaChevronRight, FaArrowRight, FaExternalLinkAlt } from 'react-icons/fa';
 
 // עד מספר זה כל מקטע בפס ההתקדמות לחיץ; מעליו הפס הוא חיווי בלבד
 const MAX_TRACK_BUTTONS = 8;
@@ -269,7 +269,18 @@ const ProjectShowcase = ({ projects }) => {
                       </ul>
                     )}
 
-                    <div className="mt-auto pt-2 xl:mt-0">
+                    {project.contributionKey && (
+                      <div>
+                        <p className="text-xs font-semibold uppercase tracking-wide text-blue-700/70 dark:text-blue-300/70">
+                          {t('projects_role_label')}
+                        </p>
+                        <p className="mt-1 text-sm leading-relaxed text-gray-600 dark:text-gray-300">
+                          {t(project.contributionKey)}
+                        </p>
+                      </div>
+                    )}
+
+                    <div className="mt-auto flex flex-wrap items-center gap-3 pt-2 xl:mt-0">
                       <a
                         href={project.link}
                         target="_blank"
@@ -291,6 +302,25 @@ const ProjectShowcase = ({ projects }) => {
                           className="text-xs transition-transform duration-200 group-hover/cta:translate-x-1 motion-reduce:transform-none rtl:rotate-180 rtl:group-hover/cta:-translate-x-1"
                         />
                       </a>
+                      {project.demoUrl && (
+                        <a
+                          href={project.demoUrl}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          tabIndex={isActive ? 0 : -1}
+                          draggable={false}
+                          onClick={(event) => {
+                            if (dragged.current) event.preventDefault();
+                          }}
+                          className="group/demo inline-flex items-center gap-2 rounded-full border-2 border-blue-700 px-5 py-2.5 text-sm font-semibold text-blue-700 shadow-sm transition-colors duration-200 hover:bg-blue-700 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 dark:border-blue-400 dark:text-blue-300 dark:hover:bg-blue-500 dark:hover:text-white dark:focus-visible:ring-offset-gray-800"
+                        >
+                          <FaExternalLinkAlt aria-hidden="true" className="text-sm" />
+                          <span>{t('projects_live_demo')}</span>
+                          <span className="sr-only">
+                            : {title} ({t('projects_new_tab')})
+                          </span>
+                        </a>
+                      )}
                     </div>
                   </div>
                 </article>

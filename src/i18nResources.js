@@ -37,10 +37,12 @@ export const resources = {
       projects_title: "הפרויקטים שלי",
       // מפתחות תרגום לפרויקט MoveMentor:
       project_title_moveMentor: "MoveMentor: מערכת שיקום מותאמת אישית",
-      project_description_moveMentor: "מערכת שיקום פיזי מותאמת אישית, עם תוכניות אימון אישיות, צ'אטבוט אינטואיטיבי, מערכת אימייל מתקדמת ומעקב סטטיסטי.",
+      project_description_moveMentor: "מערכת שיקום פיזי מותאמת אישית, עם ממשק React, שרת Node.js, ומסד נתונים MongoDB. המטופלים מקבלים תוכניות אימון אישיות, צ'אטבוט אינטואיטיבי, התראות אימייל אוטומטיות, ומעקב חזותי אחר ההתקדמות - בנייה מלאה של Full-Stack, ממסד הנתונים ועד לפריסה.",
+      project_contribution_moveMentor: "תוכננה ונבנתה באופן עצמאי - משכבת מסד הנתונים וה-API בשרת ועד לממשק ה-React והפריסה בפרודקשן.",
       // מפתחות תרגום לפרויקט To Do List:
       project_title_toDoList: "To Do List: אפליקציה לניהול משימות",
-      project_description_toDoList: "אפליקציה לניהול משימות יומיות: הוספה ומחיקה של משימות, עם שמירת הנתונים ב-MongoDB כך שהמשימות נשארות זמינות גם לאחר סגירת האפליקציה.",
+      project_description_toDoList: "אפליקציה לניהול משימות מבוססת-שרת (server-rendered), שנבנתה עם Node.js ו-Express, תבניות EJS לתצוגה, ו-MongoDB (דרך Mongoose) לשמירת המשימות בין הפעלות.",
+      project_contribution_toDoList: "פותחה באופן עצמאי, כולל נתיבי ה-Express, סכמת ה-MongoDB, ותצוגות השרת.",
 
       // ProjectShowcase.js – טקסטים של תצוגת הפרויקטים
       projects_carousel_label: "תצוגת פרויקטים",
@@ -49,9 +51,11 @@ export const resources = {
       projects_status: "פרויקט {{current}} מתוך {{total}}",
       projects_go_to: "מעבר לפרויקט {{current}}",
       projects_view_github: "צפייה ב-GitHub",
+      projects_live_demo: "הדגמה חיה",
       projects_new_tab: "נפתח בלשונית חדשה",
       projects_tech_label: "טכנולוגיות",
       projects_show_all_tech: "הצגת כל הטכנולוגיות",
+      projects_role_label: "התפקיד שלי",
       projects_image_alt: "תמונת הפרויקט {{title}}",
 
       // Seo.js – כותרת ותיאור לכל עמוד (מטא-דאטה למנועי חיפוש)
@@ -168,10 +172,12 @@ export const resources = {
       projects_title: "My Projects",
       // Translation keys for project MoveMentor:
       project_title_moveMentor: "MoveMentor: Personalized Rehabilitation System",
-      project_description_moveMentor: "A personalized physical rehabilitation system with custom workout plans, an intuitive chatbot, an advanced email system and statistical tracking.",
+      project_description_moveMentor: "A personalized physical rehabilitation platform with a React front end, a Node.js back end, and a MongoDB database. Patients get custom workout plans, an intuitive chatbot, automated email notifications, and visual progress tracking - a complete full-stack build, from database to deployment.",
+      project_contribution_moveMentor: "Designed and built independently, from the database schema and backend API to the React interface and production deployment.",
       // Translation keys for project To Do List:
-      project_title_toDoList: "To Do List Project",
-      project_description_toDoList: "A daily task manager for adding and deleting tasks, with data stored in MongoDB so tasks remain available after the app is closed.",
+      project_title_toDoList: "To Do List: Task Management App",
+      project_description_toDoList: "A server-rendered task management app built with Node.js and Express, using EJS templates for the views and MongoDB (via Mongoose) to persist tasks between sessions.",
+      project_contribution_toDoList: "Developed independently, including the Express routes, MongoDB schema, and server-rendered views.",
 
       // ProjectShowcase.js – project showcase UI strings
       projects_carousel_label: "Project showcase",
@@ -180,9 +186,11 @@ export const resources = {
       projects_status: "Project {{current}} of {{total}}",
       projects_go_to: "Go to project {{current}}",
       projects_view_github: "View on GitHub",
+      projects_live_demo: "Live Demo",
       projects_new_tab: "opens in a new tab",
       projects_tech_label: "Technologies",
       projects_show_all_tech: "Show all technologies",
+      projects_role_label: "My Role",
       projects_image_alt: "Preview image of {{title}}",
 
       // Seo.js – per-page title and description (search engine metadata)
@@ -298,11 +306,13 @@ export const resources = {
       // Projects.js
       projects_title: "Мои проекты",
       // Translation keys for project MoveMentor:
-      project_title_moveMentor: "Ментор Движения: Персонализированная система реабилитации",
-      project_description_moveMentor: "Персонализированная система физической реабилитации с индивидуальными планами тренировок, интуитивным чат-ботом, продвинутой системой электронной почты и статистическим трекингом.",
+      project_title_moveMentor: "MoveMentor: Персонализированная система реабилитации",
+      project_description_moveMentor: "Персонализированная платформа физической реабилитации с интерфейсом на React, серверной частью на Node.js и базой данных MongoDB. Пациенты получают индивидуальные планы тренировок, интуитивный чат-бот, автоматические email-уведомления и наглядное отслеживание прогресса - полноценная full-stack разработка, от базы данных до развёртывания.",
+      project_contribution_moveMentor: "Спроектирована и разработана самостоятельно - от схемы базы данных и серверного API до интерфейса на React и развёртывания в продакшене.",
       // Translation keys for project To Do List:
-      project_title_toDoList: "Проект To Do List",
-      project_description_toDoList: "Приложение для управления ежедневными задачами: добавление и удаление задач с хранением данных в MongoDB, чтобы задачи сохранялись и после закрытия приложения.",
+      project_title_toDoList: "To Do List: Приложение для управления задачами",
+      project_description_toDoList: "Приложение для управления задачами с серверным рендерингом, построенное на Node.js и Express, с шаблонами EJS для представлений и MongoDB (через Mongoose) для хранения задач между сеансами.",
+      project_contribution_toDoList: "Разработано самостоятельно, включая маршруты Express, схему MongoDB и серверные представления.",
 
       // ProjectShowcase.js – project showcase UI strings
       projects_carousel_label: "Витрина проектов",
@@ -311,9 +321,11 @@ export const resources = {
       projects_status: "Проект {{current}} из {{total}}",
       projects_go_to: "Перейти к проекту {{current}}",
       projects_view_github: "Смотреть на GitHub",
+      projects_live_demo: "Живое демо",
       projects_new_tab: "откроется в новой вкладке",
       projects_tech_label: "Технологии",
       projects_show_all_tech: "Показать все технологии",
+      projects_role_label: "Моя роль",
       projects_image_alt: "Изображение проекта {{title}}",
 
       // Seo.js – per-page title and description (search engine metadata)
