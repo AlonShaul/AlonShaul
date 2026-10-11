@@ -22,17 +22,11 @@ export const resources = {
 
       home_skills_title: "המיומנויות שלי",
 
-      home_skills_react_title: "React",
       home_skills_react_text: "בניית ממשקים דינמיים ומתקדמים.",
-      home_skills_node_title: "Node.js",
       home_skills_node_text: "יצירת API מהירים ואמינים.",
-      home_skills_tailwind_title: "Tailwind CSS",
       home_skills_tailwind_text: "עיצוב מודרני, רספונסיבי וקל לתפעול.",
-      home_skills_htmlcssjs_title: "HTML5 | CSS | JS",
       home_skills_htmlcssjs_text: "בניית אתרים עם HTML5, CSS3 ו-JavaScript.",
-      home_skills_mongo_title: "MongoDB",
       home_skills_mongo_text: "ניהול מסדי נתונים NoSQL.",
-      home_skills_python_title: "Python",
       home_skills_python_text: "פיתוח backend, סקריפטים ואוטומציה.",
 
       // Profile.js
@@ -159,17 +153,11 @@ export const resources = {
 
       home_skills_title: "My Skills",
 
-      home_skills_react_title: "React",
       home_skills_react_text: "Building dynamic and advanced interfaces.",
-      home_skills_node_title: "Node.js",
       home_skills_node_text: "Creating fast and reliable APIs.",
-      home_skills_tailwind_title: "Tailwind CSS",
       home_skills_tailwind_text: "Modern, responsive, and easy to maintain design.",
-      home_skills_htmlcssjs_title: "HTML5 | CSS | JS",
       home_skills_htmlcssjs_text: "Building websites with HTML5, CSS3, and JavaScript.",
-      home_skills_mongo_title: "MongoDB",
       home_skills_mongo_text: "Managing NoSQL databases.",
-      home_skills_python_title: "Python",
       home_skills_python_text: "Backend development, scripting, and automation.",
 
       // Profile.js
@@ -296,17 +284,11 @@ export const resources = {
 
       home_skills_title: "Мои навыки",
 
-      home_skills_react_title: "React",
       home_skills_react_text: "Creating dynamic and modern interfaces.",
-      home_skills_node_title: "Node.js",
       home_skills_node_text: "Creating fast and reliable APIs.",
-      home_skills_tailwind_title: "Tailwind CSS",
       home_skills_tailwind_text: "Modern, adaptive, and easy-to-maintain design.",
-      home_skills_htmlcssjs_title: "HTML5 | CSS | JS",
       home_skills_htmlcssjs_text: "Building websites using HTML5, CSS3, and JavaScript.",
-      home_skills_mongo_title: "MongoDB",
       home_skills_mongo_text: "Managing NoSQL databases.",
-      home_skills_python_title: "Python",
       home_skills_python_text: "Backend development, scripting, and automation.",
 
       // Profile.js
