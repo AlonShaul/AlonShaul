@@ -22,7 +22,9 @@ const Projects = () => {
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 1.2, ease: 'easeOut' }}
       >
-        <section className="py-16 bg-gray-50 dark:bg-gray-900 relative z-10" id="projects">
+        {/* הוסר bg-gray-50/dark:bg-gray-900 שכיסה את הרקע המונפש (DynamicTriangles,
+            שממוקם ב-z-10 שלילי) - כרטיסי הפרויקטים עצמם (בתוך ProjectShowcase) כבר אטומים */}
+        <section className="py-16 relative z-10" id="projects">
           <div className="container mx-auto px-4">
             {/* כותרת עמוד עם אנימציית כניסה */}
             <motion.div

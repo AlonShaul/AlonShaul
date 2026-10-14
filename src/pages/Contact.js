@@ -11,7 +11,9 @@ const Contact = () => {
 
   const [formData, setFormData] = useState({ name: '', email: '', message: '', website: '' });
   const [responseMsg, setResponseMsg] = useState('');
+  const [responseStatus, setResponseStatus] = useState(null); // 'success' | 'error' | null
   const [errors, setErrors] = useState({ name: '', email: '' });
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   // validateName uses Unicode letter matching so legitimate names in any script
   // (Hebrew, Latin, Cyrillic, etc.) pass, without hand-maintaining per-alphabet ranges.
@@ -19,6 +21,11 @@ const Contact = () => {
     const regex = /^[\p{L}\s]+$/u;
     return regex.test(value);
   };
+
+  // Lightweight client-side email check (not a full RFC validator - the server's
+  // validator.isEmail() remains authoritative). Catches obviously invalid addresses
+  // (missing "@", missing domain/TLD, stray whitespace) before a network round-trip.
+  const validateEmail = (value) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
 
   // Maps server-returned error codes to translated i18n keys. An unrecognized/missing
   // code falls back to the existing behavior (raw error text from the server).
@@ -43,7 +50,7 @@ const Contact = () => {
       }
     }
     if (name === 'email') {
-      if (!value.includes('@')) {
+      if (!validateEmail(value)) {
         setErrors((prev) => ({ ...prev, email: t('contact_error_email') }));
       } else {
         setErrors((prev) => ({ ...prev, email: '' }));
@@ -53,10 +60,14 @@ const Contact = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
+    // מונע שליחה כפולה - הן מלחיצה חוזרת בזמן שבקשה כבר רצה, והן כפתור מושבת ויזואלית
+    if (isSubmitting) return;
     if (errors.name || errors.email) {
+      setResponseStatus('error');
       setResponseMsg(t('contact_error_fixFields'));
       return;
     }
+    setIsSubmitting(true);
     // הפנייה ישירות לפונקציה דרך הנתיב המיוחד של Netlify
     fetch(`/.netlify/functions/contact`, {
       method: 'POST',
@@ -68,15 +79,21 @@ const Contact = () => {
         if (data.error) {
           // אם השרת החזיר errorCode מוכר - מציגים הודעה מתורגמת; אחרת נופלים חזרה לטקסט הגולמי מהשרת
           const translatedKey = SERVER_ERROR_KEYS[data.errorCode];
+          setResponseStatus('error');
           setResponseMsg(translatedKey ? t(translatedKey) : t('contact_error_generic') + data.error);
         } else {
+          setResponseStatus('success');
           setResponseMsg(t('contact_success'));
           setFormData({ name: '', email: '', message: '', website: '' });
         }
       })
       .catch((err) => {
         console.error(err);
+        setResponseStatus('error');
         setResponseMsg(t('contact_error_tryLater'));
+      })
+      .finally(() => {
+        setIsSubmitting(false);
       });
   };
 
@@ -94,7 +111,9 @@ const Contact = () => {
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 1.2, ease: "easeOut" }}
       >
-        <section className="py-16 bg-white dark:bg-gray-900 relative z-10">
+        {/* הוסר bg-white/dark:bg-gray-900 שכיסה את הרקע המונפש (DynamicSquares,
+            שממוקם ב-z-10 שלילי) - טופס יצירת הקשר עצמו (bg-gray-100/dark:bg-gray-800) כבר אטום */}
+        <section className="py-16 relative z-10">
           <div className="container mx-auto px-4">
             <h1 className="text-4xl font-bold text-center text-blue-700 dark:text-white mb-4">
               {t('contact_title')}
@@ -112,13 +131,16 @@ const Contact = () => {
               initial={{ opacity: 0, scale: 0.8 }}
               animate={{ opacity: 1, scale: 1 }}
               transition={{ duration: 1 }}
-              className="max-w-xl mx-auto bg-gray-100 dark:bg-gray-800 p-8 rounded-lg shadow-2xl border border-gray-200 dark:border-gray-700 mt-8"
+              className="max-w-xl mx-auto bg-gray-100 dark:bg-gray-800 p-8 rounded-lg shadow-lg mt-8"
             >
-              {/* שדה honeypot - מוסתר מעין אנושית, נועד ללכוד בוטים שממלאים את כל שדות הטופס */}
-              <div
-                aria-hidden="true"
-                style={{ position: 'absolute', left: '-9999px', width: '1px', height: '1px', overflow: 'hidden' }}
-              >
+              {/* שדה honeypot - מוסתר מעין אנושית, נועד ללכוד בוטים שממלאים את כל שדות הטופס.
+                  sr-only (ולא position:absolute; left:-9999px) - הגרסה הקודמת דחפה את האלמנט
+                  אלפי פיקסלים מחוץ לדף בלי שום אב-מכיל עם overflow:hidden שיבלום אותו, מה שהרחיב
+                  את document.documentElement.scrollWidth והפך את כל העמוד לגלילה אופקית. sr-only
+                  משתמש ב-clip+margin:-1px (התבנית הסטנדרטית לתוכן מוסתר-ויזואלית) ונשאר בתוך
+                  זרימת הפריסה הרגילה - אותה תוצאה (בלתי-נראה, לא נגיש לקוראי מסך הודות ל-
+                  aria-hidden) בלי להרחיב את רוחב המסמך. */}
+              <div aria-hidden="true" className="sr-only">
                 <label htmlFor="website">Leave this field blank</label>
                 <input
                   type="text"
@@ -218,16 +240,24 @@ const Contact = () => {
 
               <motion.button
                 type="submit"
-                whileHover={{ scale: 1.05 }}
-                className="w-full h-12 bg-blue-500 dark:bg-blue-600 hover:bg-blue-600 dark:hover:bg-blue-700 text-white font-bold rounded transition duration-300"
+                disabled={isSubmitting}
+                aria-busy={isSubmitting}
+                whileHover={isSubmitting ? undefined : { scale: 1.05 }}
+                className="w-full h-12 bg-blue-500 dark:bg-blue-600 hover:bg-blue-600 dark:hover:bg-blue-700 text-white font-bold rounded transition duration-300 disabled:opacity-70 disabled:cursor-not-allowed disabled:hover:bg-blue-500 dark:disabled:hover:bg-blue-600"
               >
-                {t('contact_submit')}
+                {isSubmitting ? t('contact_submit_sending') : t('contact_submit')}
               </motion.button>
 
               {responseMsg && (
-                <p role="status" aria-live="polite" className="text-center mt-4 text-green-600 dark:text-green-400 font-semibold">
-                  {responseMsg}
-                </p>
+                responseStatus === 'error' ? (
+                  <p role="alert" className="text-center mt-4 text-red-600 dark:text-red-400 font-semibold">
+                    {responseMsg}
+                  </p>
+                ) : (
+                  <p role="status" aria-live="polite" className="text-center mt-4 text-green-600 dark:text-green-400 font-semibold">
+                    {responseMsg}
+                  </p>
+                )
               )}
             </motion.form>
           </div>
