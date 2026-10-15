@@ -34,6 +34,16 @@ html[dir="rtl"] {
   }
 }
 
+/* סמן עכבר מותאם-אישית (CustomCursor.js): המחלקה הזו מתווספת ל-<html> אך ורק אחרי
+   שזוהתה בפועל התקנה עם מצביע-עדין (pointer:fine) ו-CustomCursor כבר התחיל לרנדר
+   את הסמן שלו - כך שלעולם לא נוצר מצב של סמן מערכת מוסתר בלי תחליף. הכלל חל גם על
+   *, כי לאלמנטים אינטראקטיביים (קישורים/כפתורים) יש לרוב cursor:pointer מפורש
+   (מה-UA stylesheet או מ-Tailwind), שהיה עוקף סתם html{cursor:none} בזכות ירושה. */
+.custom-cursor-active,
+.custom-cursor-active * {
+  cursor: none !important;
+}
+
 /* הגדרות נוספות */
 .invert-contrast {
   filter: invert(100%);

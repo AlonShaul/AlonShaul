@@ -18,7 +18,13 @@ export const resources = {
       // Home.js
       home_header_titleName: "Alon Shaul",
       home_header_subtitle: "מפתח Full-Stack",
-      home_header_quote: "\"אני משלב גישה חדשנית עם התמחות טכנולוגית מתקדמת, ומקפיד על כל פרט מתוך מחויבות לעיצוב חוויית משתמש מעצימה.\nבכל פרויקט שאני מוביל, אני מתכנן פתרונות יעילים ואסתטיים שמעניקים ערך אמיתי ומדגישים את כישוריי כמפתח מקצועי\".",
+      home_header_quote: "\"רעיון הוא רק ההתחלה.\nאני אוהב לקחת רעיונות, לפרק אותם לאתגרים ולבנות מהם חוויה שלמה שעובדת באמת - משלב המחשבה והתכנון, דרך הפיתוח, ועד לרגע שבו הרעיון הופך למוצר שאפשר לראות, להרגיש ולהשתמש בו\".",
+
+      home_cta_projects: "הפרויקטים שלי",
+      home_cta_contact: "צור קשר",
+
+      home_parallax_title: "רעיון → פיתוח → מוצר",
+      home_parallax_text: "כל פרויקט מתחיל ברעיון - אני מוביל אותו דרך הפיתוח, עד למשהו שאנשים באמת משתמשים בו.",
 
       home_skills_title: "המיומנויות שלי",
 
@@ -160,7 +166,13 @@ export const resources = {
       // Home.js
       home_header_titleName: "Alon Shaul",
       home_header_subtitle: "Full-Stack Developer",
-      home_header_quote: "\"I combine an innovative approach with advanced technological expertise, and I pay attention to every detail with a commitment to designing an empowering user experience.\nIn every project I lead, I plan efficient and aesthetic solutions that deliver true value and highlight my skills as a professional developer\"",
+      home_header_quote: "\"An idea is just the beginning.\nI like taking an idea, breaking it down into real challenges, and shaping it into something that actually works - from the first spark of thought, through the process of building, to the moment it becomes a product people can see, feel, and use\"",
+
+      home_cta_projects: "My Projects",
+      home_cta_contact: "Contact Me",
+
+      home_parallax_title: "Idea → Development → Product",
+      home_parallax_text: "Every project starts with an idea - I take it through development, into something people can actually use.",
 
       home_skills_title: "My Skills",
 
@@ -302,16 +314,22 @@ export const resources = {
       // Home.js
       home_header_titleName: "Алон Шауль",
       home_header_subtitle: "Фулстек-разработчик",
-      home_header_quote: "\"Я сочетаю инновационный подход с передовыми технологическими знаниями и уделяю внимание каждой детали, исходя из стремления создавать вдохновляющий пользовательский опыт.\nВ каждом проекте, которым я руководствуюсь, я разрабатываю эффективные и эстетичные решения, приносящие реальную ценность и подчеркивающие мои навыки как профессионального разработчика\"",
+      home_header_quote: "\"Идея - это только начало.\nМне нравится брать идею, разбивать её на настоящие задачи и превращать в нечто целостное, что действительно работает - от первой мысли и планирования, через разработку, до момента, когда идея становится продуктом, который можно увидеть, почувствовать и использовать\"",
+
+      home_cta_projects: "Мои проекты",
+      home_cta_contact: "Связаться со мной",
+
+      home_parallax_title: "Идея → Разработка → Продукт",
+      home_parallax_text: "Каждый проект начинается с идеи - я провожу её через разработку, пока она не станет чем-то, чем люди действительно пользуются.",
 
       home_skills_title: "Мои навыки",
 
-      home_skills_react_text: "Creating dynamic and modern interfaces.",
-      home_skills_node_text: "Creating fast and reliable APIs.",
-      home_skills_tailwind_text: "Modern, adaptive, and easy-to-maintain design.",
-      home_skills_htmlcssjs_text: "Building websites using HTML5, CSS3, and JavaScript.",
-      home_skills_mongo_text: "Managing NoSQL databases.",
-      home_skills_python_text: "Backend development, scripting, and automation.",
+      home_skills_react_text: "Создание динамичных и современных интерфейсов.",
+      home_skills_node_text: "Создание быстрых и надёжных API.",
+      home_skills_tailwind_text: "Современный, адаптивный и простой в поддержке дизайн.",
+      home_skills_htmlcssjs_text: "Создание веб-сайтов с помощью HTML5, CSS3 и JavaScript.",
+      home_skills_mongo_text: "Управление базами данных NoSQL.",
+      home_skills_python_text: "Backend-разработка, скрипты и автоматизация.",
 
       // Profile.js
       profile_title: "Обо мне",

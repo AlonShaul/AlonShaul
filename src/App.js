@@ -11,6 +11,7 @@ import Contact from './pages/Contact';
 import NotFound from './pages/NotFound';
 import AccessibilityWidget from './components/AccessibilityWidget';
 import ContactBot from './components/ContactBot'; // הוספת ייבוא של הבוט
+import CustomCursor from './components/CustomCursor';
 import { getLanguageFromPath, getDirection } from './languageRoutes';
 
 // אותם עמודים בכל קבוצת שפה. כל כתובת אחרת בתוך הקבוצה – עמוד "לא נמצא" באותה שפה.
@@ -60,6 +61,8 @@ function App() {
       <Footer />
       <AccessibilityWidget />
       <ContactBot /> {/* הוספת הבוט לתחתית העמוד */}
+      {/* מופע גלובלי יחיד - נשאר קבוע בין ניווטים (App.js לא נטען-מחדש בין routes) */}
+      <CustomCursor />
     </div>
   );
 }

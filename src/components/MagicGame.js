@@ -688,6 +688,25 @@ const MagicGame = () => {
     }
   }, [gameOver]);
 
+  // תיאום עם הסמן הגלובלי (CustomCursor.js): בדיוק אותו תנאי "משחק פעיל" שכבר
+  // קיים למעלה (שורה שמחשבת cursor:'none' על מכל המשחק עצמו) - לא נוצר כאן שום
+  // מעקב מצב-משחק כפול. כשהתנאי אמיתי (טיסה פעילה/ספירה לאחור, לא מושהה, לא
+  // נגמר) - מבקשים מהסמן הגלובלי להיעלם; בכל מצב אחר (לפני התחלה/מושהה/game
+  // over) - מבקשים שיחזור. אותם שני אירועי DOM גלובליים בדיוק כמו ב-ParallaxSection,
+  // כך של-CustomCursor.js אין צורך בשום שינוי - אותו מאזין משרת את שני המקומות.
+  useEffect(() => {
+    const isActiveGameplay = (gameStarted || countdown !== null) && !paused && !gameOver;
+    window.dispatchEvent(new CustomEvent(isActiveGameplay ? 'customcursor:hide' : 'customcursor:show'));
+  }, [gameStarted, countdown, paused, gameOver]);
+
+  // רשת ביטחון: אם הרכיב מתפרק לגמרי (ניווט לעמוד אחר) בזמן שהמשחק פעיל, מוודאים
+  // שהסמן הגלובלי חוזר - כך שהוא לעולם לא נשאר "תקוע" מוסתר בעמוד הבא.
+  useEffect(() => {
+    return () => {
+      window.dispatchEvent(new CustomEvent('customcursor:show'));
+    };
+  }, []);
+
   return (
     <div
       ref={containerRef}
@@ -750,6 +769,17 @@ const MagicGame = () => {
             <button
               className="w-12 h-12 flex items-center justify-center rounded-full bg-blue-400 hover:bg-blue-500"
               onClick={() => setPaused(true)}
+              // חריג זמני וקטן ביותר למצב הסמן הגלובלי: בזמן משחק פעיל הסמן מוסתר
+              // לגמרי (כנדרש), אבל בלי זה לא ניתן לדעת מתי מצביעים בדיוק על כפתור
+              // ה-Pause. לא נוגעים בלוגיקת המשחק/מצבו - רק "מבקשים" מהסמן הגלובלי
+              // להופיע זמנית בזמן hover על הכפתור הזה בלבד.
+              onMouseEnter={() => window.dispatchEvent(new CustomEvent('customcursor:show'))}
+              onMouseLeave={() => {
+                // בודקים את paused העדכני: אם הלחיצה כבר קרתה (paused===true), הסמן
+                // צריך להישאר גלוי (תפריט ההשהיה פעיל) - לא לחזור ולהסתיר אותו רק
+                // כי העכבר זז מעל הכפתור. מסתירים מחדש רק אם המשחק עדיין פעיל בפועל.
+                if (!paused) window.dispatchEvent(new CustomEvent('customcursor:hide'));
+              }}
             >
               <img src={pauseIcon} alt="Pause" className="w-8 h-8" />
             </button>
