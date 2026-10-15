@@ -283,6 +283,12 @@ const BuildAlon = () => {
                     scale: isBuilt ? 0.4 : hoveredId === node.id ? 1.06 : 1,
                   }}
                   transition={{ duration: prefersReducedMotion ? 0 : 0.6, ease: 'easeInOut' }}
+                  // iOS Safari: רכיב עם box-shadow+border-radius שמונפש ב-transform בתוך
+                  // שכבת-הורה שגם היא מתורגמת (parallax/auto-float) עלול לגרום ל-WebKit
+                  // לצייר תיבת-גבולות מלבנית חשופה של ה-compositing layer (באג ידוע).
+                  // will-change + backface-visibility:hidden מכריחים שכבה יציבה ותקינה,
+                  // בלי לשנות צבע/גודל/מיקום/תזמון.
+                  style={{ willChange: 'transform, opacity', backfaceVisibility: 'hidden', WebkitBackfaceVisibility: 'hidden' }}
                   className={`${nodeButtonClass} ${hoveredId === node.id ? 'border-blue-500 dark:border-blue-400' : ''}`}
                   dir="ltr"
                 >
